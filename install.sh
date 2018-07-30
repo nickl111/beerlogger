@@ -7,6 +7,8 @@ USAGE="USAGE: $0 install|uninstall"
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #TODO make sure we're root
 
+. $THIS_DIR/core/config.sh
+
 case $1 in
 	install)
 		apt-get install apache2 php rrdtool sqlite3 wiringpi
@@ -20,8 +22,7 @@ case $1 in
 		systemctl daemon-reload
 		systemctl beerlog enable
 		
-		#TODO modify apache configs based on the global config
-		cp $THIS_DIR/apache/beerlogger.conf /etc/apache2/sites-available/
+		sed 's/|OUTDIR|/$OUTDIR/g' $THIS_DIR/apache/beerlogger.conf > /etc/apache2/sites-available/beerlogger.conf
 		ln -s /etc/apache2/sites-available/beerlogger.conf /etc/apache2/sites-enabled/beerlogger.conf
 		mkdir -p $OUT_DIR/html
 		mkdir -p $OUT_DIR/logs
