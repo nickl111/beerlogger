@@ -55,8 +55,8 @@ case $1 in
 		mycron=`mktemp`
 		mycron2=`mktemp`
 		crontab -l > $mycron
-		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh update//' $mycron > $mycron2
-		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh graph//' $mycron2 > $mycron
+		sed 's/\*\/1 \* \* \* \* $HOME_DIR\/rrd\/rrd\.sh update//' $mycron > $mycron2
+		sed 's/\*\/1 \* \* \* \* $HOME_DIR\/rrd\/rrd\.sh graph//' $mycron2 > $mycron
 		crontab $mycron
 		rm $mycron $mycron2
 	;;
