@@ -7,9 +7,9 @@ Type=forking
 Restart=always
 RestartSec=1
 User=root
-ExecStart=/usr/local/beerlog/beerlog start
-ExecStop=/usr/local/beerlog/beerlog stop
-PIDFile=/var/run/beerlog/temp.pid
+ExecStart=|HOME_DIR|/beerlog start
+ExecStop=|HOME_DIR|/beerlog stop
+PIDFile=|RUN_DIR|/temp.pid
 
 [Install]
 WantedBy=multi-user.target

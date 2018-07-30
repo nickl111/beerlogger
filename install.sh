@@ -20,10 +20,12 @@ case $1 in
 		mkdir $HOME_DIR
 		cp $THIS_DIR/core/* $HOME_DIR/
 		chmod 755 $HOME_DIR/beerlog
+		chmod 755 $HOME_DIR/led-emu.sh
 		
-		cp $THIS_DIR/systemd/beerlog.service /etc/systemd/system/
+		sed 's/|HOME_DIR|/$HOME_DIR/g' $THIS_DIR/systemd/beerlog.service >  /etc/systemd/system/beerlog.service
+		sed -i 's/|RUN_DIR|/$RUN_DIR/g' $THIS_DIR/systemd/beerlog.service
 		systemctl daemon-reload
-		systemctl beerlog enable
+		systemctl enable beerlog
 		
 		sed 's/|OUTDIR|/$OUTDIR/g' $THIS_DIR/apache/beerlogger.conf > /etc/apache2/sites-available/beerlogger.conf
 		ln -s /etc/apache2/sites-available/beerlogger.conf /etc/apache2/sites-enabled/beerlogger.conf
