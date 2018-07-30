@@ -51,8 +51,8 @@ case $1 in
 		systemctl disable beerlog
 		rm /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
-		rm /etc/apache2/sites-enabled/beerlog.conf
-		rm /etc/apache2/sites-available/beerlog.conf
+		rm /etc/apache2/sites-enabled/beerlogger.conf
+		rm /etc/apache2/sites-available/beerlogger.conf
 		
 		mycron=`mktemp`
 		mycron2=`mktemp`
