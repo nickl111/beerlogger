@@ -53,8 +53,8 @@ case $1 in
 		
 		mycron=`mktemp`
 		crontab -l > $mycron
-		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh update//'
-		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh graph//'
+		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh update//' $mycron
+		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh graph//' $mycron
 		crontab $mycron
 		rm $mycron
 	;;
