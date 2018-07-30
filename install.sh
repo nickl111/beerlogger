@@ -12,8 +12,7 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 case $1 in
 	install)
 		apt-get install apache2 php rrdtool sqlite3 wiringpi
-		
-		. $THIS_DIR/core/config.sh
+
 		mkdir $HOME_DIR
 		cp $THIS_DIR/core/* $HOME_DIR/
 		chmod 755 $HOME_DIR/beerlog

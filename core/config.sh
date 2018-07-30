@@ -12,6 +12,7 @@ OW=4	#1-wire pin. We don't reference it anywhere but just a reminder not to use 
 T1_ADDR=/sys/bus/w1/devices/28-00000ab5657e/w1_slave
 T2_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave
 
+HOME_DIR=/usr/local/beerlog
 DATA_DIR=/usr/share/beerlog
 SQL_DB=$DATA_DIR/beerlog.db
 OUTRRD=$DATA_DIR/rrd.in
