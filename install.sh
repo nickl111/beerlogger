@@ -18,6 +18,7 @@ case $1 in
 		apt-get install apache2 php rrdtool sqlite3 wiringpi
 
 		mkdir $HOME_DIR
+		mkdir $RUN_DIR
 		cp $THIS_DIR/core/* $HOME_DIR/
 		chmod 755 $HOME_DIR/beerlog
 		chmod 755 $HOME_DIR/led-emu.sh
@@ -45,6 +46,8 @@ case $1 in
 		rm $mycron
 		
 		sqlite3 $DATA_DIR/beerlog.db < $THIS_DIR/web/sql.sql
+		
+		systemctl start beerlog
 	;;
 	uninstall)
 		# TODO Warning about data loss
