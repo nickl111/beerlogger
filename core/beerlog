@@ -91,7 +91,7 @@ do_start() {
 		date=`date +%s`
 		bct=`cat $COUNTERFILE`
 		
-		echo "INSERT INTO data VALUES (${date},${bct},${t1},${t2})" | sqlite3 $SQL_DB 
+		echo "INSERT INTO data VALUES (${date},${bct},${t1},${t2})" | sqlite3 $SQL_DB
 		
 		echo -n "$date:$bct:$t1:$t2" > $OUTRRD
 		led_toggle_flash $LED_G

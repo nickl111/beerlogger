@@ -23,12 +23,12 @@ case $1 in
 		chmod 755 $HOME_DIR/beerlog
 		chmod 755 $HOME_DIR/led-emu.sh
 		
-		sed 's/|HOME_DIR|/$HOME_DIR/g' $THIS_DIR/systemd/beerlog.service >  /etc/systemd/system/beerlog.service
-		sed -i 's/|RUN_DIR|/$RUN_DIR/g' /etc/systemd/system/beerlog.service
+		sed s"@|HOME_DIR|@$HOME_DIR@g" $THIS_DIR/systemd/beerlog.service >  /etc/systemd/system/beerlog.service
+		sed -i "s@|RUN_DIR|@$RUN_DIR@g" /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
 		systemctl enable beerlog
 		
-		sed 's/|OUTDIR|/$OUTDIR/g' $THIS_DIR/apache/beerlogger.conf > /etc/apache2/sites-available/beerlogger.conf
+		sed "s@|OUTDIR|@$OUTDIR@g" $THIS_DIR/apache/beerlogger.conf > /etc/apache2/sites-available/beerlogger.conf
 		ln -s /etc/apache2/sites-available/beerlogger.conf /etc/apache2/sites-enabled/beerlogger.conf
 		mkdir -p $OUT_DIR/html
 		mkdir -p $OUT_DIR/logs
@@ -54,6 +54,7 @@ case $1 in
 		rm -r $HOME_DIR
 		rm -r $RUN_DIR
 		systemctl stop beerlog
+		sleep 2
 		systemctl disable beerlog
 		rm /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
@@ -63,8 +64,8 @@ case $1 in
 		mycron=`mktemp`
 		mycron2=`mktemp`
 		crontab -l > $mycron
-		sed 's/\*\/1 \* \* \* \* $HOME_DIR\/rrd\/rrd\.sh update//' $mycron > $mycron2
-		sed 's/\*\/1 \* \* \* \* $HOME_DIR\/rrd\/rrd\.sh graph//' $mycron2 > $mycron
+		sed "s@\*/1 \* \* \* \* $HOME_DIR/rrd/rrd\.sh update@@" $mycron > $mycron2
+		sed "s@\*/1 \* \* \* \* $HOME_DIR/rrd/rrd\.sh graph@@" $mycron2 > $mycron
 		crontab $mycron
 		rm $mycron $mycron2
 	;;
