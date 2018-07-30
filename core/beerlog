@@ -1,0 +1,195 @@
+#! /bin/bash
+
+HOME_DIR=/usr/local/beerlog		# Where this script lives
+
+RUN_DIR=/var/run/beerlog		# Where the run files live
+COUNTERFILE=$RUN_DIR/counter
+INT_PID_FILE=$RUN_DIR/int.pid
+TEMP_PID_FILE=$RUN_DIR/temp.pid
+
+. $HOME_DIR/config.sh
+. $HOME_DIR/led-functions.sh
+
+# make sure our environment exists
+mkdir -p $RUN_DIR
+
+if [ ! -d $RUN_DIR ]
+then
+	echo "The run dir $RUN_DIR does not exist and can't be made. Might want to check permissions or something."
+	exit 1
+fi
+
+mkdir -p $OUT_DIR
+
+if [ ! -d $OUT_DIR ]
+then
+	echo "The out dir $OUT_DIR does not exist and can't be made. Might want to check permissions or something."
+	exit 2
+fi
+
+COUNTER=0
+
+# Function to read temp from a 1-wire thermometer
+get_temp() {
+
+	TMPF=`mktemp`
+	
+	eval "cat \$${1}_ADDR" > $TMPF
+	lines=$(head -1 $TMPF)
+	TCNT=0
+	while [[ ${lines: -3} != 'YES' ]] ; do
+		sleep 0.2
+		eval "cat \$${1}_ADDR" > $TMPF
+		lines=$(head -1 $TMPF)
+		TCNT=`expr $TCNT + 1`
+		if [[ $TCNT -ge 10 ]]
+		then
+			return 1
+		fi
+	done
+	rawt=`tail -1 $TMPF`
+	rawt=${rawt: -5}
+	temp=`echo "scale=2; $rawt / 1000" | bc`
+        
+	echo $temp
+	rm -f $TMPF
+	return 0
+}
+
+do_start() {
+	#GPIO is not terribly reliable at initialising pins so do it manually
+	echo $IN > /sys/class/gpio/export > /dev/null 2>&1
+	echo $LED_R > /sys/class/gpio/export > /dev/null 2>&1
+	echo $LED_G > /sys/class/gpio/export > /dev/null 2>&1
+	echo $LED_O > /sys/class/gpio/export > /dev/null 2>&1
+	
+	#init pins
+	gpio -g mode $IN in
+	gpio -g mode $IN up
+	gpio -g mode $LED_R out
+	gpio -g mode $LED_G out
+	gpio -g mode $LED_O out
+	
+	led_hello
+	
+	# This listens for interupts on $IN and increments a counter.
+	echo -n $COUNTER > $COUNTERFILE
+	(while true; do
+		gpio -g wfi $IN falling
+		COUNTER=`expr $COUNTER + 1`
+		echo -n $COUNTER > $COUNTERFILE
+		led_flash $LED_O
+	done ) &
+	INT_PID=$!
+	echo $INT_PID>$INT_PID_FILE
+	
+	# This logs the temperatures and whatever the current value of the counter is every minute
+	# Note that this counter will reset everytime the service is restarted!
+	( while true ; do
+		sleep 60
+		t1=`get_temp T1`
+		t2=`get_temp T2`
+		echo -n `date +%s` >> $OUTLOG
+		echo -n "," >> $OUTLOG
+		cat $COUNTERFILE >> $OUTLOG
+		echo ",$t1,$t2" >> $OUTLOG
+		led_toggle_flash $LED_G
+		
+		#check that bloop counter is running and error if not
+		#INT_PID=`cat $INT_PID_FILE` should know this?
+		ps -hq $INT_PID > /dev/null 
+		if [[ $? -ne 0 ]]
+		then
+			echo "Bloop monitor appears to be dead! ($INT_PID)"
+			led_error
+		fi
+		
+	done ) &
+	TEMP_PID=$!
+	echo $TEMP_PID>$TEMP_PID_FILE
+	
+	led_on $LED_G
+	echo "Beer logger service started"
+}
+
+do_stop() {
+	INT_PID=`cat $INT_PID_FILE`
+	TEMP_PID=`cat $TEMP_PID_FILE`
+
+	kill $INT_PID
+	kill $TEMP_PID
+	rm -f $INT_PID_FILE
+	rm -f $TEMP_PID_FILE
+	
+	led_off $LED_G
+	echo "Beer logger service stopped"
+}
+
+do_status() {
+	if [ -e $INT_PID_FILE ]
+	then
+		INT_PID=`cat $INT_PID_FILE`
+		
+		ps -hq $INT_PID > /dev/null 
+		if [[ $? -ne 0 ]]
+		then
+			echo "Bloop monitor pidfile exists but process appears to be dead ($INT_PID)"
+		else
+			echo -n "Bloop monitoring process OK. Current count: "
+			cat $COUNTERFILE
+			echo ""
+		fi
+	else
+		# no pidfile
+		
+		pscount=`ps aux | grep "gpio -g wfi" | wc -l`
+		if [[ $pscount -gt 1 ]]
+		then
+			echo "No Bloop monitor pidfile was found, however a process was found! You might want to investigate, it's probably orphaned"
+			ps aux | grep "gpio -g wfi" 
+		fi
+	fi
+
+	if [ -e $TEMP_PID_FILE ]
+	then
+		TEMP_PID=`cat $TEMP_PID_FILE`
+		
+		ps -hq $TEMP_PID > /dev/null
+		if [[ $? -ne 0 ]]
+		then
+			echo "Temperature Logger pidfile exists but process appears to be dead ($TEMP_PID)"
+		else
+			amb=`get_temp T2`
+			beer=`get_temp T1`
+			echo "Temperature Logger process OK. Current Temps: Ambient $amb - Beer: $beer"
+		fi
+	else
+		#oops. No pid file
+		echo "Service is stopped"
+	fi
+}
+
+# Main controller
+# This works with systemd as well as standalone but it's not a perfect implementation. 
+# In particular systemd will not pass through the status command and it doesn't really like having children
+case $1 in
+	start)
+		do_start
+		;;
+	stop)
+		do_stop
+		;;
+	status)
+		do_status
+		;;
+	restart)
+		do_stop
+		sleep 2
+		do_start
+		;;
+	*)
+		echo Action \'"$@"\' is not supported.
+		;;
+esac
+
+exit 0
