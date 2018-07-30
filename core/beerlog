@@ -1,14 +1,14 @@
 #! /bin/bash
 
-HOME_DIR=/usr/local/beerlog		# Where this script lives
+THIS_DIR=${BASH_SOURCE%/*}		# Where this script lives
 
 RUN_DIR=/var/run/beerlog		# Where the run files live
 COUNTERFILE=$RUN_DIR/counter
 INT_PID_FILE=$RUN_DIR/int.pid
 TEMP_PID_FILE=$RUN_DIR/temp.pid
 
-. $HOME_DIR/config.sh
-. $HOME_DIR/led-functions.sh
+. $THIS_DIR/config.sh
+. $THIS_DIR/led-functions.sh
 
 # make sure our environment exists
 mkdir -p $RUN_DIR
@@ -19,11 +19,11 @@ then
 	exit 1
 fi
 
-mkdir -p $OUT_DIR
+mkdir -p $DATA_DIR
 
-if [ ! -d $OUT_DIR ]
+if [ ! -d $DATA_DIR ]
 then
-	echo "The out dir $OUT_DIR does not exist and can't be made. Might want to check permissions or something."
+	echo "The data dir $DATA_DIR does not exist and can't be made. Might want to check permissions or something."
 	exit 2
 fi
 
@@ -93,6 +93,10 @@ do_start() {
 		echo -n "," >> $OUTLOG
 		cat $COUNTERFILE >> $OUTLOG
 		echo ",$t1,$t2" >> $OUTLOG
+		
+		echo -n "N:" > $OUTRRD
+		cat $COUNTERFILE >> $OUTRRD
+		echo -n ":$t1:$t2" >> $OUTRRD
 		led_toggle_flash $LED_G
 		
 		#check that bloop counter is running and error if not

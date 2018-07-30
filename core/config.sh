@@ -12,6 +12,8 @@ OW=4	#1-wire pin. We don't reference it anywhere but just a reminder not to use 
 T1_ADDR=/sys/bus/w1/devices/28-00000ab5657e/w1_slave
 T2_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave
 
-OUT_DIR=/usr/share/beerlog
-OUTLOG=$OUT_DIR/templog		# The output log
-OUTRRD=$OUT_DIR/rrd.in
+DATA_DIR=/usr/share/beerlog
+OUTLOG=$DATA_DIR/templog		# The output log
+OUTRRD=$DATA_DIR/rrd.in
+
+OUT_DIR=/var/www/beerlog

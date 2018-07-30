@@ -4,23 +4,29 @@
 
 USAGE="USAGE: $0 install|uninstall"
 
+THIS_DIR=${BASH_SOURCE%/*}
 #TODO make sure we're root
 
 case $1 in
 	install)
 		apt-get install apache2 php rrdtool sqlite3 wiringpi
-		#TODO get directory this script is in (atm running from a different directory wouldprobably be messy)
-		. core/config.sh
+		
+		. $THIS_DIR/core/config.sh
 		mkdir $HOME_DIR
-		cp core/* $HOME_DIR/
+		cp $THIS_DIR/core/* $HOME_DIR/
 		chmod 755 $HOME_DIR/beerlog
 		
-		cp systemd/beerlog.service /etc/systemd/system/
+		cp $THIS_DIR/systemd/beerlog.service /etc/systemd/system/
 		systemctl daemon-reload
 		systemctl beerlog enable
 		
-		cp apache/beerlog.conf /etc/apache2/mods-available/
-		ln -s /etc/apache2/mods-available/beerlog.conf /etc/apache2/mods-enabled/beerlog.conf
+		#TODO modify apache configs based on the global config
+		cp $THIS_DIR/apache/beerlogger.conf /etc/apache2/sites-available/
+		ln -s /etc/apache2/sites-available/beerlogger.conf /etc/apache2/sites-enabled/beerlogger.conf
+		mkdir -p $OUT_DIR/html
+		mkdir -p $OUT_DIR/logs
+		
+		mkdir -p $DATA_DIR
 		
 	;;
 	uninstall)
@@ -30,8 +36,8 @@ case $1 in
 		systemctl beerlog disable
 		rm -f /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
-		rm -f /etc/apache2/mods-enabled/beerlog.conf
-		rm -f /etc/apache2/mods-available/beerlog.conf
+		rm -f /etc/apache2/sites-enabled/beerlog.conf
+		rm -f /etc/apache2/sites-available/beerlog.conf
 	;;
 	*)
 		echo "Unknown command ${1}"
