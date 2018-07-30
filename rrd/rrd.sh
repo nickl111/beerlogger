@@ -5,7 +5,7 @@ THIS_DIR=${BASH_SOURCE%/*}
 GRAPH_PERIOD=1
 PERIODS="hour day week month year"
 RRA_DEF="RRA:AVERAGE:0.5:1:120 RRA:AVERAGE:0.5:5:576 RRA:AVERAGE:0.5:30:672 RRA:AVERAGE:0.5:120:744 RRA:AVERAGE:0.5:1440:732 RRA:MAX:0.5:1:120 RRA:MAX:0.5:5:576 RRA:MAX:0.5:30:672 RRA:MAX:0.5:120:744 RRA:MAX:0.5:1440:732"
-HEARTBEAT=120
+HEARTBEAT=300
 WIDTH=620
 HEIGHT=280
 #OPTIONS=" --only-graph"
@@ -32,17 +32,19 @@ case $1 in
 				--width ${WIDTH} \
 				--height ${HEIGHT} \
 				--lower-limit 0 \
+				--rigid \
 				--right-axis 1:0 \
-				--right-axis-label "Bloops" \
+				--right-axis-label "Bloops / min" \
 				--right-axis-format %1.1lf \
 				--alt-autoscale ${OPTIONS} \
 				DEF:BLOOP=$DATA_DIR/beerlog.rrd:BLOOP:AVERAGE \
 				DEF:BEER=$DATA_DIR/beerlog.rrd:BEERTEMP:AVERAGE \
 				DEF:AMB=$DATA_DIR/beerlog.rrd:AMBTEMP:AVERAGE \
-				AREA:BLOOP#66ee66:"Bloops/min\t" \
-				GPRINT:BLOOP:AVERAGE:"Avg\:%4.2lf" \
-				GPRINT:BLOOP:MAX:"Max\:%4.2lf" \
-				GPRINT:BLOOP:MIN:"Min\:%4.2lf\n" \
+				CDEF:BPM=BLOOP,60,* \
+				AREA:BPM#66ee66:"Bloops/min\t" \
+				GPRINT:BPM:AVERAGE:"Avg\:%4.2lf" \
+				GPRINT:BPM:MAX:"Max\:%4.2lf" \
+				GPRINT:BPM:MIN:"Min\:%4.2lf\n" \
 				LINE:BEER#660000:"Beer Temp\t" \
 				GPRINT:BEER:AVERAGE:"Avg\:%4.2lf" \
 				GPRINT:BEER:MAX:"Max\:%4.2lf" \

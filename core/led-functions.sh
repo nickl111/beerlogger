@@ -58,6 +58,7 @@ led_flash() {
 led_unflash() {
 	PIN=$1
 	led_off $PIN
+	sleep 0.1
 	led_on $PIN
 }
 
