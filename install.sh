@@ -45,7 +45,7 @@ case $1 in
 		# TODO Warning about data loss
 		rm -r $HOME_DIR
 		rm -r $RUN_DIR
-		systemctl beerlog disable
+		systemctl disable beerlog
 		rm /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
 		rm /etc/apache2/sites-enabled/beerlog.conf

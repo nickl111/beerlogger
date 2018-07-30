@@ -14,6 +14,7 @@ T2_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave
 
 HOME_DIR=/usr/local/beerlog
 DATA_DIR=/usr/share/beerlog
+RUN_DIR=/var/run/beerlog		# Where the run files live
 SQL_DB=$DATA_DIR/beerlog.db
 OUTRRD=$DATA_DIR/rrd.in
 
