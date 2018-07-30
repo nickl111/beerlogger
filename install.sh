@@ -5,7 +5,11 @@
 USAGE="USAGE: $0 install|uninstall"
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#TODO make sure we're root
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
 
 . $THIS_DIR/core/config.sh
 
@@ -39,16 +43,24 @@ case $1 in
 	;;
 	uninstall)
 		# TODO Warning about data loss
-		rm -rf $HOME_DIR
-		rm -rf $RUN_DIR
+		rm -r $HOME_DIR
+		rm -r $RUN_DIR
 		systemctl beerlog disable
-		rm -f /etc/systemd/system/beerlog.service
+		rm /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
-		rm -f /etc/apache2/sites-enabled/beerlog.conf
-		rm -f /etc/apache2/sites-available/beerlog.conf
+		rm /etc/apache2/sites-enabled/beerlog.conf
+		rm /etc/apache2/sites-available/beerlog.conf
+		
+		mycron=`mktemp`
+		crontab -l > $mycron
+		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh update//'
+		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh graph//'
+		crontab $mycron
+		rm $mycron
 	;;
 	*)
 		echo "Unknown command ${1}"
 		echo $USAGE
+		exit 2
 	;;
 esac
