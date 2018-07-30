@@ -4,7 +4,7 @@
 
 USAGE="USAGE: $0 install|uninstall"
 
-THIS_DIR=${BASH_SOURCE%/*}
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #TODO make sure we're root
 
 case $1 in

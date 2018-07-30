@@ -1,6 +1,6 @@
 #! /bin/bash
 
-THIS_DIR=${BASH_SOURCE%/*}		# Where this script lives
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"		# Where this script lives
 
 RUN_DIR=/var/run/beerlog		# Where the run files live
 COUNTERFILE=/dev/shm/beerlog_counter

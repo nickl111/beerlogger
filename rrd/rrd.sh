@@ -1,5 +1,5 @@
 #! /bin/bash
-THIS_DIR=${BASH_SOURCE%/*}
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . $THIS_DIR/../config.sh
 
 GRAPH_PERIOD=1
