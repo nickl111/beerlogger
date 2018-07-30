@@ -53,11 +53,12 @@ case $1 in
 		rm /etc/apache2/sites-available/beerlog.conf
 		
 		mycron=`mktemp`
+		mycron2=`mktemp`
 		crontab -l > $mycron
-		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh update//' $mycron > $mycron
-		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh graph//' $mycron > $mycron
+		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh update//' $mycron > $mycron2
+		sed 's/\*\/1 \* \* \* \* \/usr\/local\/beerlog\/rrd\/rrd\.sh graph//' $mycron2 > $mycron
 		crontab $mycron
-		rm $mycron
+		rm $mycron $mycron2
 	;;
 	*)
 		echo "Unknown command ${1}"
