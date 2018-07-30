@@ -23,7 +23,7 @@ case $1 in
 		chmod 755 $HOME_DIR/led-emu.sh
 		
 		sed 's/|HOME_DIR|/$HOME_DIR/g' $THIS_DIR/systemd/beerlog.service >  /etc/systemd/system/beerlog.service
-		sed -i 's/|RUN_DIR|/$RUN_DIR/g' $THIS_DIR/systemd/beerlog.service
+		sed -i 's/|RUN_DIR|/$RUN_DIR/g' /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
 		systemctl enable beerlog
 		
