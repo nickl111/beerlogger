@@ -27,7 +27,13 @@ case $1 in
 		mkdir -p $OUT_DIR/logs
 		
 		mkdir -p $DATA_DIR
-		
+		$HOME_DIR/rrd/rrd.sh create
+		mycron=`mktemp`
+		crontab -l > $mycron
+		echo "*/1 * * * $HOME_DIR/rrd/rrd.sh update" >> mycron
+		echo "*/1 * * * $HOME_DIR/rrd/rrd.sh graph" >> mycron
+		crontab $mycron
+		rm $mycron
 	;;
 	uninstall)
 		# TODO Warning about data loss
