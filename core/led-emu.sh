@@ -39,8 +39,8 @@ echo
 echo -e "RED         ($LED_RS)"
 echo
 
-#last reading: 1532952082,0,20.12,20.06
-IFS=',' read TS BLC T1 T2 <<< tail -1 $OUTLOG
+#last reading
+IFS='|' read TS BLC T1 T2 <<< `echo "SELECT * FROM data ORDER BY ts LIMIT 0,1" | sqlite3 test.db`
 
 AGO=$(echo `date +%s` - $TS | bc)
 echo "Last Reading $AGO seconds ago"

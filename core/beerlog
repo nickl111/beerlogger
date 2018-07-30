@@ -3,7 +3,7 @@
 THIS_DIR=${BASH_SOURCE%/*}		# Where this script lives
 
 RUN_DIR=/var/run/beerlog		# Where the run files live
-COUNTERFILE=$RUN_DIR/counter
+COUNTERFILE=/dev/shm/beerlog_counter
 INT_PID_FILE=$RUN_DIR/int.pid
 TEMP_PID_FILE=$RUN_DIR/temp.pid
 
@@ -89,14 +89,12 @@ do_start() {
 		sleep 60
 		t1=`get_temp T1`
 		t2=`get_temp T2`
-		echo -n `date +%s` >> $OUTLOG
-		echo -n "," >> $OUTLOG
-		cat $COUNTERFILE >> $OUTLOG
-		echo ",$t1,$t2" >> $OUTLOG
+		date=`date +%s`
+		bct=`cat $COUNTERFILE`
 		
-		echo -n "N:" > $OUTRRD
-		cat $COUNTERFILE >> $OUTRRD
-		echo -n ":$t1:$t2" >> $OUTRRD
+		echo "INSERT INTO data VALUES (${date},${bct},${t1},${t2})" | sqlite3 $SQL_DB 
+		
+		echo -n "$date:$bct:$t1:$t2" > $OUTRRD
 		led_toggle_flash $LED_G
 		
 		#check that bloop counter is running and error if not

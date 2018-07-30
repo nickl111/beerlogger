@@ -13,7 +13,7 @@ T1_ADDR=/sys/bus/w1/devices/28-00000ab5657e/w1_slave
 T2_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave
 
 DATA_DIR=/usr/share/beerlog
-OUTLOG=$DATA_DIR/templog		# The output log
+SQL_DB=$DATA_DIR/beerlog.db
 OUTRRD=$DATA_DIR/rrd.in
 
 OUT_DIR=/var/www/beerlog

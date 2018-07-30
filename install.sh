@@ -34,6 +34,8 @@ case $1 in
 		echo "*/1 * * * $HOME_DIR/rrd/rrd.sh graph" >> mycron
 		crontab $mycron
 		rm $mycron
+		
+		sqlite3 $DATA_DIR/beerlog.db < $THIS_DIR/web/sql.sql
 	;;
 	uninstall)
 		# TODO Warning about data loss
