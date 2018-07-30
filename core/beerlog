@@ -2,12 +2,12 @@
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"		# Where this script lives
 
+. $THIS_DIR/config.sh
+. $THIS_DIR/led-functions.sh
+
 COUNTERFILE=/dev/shm/beerlog_counter
 INT_PID_FILE=$RUN_DIR/int.pid
 TEMP_PID_FILE=$RUN_DIR/temp.pid
-
-. $THIS_DIR/config.sh
-. $THIS_DIR/led-functions.sh
 
 # make sure our environment exists
 mkdir -p $RUN_DIR
