@@ -40,8 +40,8 @@ case $1 in
 		$HOME_DIR/rrd/rrd.sh create
 		mycron=`mktemp`
 		crontab -l > $mycron
-		echo "*/1 * * * $HOME_DIR/rrd/rrd.sh update" >> $mycron
-		echo "*/1 * * * $HOME_DIR/rrd/rrd.sh graph" >> $mycron
+		echo "*/1 * * * * $HOME_DIR/rrd/rrd.sh update" >> $mycron
+		echo "*/1 * * * * $HOME_DIR/rrd/rrd.sh graph" >> $mycron
 		crontab $mycron
 		rm $mycron
 		
