@@ -70,6 +70,6 @@ led_toggle_flash() {
 	then
 		led_flash $PIN
 	else
-		led_inv_flash $PIN
+		led_unflash $PIN
 	fi
 }
