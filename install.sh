@@ -33,6 +33,8 @@ case $1 in
 		mkdir -p $OUT_DIR/logs
 		
 		mkdir -p $DATA_DIR
+		mkdir -p $HOME_DIR/rrd
+		cp $THIS_DIR/rrd/* $HOME_DIR/rrd
 		$HOME_DIR/rrd/rrd.sh create
 		mycron=`mktemp`
 		crontab -l > $mycron
