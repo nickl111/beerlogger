@@ -3,7 +3,8 @@
 # emulate leds for remote testing
 # this just outputs one screen. Watch the output with `watch --color -n0.1 /usr/local/beerlog/led-emu.sh`
 
-. /usr/local/beerlog/config.sh
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. $THIS_DIR/config.sh
 
 RED='\033[0;31m'
 ORG='\033[0;33m'
@@ -40,10 +41,13 @@ echo -e "RED         ($LED_RS)"
 echo
 
 #last reading
-IFS='|' read TS BLC T1 T2 <<< `echo "SELECT * FROM data ORDER BY ts LIMIT 0,1" | sqlite3 test.db`
+IFS=':' read TS BLC T1 T2 <<< `cat $OUTRRD`
 
 AGO=$(echo `date +%s` - $TS | bc)
-echo "Last Reading $AGO seconds ago"
+echo
+echo "Last Reading:"
+echo
+echo "$AGO seconds ago"
 echo "Bloop Count: $BLC"
 echo "Beer Temp: $T1"
 echo "Beer Temp: $T2"
