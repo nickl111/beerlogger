@@ -28,7 +28,7 @@ case $1 in
 		systemctl daemon-reload
 		systemctl enable beerlog
 		
-		sed "s@|OUTDIR|@$OUTDIR@g" $THIS_DIR/apache/beerlogger.conf > /etc/apache2/sites-available/beerlogger.conf
+		sed "s@|OUT_DIR|@$OUTDIR@g" $THIS_DIR/apache/beerlogger.conf > /etc/apache2/sites-available/beerlogger.conf
 		ln -s /etc/apache2/sites-available/beerlogger.conf /etc/apache2/sites-enabled/beerlogger.conf
 		mkdir -p $OUT_DIR/html
 		mkdir -p $OUT_DIR/logs
