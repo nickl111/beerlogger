@@ -31,18 +31,27 @@ COUNTER=0
 # Function to read temp from a 1-wire thermometer
 get_temp() {
 
+	eval "TFILE=`echo \\$${1}_ADDR`"
+	if [ ! -e $TFILE ]
+	then
+		echo "NULL"
+		return 1
+	fi
+
 	TMPF=`mktemp`
-	
-	eval "cat \$${1}_ADDR" > $TMPF
+
+	cat $TFILE > $TMPF
 	lines=$(head -1 $TMPF)
 	TCNT=0
 	while [[ ${lines: -3} != 'YES' ]] ; do
 		sleep 0.2
-		eval "cat \$${1}_ADDR" > $TMPF
+		cat $TFILE > $TMPF
 		lines=$(head -1 $TMPF)
 		TCNT=`expr $TCNT + 1`
 		if [[ $TCNT -ge 10 ]]
 		then
+			echo "NULL"
+			rm -f $TMPF
 			return 1
 		fi
 	done
