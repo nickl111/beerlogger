@@ -102,6 +102,16 @@ do_start() {
 		
 		echo "INSERT INTO data VALUES (${date},${bct},${t1},${t2})" | sqlite3 $SQL_DB
 		
+		if [[ $t2 == 'NULL' ]]
+		then
+			t2='U';
+		fi
+		
+		if [[ $t1 == 'NULL' ]]
+		then
+			t1='U';
+		fi
+		
 		echo -n "$date:$bct:$t1:$t2" > $OUTRRD
 		led_toggle_flash $LED_G
 		

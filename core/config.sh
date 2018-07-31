@@ -9,8 +9,8 @@ LED_O=22	# Pin that drives the Orange LED
 OW=4		#1-wire pin. We don't reference it anywhere but just a reminder not to use it
 
 # The two temp sensor 1-wire addresses. T1 is the remote, T2 is the home
-T1_ADDR=/sys/bus/w1/devices/28-00000ab5657e/w1_slave
-T2_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave
+T2_ADDR=/sys/bus/w1/devices/28-00000ab5657e/w1_slave
+T1_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave
 
 HOME_DIR=/usr/local/beerlog
 DATA_DIR=/usr/share/beerlog
