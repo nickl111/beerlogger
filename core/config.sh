@@ -8,6 +8,8 @@ LED_G=27	# Pin that drives the Green LED
 LED_O=22	# Pin that drives the Orange LED
 OW=4		#1-wire pin. We don't reference it anywhere but just a reminder not to use it
 
+RATE_LIMIT=0.5
+
 # The two temp sensor 1-wire addresses. T1 is the remote, T2 is the home
 T2_ADDR=/sys/bus/w1/devices/28-00000ab5657e/w1_slave
 T1_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave

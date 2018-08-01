@@ -83,10 +83,11 @@ do_start() {
 	# This listens for interupts on $IN and increments a counter.
 	echo -n $COUNTER > $COUNTERFILE
 	(while true; do
-		gpio -g wfi $IN falling
+		gpio -g wfi $IN rising
 		COUNTER=`expr $COUNTER + 1`
 		echo -n $COUNTER > $COUNTERFILE
 		led_flash $LED_O
+		sleep $RATE_LIMIT
 	done ) &
 	INT_PID=$!
 	echo $INT_PID>$INT_PID_FILE
