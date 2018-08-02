@@ -22,6 +22,7 @@ case $1 in
 		cp $THIS_DIR/core/* $HOME_DIR/
 		chmod 755 $HOME_DIR/beerlog
 		chmod 755 $HOME_DIR/led-emu.sh
+		chmod 755 $HOME_DIR/selectTemp.sh
 		
 		sed s"@|HOME_DIR|@$HOME_DIR@g" $THIS_DIR/systemd/beerlog.service >  /etc/systemd/system/beerlog.service
 		sed -i "s@|RUN_DIR|@$RUN_DIR@g" /etc/systemd/system/beerlog.service
@@ -44,6 +45,8 @@ case $1 in
 		echo "*/1 * * * * $HOME_DIR/rrd/rrd.sh graph" >> $mycron
 		crontab $mycron
 		rm $mycron
+		
+		bash $HOME_DIR/selectTemp.sh
 		
 		sqlite3 $DATA_DIR/beerlog.db < $THIS_DIR/web/sql.sql
 		

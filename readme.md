@@ -1,18 +1,58 @@
 # Beer Logger for Braubot
 
-## !THIS IS A WORK IN PROGRESS!
+Beer logger is a simple linux service that logs temperature and airlock bloops from my Braubot (a raspbian running pi zero w with some gidgets attached). As we are running on a pi however we can also run a web server and make the results available to the world (though router config and system capacity for this I'm afraid is your problem). It is designed to fit on the large Speidel style airlock.
 
-Beer logger is a simple linux service that logs temperature and airlock bloops from my Braubot (a raspbian running pi zero w with some gidgets attached). As we are running on a pi however we can also run a web server and make the results available to the world (though router config and system capacity for this I'm afraid is your problem).
-
-## Configuration
-The only basic configuration that is required is to put your correct 1-wire temperature sensor addresses in config.sh (`ls -l /sys/bus/w1/devices/`). I can find them, I can't determine which is which.
+It was designed to stop me having to go out to the garage to see what was happening all the time.
 
 ## Installation
-`bash install.sh install`
+Install it on a fresh copy of raspbian on a Pi Zero W. Make sure you get wifi working reliably first and raspbian updated. Then
+```git clone https://github.com/nickl111/beerlogger.git
+cd beerlogger
+bash install.sh install
+```
 
-Now you have it logging constantly to a sqlite database and producing pretty graphs at http://[yourpiip]:8336/
+Other pi versions probably work and other Debians probably work too but I've not tested. Other linuxes that use systemd may also work except for the apache set up.
 
-Cheers!
+Should you decide you don't want it `bash install.sh uninstall` should remove it cleanly but leave the data in /usr/share/beerlog.
+
+## Configuration
+### Software
+The only software configuration that is required is to select the correct temperature sensors. Unfortunately it is impossible from the outside to determine which sensor is which so trial and error is the only way... You will be asked to select during installation and half of you will need to select again when it turns out you guessed incorrectly. By default the selection script is in `/usr/local/beerlog/selectTemp.sh`, just run this.
+
+Obviously you can set about altering apache configs, gpio pins, and whatever you want if you feel like it.
+
+###Hardware
+Stick the pi & board to the airlock. I used the bottom half of a pi case so I could remove the board when required.
+
+Once fitted you need to tune the potentiometer to detect bloops correctly. The correct setting is going to depend on your situation.
+If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible. However you might struggle if your environment is noisy. This also probably needs to be done while some real fermenting is happening and you way find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration.
+
+To help with this a bit I weighted my airlock lid with a couple of large washers (weight to follow).
+
+## Usage
+Now you should now have a service on your pi logging constantly to a sqlite database and producing pretty graphs at http://[yourpiip]:8336/. It is pretty much fire and forget, but don't forget your data is on the pi, not in the cloud. If you reclaim the pi for something else and want to keep the data you will need to move it (/usr/share/beerlog by default).
+### LEDs
+After a little dance on start up the green led should be on when the service is running (it's enabled on boot by default so this should be always and systemd should recover it if something unexpected happens). It will unflash every minute when a temperature reading is taken.
+The orange LED flashes whenever a bloop is detected. The red LED will only come on if an error is detected. The first step in troubleshooting this is to turn it off and then on again.
 
 ## Implementation Details
-The bloop counter is a simple incrementer and will reset to 0 every time the service restarts. If you're reading the output from outlog directly you need to look at the difference between readings rather than the absolute value (and obviously extrapolate when the reading is less than the previous one). 
+The bloop counter is a simple incrementer and will reset to 0 every time the service restarts. If you're reading the output from the db directly you need to look at the difference between readings rather than the absolute value (and obviously extrapolate when the reading is less than the previous one).
+
+There is a rate limit on the counter that will stop it counting more than 2 per second. You can change this in the config file if you think this is too low. This was introduced to limit the interference from accidental knocks and the like. I found, probably because of my terrible soldering, that putting my fingers near the sensors was enough to trigger it hundreds of times per second.
+
+## Braubot
+
+Schema and board layout to follow. Details to follow...
+
+## Acknowledgments
+I borrowed part of the circuit design for the piezo sensors from here: https://scienceprog.com/thoughts-on-interfacing-piezo-vibration-sensor/
+I borrowed the idea of counting airlock bloops from Speidels themselves. Their Garspundsmobil is basically the same thing (though note I've not actually seen one so I don't know how it actually works internally. And I would have just bought one if they were €50 instead of €150). 
+
+## Known Issues
+- Using apache is overkill
+- Producing RRD graphs every minute is probably overkill
+- The web interface is basic and probably hideously insecure. Don't expose it to the world.
+- I used 5.1V Zeners instead of 3.6V because that's what I had. I don't know how much difference this makes. (But I do know that 3.3V Zeners don't work)
+- I used a smaller resistor across the piezo than recommended because the larger one was physically too large to fit on the board. I don't think this makes much difference for this application.
+- Airlock activity doesn't completely represent fermentation activity. I know. This is a guide only.
+- Braubot might be being used by someone else. I haven't checked. It's not meant to be serious.
