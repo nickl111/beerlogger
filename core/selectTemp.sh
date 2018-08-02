@@ -10,7 +10,7 @@ echo "Temperature Sensor selector."
 echo "Unfortunately it's impossible to determine which sensor is which from the outside."
 echo "The only way is to try it and see. After running this once and selecting randomly"
 echo "hold one in your hand for a few seconds and look at the graphs to see if you guessed"
-echo "correctly. If not just run this again."
+echo "correctly. If not just run $0 again."
 echo
 
 beer=0
