@@ -6,7 +6,8 @@ It was designed to stop me having to go out to the garage to see what was happen
 
 ## Installation
 Install it on a fresh copy of raspbian on a Pi Zero W. Make sure you get wifi working reliably first and raspbian updated. Then
-```git clone https://github.com/nickl111/beerlogger.git
+```
+git clone https://github.com/nickl111/beerlogger.git
 cd beerlogger
 bash install.sh install
 ```
