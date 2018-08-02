@@ -31,7 +31,8 @@ COUNTER=0
 # Function to read temp from a 1-wire thermometer
 get_temp() {
 
-	eval "TFILE=`echo \\$${1}_ADDR`"
+	eval "TADDR=`echo \\$${1}_ADDR`"
+	TFILE=/sys/bus/w1/devices/$TADDR/w1_slave
 	if [ ! -e $TFILE ]
 	then
 		echo "NULL"

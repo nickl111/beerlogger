@@ -10,9 +10,9 @@ OW=4		#1-wire pin. We don't reference it anywhere but just a reminder not to use
 
 RATE_LIMIT=0.5
 
-# The two temp sensor 1-wire addresses. T1 is the remote, T2 is the home
-T2_ADDR=/sys/bus/w1/devices/28-00000ab5657e/w1_slave
-T1_ADDR=/sys/bus/w1/devices/28-00000ab52c83/w1_slave
+# The two temp sensor 1-wire addresses. T1 is the beer, T2 is the ambient
+T2_ADDR=28-00000ab657b7
+T1_ADDR=28-00000ab52c83
 
 HOME_DIR=/usr/local/beerlog
 DATA_DIR=/usr/share/beerlog
