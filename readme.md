@@ -22,11 +22,11 @@ The only software configuration that is required is to select the correct temper
 
 Obviously you can set about altering apache configs, gpio pins, and whatever you want if you feel like it.
 
-###Hardware
-Stick the pi & board to the airlock. I used the bottom half of a pi case so I could remove the board when required.
+### Hardware
+Stick the pi & board firmly to the airlock. I used the bottom half of a pi case so I could still remove the board when required.
 
 Once fitted you need to tune the potentiometer to detect bloops correctly. The correct setting is going to depend on your situation.
-If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible. However you might struggle if your environment is noisy. This also probably needs to be done while some real fermenting is happening and you way find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration.
+If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible. However you might struggle if your environment is noisy. This also probably needs to be done while some real fermenting is happening and you may find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration.
 
 To help with this a bit I weighted my airlock lid with a couple of large washers (weight to follow).
 
@@ -34,20 +34,23 @@ To help with this a bit I weighted my airlock lid with a couple of large washers
 Now you should now have a service on your pi logging constantly to a sqlite database and producing pretty graphs at http://[yourpiip]:8336/. It is pretty much fire and forget, but don't forget your data is on the pi, not in the cloud. If you reclaim the pi for something else and want to keep the data you will need to move it (/usr/share/beerlog by default).
 ### LEDs
 After a little dance on start up the green led should be on when the service is running (it's enabled on boot by default so this should be always and systemd should recover it if something unexpected happens). It will unflash every minute when a temperature reading is taken.
-The orange LED flashes whenever a bloop is detected. The red LED will only come on if an error is detected. The first step in troubleshooting this is to turn it off and then on again.
+The orange LED flashes whenever a bloop is detected. The red LED will only come on if an error is detected. Your first (and hopefully only) step in troubleshooting this is to turn it off and then on again. Restarting the service/loosing power will not affect the data other than missing a few readings.
+
+### Web Interface
+To follow when I've written it...
 
 ## Implementation Details
 The bloop counter is a simple incrementer and will reset to 0 every time the service restarts. If you're reading the output from the db directly you need to look at the difference between readings rather than the absolute value (and obviously extrapolate when the reading is less than the previous one).
 
-There is a rate limit on the counter that will stop it counting more than 2 per second. You can change this in the config file if you think this is too low. This was introduced to limit the interference from accidental knocks and the like. I found, probably because of my terrible soldering, that putting my fingers near the sensors was enough to trigger it hundreds of times per second.
+There is a rate limit on the counter that will stop it counting more than 2 per second. You can change this in the config file if you think this is too low. This was introduced to limit the data pollution from accidental knocks and the like. I found, probably because of my terrible soldering, that putting my fingers near the sensor was enough to trigger it hundreds of times per second.
 
 ## Braubot
 
-Schema and board layout to follow. Details to follow...
+Schema and board layout to follow.
 
 ## Acknowledgments
-I borrowed part of the circuit design for the piezo sensors from here: https://scienceprog.com/thoughts-on-interfacing-piezo-vibration-sensor/
-I borrowed the idea of counting airlock bloops from Speidels themselves. Their Garspundsmobil is basically the same thing (though note I've not actually seen one so I don't know how it actually works internally. And I would have just bought one if they were €50 instead of €150). 
+- I borrowed part of the circuit design for the piezo sensors from here: https://scienceprog.com/thoughts-on-interfacing-piezo-vibration-sensor/
+- I borrowed the idea of counting airlock bloops from Speidels themselves. Their [GÄRSPUNDmobil](https://www.speidels-braumeister.de/en/braumeister/gaerspundmobil-and-gaermeister-control.html) is basically the same thing (though note I've not actually seen one so I don't know how it actually works internally. And I would have just bought one if they were €50 instead of €150). 
 
 ## Known Issues
 - Using apache is overkill
@@ -57,3 +60,4 @@ I borrowed the idea of counting airlock bloops from Speidels themselves. Their G
 - I used a smaller resistor across the piezo than recommended because the larger one was physically too large to fit on the board. I don't think this makes much difference for this application.
 - Airlock activity doesn't completely represent fermentation activity. I know. This is a guide only.
 - Braubot might be being used by someone else. I haven't checked. It's not meant to be serious.
+- Electricity and beer do not mix. Be careful.
