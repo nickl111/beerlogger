@@ -1,29 +1,41 @@
 CREATE TABLE session (
 	id INTEGER PRIMARY KEY,
-	recipe_id INTEGER,
-	name TEXT,
-	start INTEGER,
-	end INTEGER,
-	notes TEXT
+	recipe_id INTEGER default NULL,
+	name TEXT default NULL,
+	ts_start INTEGER default NULL,
+	ts_end INTEGER default NULL,
+	notes TEXT default NULL,
+	g_orig DECIMAL(4,3) default NULL,
+	mash_ph DECIMAL(3,2) default NULL,
+	g_post_mash DECIMAL(4,3) default NULL,
+	mash_eff INTEGER default NULL,
+	vol_pre_boil DECIMAL(5,2) default NULL,
+	g_pre_boil DECIMAL(4,3) default NULL,
+	vol_ferment DECIMAL(5,2) default NULL,
+	g_final DECIMAL(4,3) default NULL,
+	vol_bottle DECIMAL(5,2) default NULL,
+	abv DECIMAL(4,2) default NULL,
+	attenuation DECIMAL(4,1) default NULL,
+	carb_level DECIMAL(2,1) default NULL,
 );
 
 CREATE TABLE recipe (
 	id INTEGER PRIMARY KEY,
-	name TEXT,
-	notes TEXT
+	name TEXT default NULL,
+	notes TEXT default NULL
 )
 
 CREATE TABLE sample (
 	id INTEGER PRIMARY KEY,
-	session_id INTEGER,
-	ts INTEGER,
-	sg DECIMAL(8,4),
-	note TEXT
+	session_id INTEGER default NULL,
+	ts INTEGER default NULL,
+	sg DECIMAL(8,4) default NULL,
+	note TEXT default NULL
 );
 
 CREATE TABLE data (
 	ts INTEGER PRIMARY KEY,
-	bloops INTEGER,
-	beer_temp DECIMAL(5,3),
-	amb_temp DECIMAL(5,3)
+	bloops INTEGER default 0,
+	beer_temp DECIMAL(5,3) default NULL,
+	amb_temp DECIMAL(5,3) default NULL
 );
