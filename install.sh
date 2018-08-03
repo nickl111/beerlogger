@@ -15,7 +15,7 @@ fi
 
 case $1 in
 	install)
-		apt-get install apache2 php rrdtool sqlite3 wiringpi
+		apt-get install apache2 php rrdtool sqlite3 wiringpi php-sqlite3
 
 		mkdir -p $HOME_DIR
 		mkdir -p $RUN_DIR
