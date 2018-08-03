@@ -16,14 +16,14 @@ CREATE TABLE session (
 	vol_bottle DECIMAL(5,2) default NULL,
 	abv DECIMAL(4,2) default NULL,
 	attenuation DECIMAL(4,1) default NULL,
-	carb_level DECIMAL(2,1) default NULL,
+	carb_level DECIMAL(2,1) default NULL
 );
 
 CREATE TABLE recipe (
 	id INTEGER PRIMARY KEY,
 	name TEXT default NULL,
 	notes TEXT default NULL
-)
+);
 
 CREATE TABLE sample (
 	id INTEGER PRIMARY KEY,
