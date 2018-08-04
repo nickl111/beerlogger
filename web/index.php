@@ -1,158 +1,123 @@
 <?php
 
 /**
- * This is quick and dirty. I will put something better in place in time.
- * Yes, I know it's wildy inefficient, insecure, inelegant and unscalable. Don't make it public.
- * I need to write a sqlite backend for mana
- *
- * actions: CRUD - create, read, update ,delete
- *
- * screens:
- * 		Index: Show the current session if exists
- * 				-> previous sessions
- * 				-> Start a new session
- * 				-> create new sample
- * 		
+ * This is quick and dirty MVC. I will put something better in place in time.
  */
+require_once('model.php');
 
-class vbc {
-	private $db;
-	private $tablename;
-	private $collection;
-	private $pk = 'id';
-	public $fields = array();
-	
-	private $SQL_DB = "/usr/share/beerlog/beerlog.db";  // TODO: get this from the config file
+$SQL_DB = "/usr/share/beerlog/db/beerlog.db";
+$db 	= new SQLite3($SQL_DB);
+$p 		= new Page();
 
-	function __construct($db=false) {
-		if(!$db) {
-			$this->db = new SQLite3($SQL_DB);
-		}
-	}
-	
-	function load($id=false) {
-		if($id) {
-			$q = "SELECT * FROM ".$this->tablename." WHERE ".$this->pk." = $id";
-			$results = $this->db->query($q);
-			while ($row = $results->fetchArray()) {
-				foreach($row as $k => $v) {
-					$this->fields[$k] = $v;
-				}
-			}
-		} else {
-			// load the next one in the collection;
-			if($this->collection) {
-				$this->load(current($this->collection));
-				next($this->collection);
-			} else {
-				return false;
-			}
-		}
-	}
-	
-	function save() {
-		if ($this->fields[$this->pk]) {
-			// is an object instantiated
-			$q = 'UPDATE '.$this->tablename.' SET ';
-			foreach($this->fields as $k => $v) {
-				$q .= "$k = '".$v."'";
-			}
-			$q .= "WHERE ".$this->pk." = ".$this->fields[$this->pk];
-		} else {
-			// new object
-			$q = 'INSERT INTO '.$this->tablename.' VALUES (';
-			foreach($this->fields as $k => $v) {
-				$q .= "$k,";
-				$p .= "'$v',";
-			}
-			$q .= substr($q,0,-1).') VALUES ('.substr($p,0,-1).')';
-		}
-		$this->db->query($q);
-	}
-	
-	function destroy() {
-		if ($this->fields['id']) {
-			$q = 'DELETE FROM '.$this->tablename.' WHERE id ='.$this->fields['id'];
-			$this->db->query($q);
-		} else {
-			return false;
-		}
-	}
-	
-	function find($sqlwhere='') {
-		$q = 'SELECT id FROM '.$this->tablename.' WHERE '.$this->db->escapeString($sqlwhere);
-		$r = $this->db->query($q);
-		while($row = $r->fetchArray()) {
-			$this->collection[] = $row[$this->pk];
-		}
-	}
-}
+$perm_views = array('','home','monitor','session','data','recipe','sample');
+$perm_actions = array('','view','edit','save','delete');
+$perm_graphs = array('day','hour','week','month','year');
 
-class Session extends vbc {
-	private $tablename = 'session';
-	
-	function getCurrent() {
-		//  see if there is a current session
-		$results = $this->db->query("SELECT id FROM session WHERE end = '' ORDER BY start DESC LIMIT 0,1");
-		if($row = $results->fetchArray()) {
-			$this->load($row['id']);
-			return true;
-		}
-		return false;
-	}
-	
-	function getSamples() {
-		$samples = array();
-		$sample = new Sample();
-		$sample->find('session_id = '.$this->fields['id']);
-		while($sample->load()) {
-			$samples[] = $sample;
-		}
-		return $samples;
-	}
-	
-	function getData() {
-		$datas = array();
-		$data = new Data();
-		$data->find('ts >= '.$this->fields['start'].' AND $ts <= '.$this->fields['end']);
-		while($data->load()) {
-			$datas[] = $data;
-		}
-		return $datas;
-	}
-}
+// keys
+$pks = explode(',', $_REQUEST['pks']);
 
-class Sample extends vbc {
-	private $tablename = 'sample';
-}
-
-class Data extends vbc {
-	private $tablename = 'date';
-	private $pk = 'ts';
-}
-
-
-/*********/
-$SQL_DB = "/usr/share/beerlog/beerlog.db";
-$db = new SQLite3($SQL_DB);
-
-$s = new Session($db);
-if($s->getCurrent()) {
-	// We have an existing session.
-	// - Show details
-	// - Show End Session Button
-	// - Show compare with previous sessions on this recipe
-	// - Show "Log sample" button
-	print_r($s);
-	
+// Security
+if(in_array($_REQUEST['view'],$perm_views)) {
+	$view = $_REQUEST['view'];
 } else {
-	// No current session
-	// - Show "Start New Session" button
-	// - Show "Resume previous Session" button (oopsy)
-	// - List previous sessions
-	// - List Recipes
-	print 'No existing session';
+	// unpermitted view. Should probably log an error somewhere
+	$view = '';
 }
+
+if(in_array($_REQUEST['do'],$perm_actions)) {
+	$do = $_REQUEST['do'];
+} else {
+	// unpermitted action. Should probably log an error somewhere
+	$do = '';
+}
+
+if(in_array($_REQUEST['graph'],$perm_graphs)) {
+	$graph = $_REQUEST['graph'];
+} else {
+	// unpermitted action. Should probably log an error somewhere
+	$graph = 'day';
+}
+
+switch($view) {
+	case '':
+	case 'home':
+		$s 	= new Session($db);
+		if($s->getCurrent()) {
+			// We have an existing session.
+			// - Show details
+			// - - Graph of temps & bloops
+			// - - Samples listed and highlighted on graph
+			// - - Current temps
+			// - - Session details (recipe, start date, notes etc)
+			// - Show End Session Button
+			// - -^ Set end date to current ts
+			// - Show compare with previous sessions on this recipe
+			// - - -> Compare sessions page. huh?
+			// - Show "Log sample" button
+			// - - -> Create Sample Page
+			$content = $s->fields['name'];
+			
+		} else {
+			// No current session
+			// - Show "Start New Session" button
+			// - -> New Session page
+			// - Show "Resume previous Session" button (oopsy)
+			// - -^ Set end date to null on newest session
+			// - List previous sessions
+			// - -> View Recipes
+			// - -> Raw Data
+			$content = 'No existing session';
+		}
+		break;
+	case 'monitor':
+		$content = $p->showMonitor($graph);
+		break;
+	default:
+		switch ($do) {
+			case 'delete':
+				$o = new $view($db);
+				if($o->load($pks)) {
+					$o->destroy();
+				}
+			
+			case '':
+				$o = new $view($db);
+				if($o->find('1=1 LIMIT 0,20')) {
+					while($o->load()) {
+						$content .= $p->listItem($view, $o->getPKValues());
+					}
+				} else {
+					print "No $view s found";
+				}
+				$content .= $p->newButton($view);
+				break;
+			case 'save':
+				$o = new $view($db);
+				foreach($_POST as $k => $v) {
+					if(substr($k,0,6) == 'field_') {
+						$o->fields[substr($k,6)] = $v;
+					}
+				}
+				$o->save();
+			case 'view':
+			case 'edit':
+				$o = new $view($db);
+				if($o->load($pks)) {
+					$content = $p->editObject($o);
+				} else {
+					$content = "Unknown object";
+				}
+			break;
+			
+			break;
+			default:
+			break;
+		}
+	break;
+}
+
+
+$p->output(($title ? "Beerlogger - $title" : "Beerlogger"), $content);
 
 
 ?>

@@ -34,7 +34,10 @@ case $1 in
 		mkdir -p $OUT_DIR/html
 		mkdir -p $OUT_DIR/logs
 		
-		mkdir -p $DATA_DIR
+		mkdir -p $DATA_DIR/db
+		chgrp www-data $DATA_DIR/db
+		chmod -R 777 $DATA_DIR/db	# This is the only permission set I can get it to work on under apache
+		
 		mkdir -p $HOME_DIR/rrd
 		cp $THIS_DIR/rrd/* $HOME_DIR/rrd
 		chmod 755 $HOME_DIR/rrd/rrd.sh

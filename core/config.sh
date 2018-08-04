@@ -17,7 +17,7 @@ T1_ADDR=28-00000ab52c83
 HOME_DIR=/usr/local/beerlog
 DATA_DIR=/usr/share/beerlog
 RUN_DIR=/var/run/beerlog		# Where the run files live
-SQL_DB=$DATA_DIR/beerlog.db
+SQL_DB=$DATA_DIR/db/beerlog.db
 OUTRRD=/dev/shm/rrd.in
 
 OUT_DIR=/var/www/beerlog
