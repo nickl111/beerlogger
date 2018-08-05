@@ -231,9 +231,11 @@ class Session extends vbc {
 	 * @return boolean Current session or no
 	 */
 	function getCurrent() {
-		if($this->find("ts_end IS NULL AND ts_start IS NOT NULL ORDER BY ts_start DESC LIMIT 0,1")) {
-			$this->load();
-			return true;
+		if($this->find('ts_end = "" AND ts_start <> "" ORDER BY ts_start DESC LIMIT 0,1')) {
+			if(count($this->collection) > 0) {
+				$this->load();
+				return true;
+			}
 		}
 		return false;
 	}
