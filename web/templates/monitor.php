@@ -1,5 +1,4 @@
-<div class="container">
-	<nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
 	<a class="navbar-item <?php print ($graph == 'hour' ? 'is-active' : ''); ?>" href="?view=monitor&amp;graph=hour">Hour<a>
 	<a class="navbar-item <?php print ($graph == 'day' ? 'is-active' : ''); ?>" href="?view=monitor&amp;graph=day">Day<a>
@@ -9,4 +8,3 @@
   </div>
 </nav>
 <img src="/beerlog-<?php print $graph;?>.png">
-</div>

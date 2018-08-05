@@ -1,6 +1,7 @@
 <?php
  /**
   * A Very Basic Class to handle CRUD+ functions on an object
+  * @var $db a database handle
   */
 class vbc {
 	public $db;
@@ -9,16 +10,21 @@ class vbc {
 	protected $tableinfo = array();
 	public $fields = array();
 	public $pk = array();
-	
-	protected $SQL_DB = "/usr/share/beerlog/db/beerlog.db";  // TODO: get this from the config file
 
+	/**
+	 * The constructor
+	 * @param $db A usable database handle
+	 * @return boolean true unless no DB handle supplied
+	 */
 	function __construct($db=false) {
 		if(!$db) {
-			$this->db = new SQLite3($this->SQL_DB);
+			error_log("VBC Constructor : No DB handle supplied");
+			return false;
 		} else {
 			$this->db = $db;
 		}
 		$this->setTableInfo();
+		return true;
 	}
 	
 	/**
@@ -27,7 +33,7 @@ class vbc {
 	 * @return boolean Success or no
 	 */
 	function load($id=false) {
-		if($id) {
+		if($id !==  false) {
 			if(!is_array($id)) {
 				$id = array($id);
 			}
@@ -39,23 +45,21 @@ class vbc {
 						$this->fields[$k] = $v;
 					}
 				}
+				return true;
 			} else {
 				error_log("Load : Query: $q failed");
-				return false;
 			}
 		} else {
 			// load the next one in the collection;
 			if($this->collection) {
-				$mine = current($this->collection);
-				$this->load($mine);
-				if(!next($this->collection)) {
-					return false;
+				if($mine = current($this->collection)) {
+					$this->load($mine);
+					next($this->collection);
+					return true;
 				}
-			} else {
-				return false;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	/**
@@ -177,6 +181,7 @@ class vbc {
 	
 	/**
 	 * Set the table info
+	 * @param boolean $force Force recreating if it's already set
 	 * @return boolean Always true
 	 */
 	private function setTableInfo($force=false) {
@@ -185,7 +190,7 @@ class vbc {
 		}
 		$r = $this->db->query("PRAGMA table_info(".$this->tablename.")");
 		while ($row = $r->fetchArray(SQLITE3_ASSOC)) {
-			 $this->tableinfo[] = $row;
+			 $this->tableinfo[$row['name']] = $row;
 		}
 		
 		foreach($this->tableinfo as $rownum => $v) {
@@ -196,14 +201,34 @@ class vbc {
 		}
 		return true;
 	}
+	
+	/**
+	 * Return a sensible string for the name
+	 * You should overload this probably
+	 * @return string A sensible name
+	 */
+	function getDisplayName() {
+		if($this->fields['name']) {
+			return $this->fields['name'];
+		} else {
+			return implode(', ', $this->getPKValues());
+		}
+	}
 }
 
+/***********/
+
+/**
+ * This is a Fermenting/Brewing session
+ * @package beerlogger
+ */
 class Session extends vbc {
 	
 	protected $tablename = 'session';
 	
 	/**
 	 * If there's a current session load it
+	 * @return boolean Current session or no
 	 */
 	function getCurrent() {
 		if($this->find("ts_end IS NULL AND ts_start IS NOT NULL ORDER BY ts_start DESC LIMIT 0,1")) {
@@ -215,6 +240,7 @@ class Session extends vbc {
 	
 	/**
 	 * Get samples associated with this session
+	 * @return array An array of Sample objects
 	 */
 	function getSamples() {
 		$samples = array();
@@ -228,6 +254,7 @@ class Session extends vbc {
 	
 	/**
 	 * get data that happened between this session's start and end (if any)
+	 * @return array An array of Data objects
 	 */
 	function getData() {
 		$datas = array();
@@ -245,100 +272,52 @@ class Session extends vbc {
 
 }
 
+/**
+ * This is a beer sample taken
+ * @package beerlogger
+ */
 class sample extends vbc {
 	protected $tablename = 'sample';
+	
+	/**
+	 * Return a sensible string for the name
+	 * @return string The "name" of this sample
+	 */
+	function getDisplayName() {
+		return $this->getSessionName()." ".date('jS F Y H:i',$this->fields['ts']);
+	}
+	
+	/**
+	 * Get the name of the Session this sample was for
+	 * @return string The name (or false on fail)
+	 */
+	function getSessionName() {
+		$s = new Session($this->db);
+		if($s->load($this->fields['session_id'])){
+			return $s->getDisplayName();
+		} else {
+			return false;
+		}
+	}
 }
 
+
+/**
+ * This is a beer recipe
+ * @package beerlogger
+ */
 class recipe extends vbc {
 	protected $tablename = 'recipe';
 }
 
+
+/**
+ * This is data from the logger.
+ * @package beerlogger
+ */
 class data extends vbc {
 	protected $tablename = 'data';
 }
 
-/**
- *
- */
-class Page {
-	
-	public $str;
-	protected $view;
-	
-	function __construct() {
-		$this->view = $_GET['view'];
-	}
-	
-	function output($title, $content) {
-		print $this->header($title);
-		print $this->menu();
-		print '<section>'.$content.'</section>';
-		print $this->footer();
-	}
-	
-	function header($title=false) {
-		if(!$title) {
-			$title = 'Beerlogger';
-		}
-		include('templates/header.php');
-	}
-	
-	function footer() {
-		include('templates/footer.php');
-	}
-	
-	function editObject($o) {
-		$str = '<h3>'.ucfirst(get_class($o)).'</h3><form method="POST">';
-		foreach($o->fields as $name => $value) {
-			if(in_array($name,$o->pk)){ continue; }
-			$str .= $this->field($name, $value);
-		}
-		$str .= '<a class="button" href="?view='.get_class($o).'">Cancel</a>';
-		foreach($o->pk as $k) {
-			$str .= '<input type="hidden" name="field_'.$k.'" value="'.$o->fields[$k].'">';
-		}
-		$str .= '<input type="submit" class="button is-primary is-pulled-right" value="Save"><input type="hidden" name="do" value="save"></form>';
-		return $str;
-	}
-	
-	function field($name, $value='') {
-		$str = '<div class="field is-size-6"><label class="label" for="'.$name.'-input">'.$name.'</label>';
-		$str .= '<div class="control"><input class="input" name="field_'.$name.'" id="'.$name.'-input" type="text" value="'.$value.'"></div></div>'."\n";
-		return $str;
-	}
-	
-	function listItem($view, $id, $value='') {
-		if(!$value) { $value = implode(', ',$id) ; }
-		$str = '<div><a href="?view='.$view.'&amp;do=edit&amp;pks='.implode(',',$id).'">'.$value.'</a><a href="?do=delete&amp;view='.$view.'&amp;pks='.implode(',',$id).'" class="button is-danger is-small">X</a></div>';
-		return $str;
-	}
-	
-	function menu() {
-		$menuList = array('home' 		=> 'Home',
-						  'monitor' 	=> 'Monitor',
-						  'session' 	=> 'Sessions',
-						  'recipe' 		=> 'Recipes',
-						  'sample' 		=> 'Samples',
-						  'data' 		=> 'Data'
-						);
-		$str = '<div class="column is-one-quarter sidebar" style="margin: 0;"><aside class="menu"><ul class="menu-list">';
-		foreach($menuList as $view => $name) {
-			$str .= '<li><a '.($this->view == $view ? 'class="is-active" ' : '').'href="?view='.$view.'">'.$name."</a></li>\n";
-		}
-		$str .= '</ul></aside></div>';
-		return $str;
-	}
-	
-	function showMonitor($graph) {
-		ob_start();
-		include('templates/monitor.php');
-		$output = ob_get_clean();
-		return $output;
-	}
-	
-	function newButton($view) {
-		$str = '<a class="button is-primary" href="?do=edit&amp;view='.$view.'">New</a>';
-		return $str;
-	}
-}
+
 ?>

@@ -4,10 +4,11 @@
  * This is quick and dirty MVC. I will put something better in place in time.
  */
 require_once('model.php');
+require_once('page.php');
+
 
 $SQL_DB = "/usr/share/beerlog/db/beerlog.db";
 $db 	= new SQLite3($SQL_DB);
-$p 		= new Page();
 
 $perm_views = array('','home','monitor','session','data','recipe','sample');
 $perm_actions = array('','view','edit','save','delete');
@@ -37,6 +38,8 @@ if(in_array($_REQUEST['graph'],$perm_graphs)) {
 	// unpermitted action. Should probably log an error somewhere
 	$graph = 'day';
 }
+
+$p = new Page($view);
 
 switch($view) {
 	case '':
@@ -75,21 +78,32 @@ switch($view) {
 	default:
 		switch ($do) {
 			case 'delete':
-				$o = new $view($db);
+ 				$o = new $view($db);
 				if($o->load($pks)) {
 					$o->destroy();
 				}
 			
 			case '':
 				$o = new $view($db);
-				if($o->find('1=1 LIMIT 0,20')) {
-					while($o->load()) {
-						$content .= $p->listItem($view, $o->getPKValues());
+				$content = '<h2 class="title is-2">'.ucfirst($view)."s</h2>\n";
+				$content .= '<div class="columns">';
+				
+				for($i=0;$i<4;$i++) {
+					$counter = 0;
+					if($o->find('1=1 LIMIT '.($i*15).',15')) {
+						$listcontent = '';
+						while($o->load()) {
+							$listcontent .= $p->listItem($view, $o->getPKValues(),$o->getDisplayName());
+							$counter++;
+						}
+						
 					}
-				} else {
-					print "No $view s found";
+					$content .= $p->listWrapper($listcontent);
+					if($counter < 15) {
+						break;
+					}
 				}
-				$content .= $p->newButton($view);
+				$content .= '</div>'.$p->newButton($view);
 				break;
 			case 'save':
 				$o = new $view($db);

@@ -8,4 +8,4 @@
 		<script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
 	</head>
 	<body>
-		 <div class="columns" style="margin: 0;">
+	<div class="columns">
