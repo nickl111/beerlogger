@@ -11,7 +11,7 @@ $SQL_DB = "/usr/share/beerlog/db/beerlog.db";
 $db 	= new SQLite3($SQL_DB);
 
 $perm_views 	= array('','home','monitor','session','data','recipe','sample','newSession');
-$perm_actions 	= array('','view','edit','save','delete','resumePrevSession','newSession');
+$perm_actions 	= array('','view','edit','save','delete','resumePrevSession','newSession','endSession');
 $perm_graphs 	= array('day','hour','week','month','year');
 
 // keys
@@ -58,7 +58,9 @@ switch($view) {
 			// - - -> Compare sessions page. huh?
 			// - Show "Log sample" button
 			// - - -> Create Sample Page
-			$content = 'Session '.$s->fields['name'].' in progress';
+			ob_start();
+			include 'templates/home.php';
+			$content = ob_get_clean();
 			
 		} else {
 			// No current session
@@ -70,8 +72,7 @@ switch($view) {
 			
 			// Is there a previous session
 			$s = new Session($db);
-			if($s->find('1=1 ORDER BY ts_end DESC LIMIT 0,1')) {
-				print_r($s);
+			if($s->find('1=1 ORDER BY ts_end DESC LIMIT 0,1')) {	
 				if($s->load()) {
 					$prevSess = $s->fields['id'];
 				}
@@ -149,9 +150,9 @@ switch($view) {
 			case 'resumePrevSession':
 				//special case
 				$s = new Session($db);
-				if($s->find('ORDER BY ts_end DESC LIMIT 0,1')) {
+				if($s->find('1=1 ORDER BY ts_end DESC LIMIT 0,1')) {
 					if($s->load()) {
-						$s->fields['ts_end'] = 'NULL';
+						$s->fields['ts_end'] = '';
 						$s->save();
 					}
 				}
@@ -159,8 +160,6 @@ switch($view) {
 				exit;
 			break;
 			case 'newSession':
-				//print_r($_POST);
-				//Array ( [field_name] => 12 [start_date] => 2018-08-05 [start_time] => 19:47 [field_notes] => aads [do] => newSession [view] => session )
 				$s = new Session($db);
 				$s->fields['name']		= $_POST['field_name'];
 				$s->fields['ts_start'] 	= strtotime($_POST['start_date'].' '.$_POST['start_time']);
@@ -169,8 +168,17 @@ switch($view) {
 				header("Location: /?view=home");
 				exit;
 				break;
+			case 'endSession':
+				$s = new Session($db);
+				if($s->getCurrent()) {
+					$s->fields['ts_end'] = time();
+					$s->save();
+				}
+				header("Location: /?view=home");
+				exit;
+				break;
 			default:
-			break;
+				break;
 		}
 	break;
 }

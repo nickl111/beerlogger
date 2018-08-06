@@ -16,7 +16,8 @@ CREATE TABLE session (
 	vol_bottle DECIMAL(5,2) default NULL,
 	abv DECIMAL(4,2) default NULL,
 	attenuation DECIMAL(4,1) default NULL,
-	carb_level DECIMAL(2,1) default NULL
+	carb_level DECIMAL(2,1) default NULL,
+	target_temp DECIMAL(3,1) default NULL
 );
 
 CREATE TABLE recipe (

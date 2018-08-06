@@ -6,7 +6,7 @@
 	</div>
 	<div class="content" style="margin-top: 2em"><a class="button is-large is-primary is-dark is-fullwidth" href="?view=newSession">Start new Session</a></div>
 	<?php if ($prevSess) {
-	?><div class="is-centered"> If you accidentally ended your last session you can restart here: <a class="button" href="?view=session&amp;do=resumePrevSession">Resume Previous Session</a></div><?php
+	?><div class="has-text-centered"><a class="button" href="?view=session&amp;do=resumePrevSession">Resume Previous Session</a></div><?php
 	}
 	?>
 </section>
