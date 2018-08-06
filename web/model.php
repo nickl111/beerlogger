@@ -395,7 +395,6 @@ class data extends vbc {
 			$c_bloop = false;
 			$bloops = array();
 			if($this->find("ts >= $bin_start AND ts < ".($bin_start + $binLength)." ORDER BY ts ASC")) {
-				print "ts >= $bin_start AND ts < ".($bin_start + $binLength)." ORDER BY ts ASC";
 				$actual_steps = count($this->collection);
 				while($this->load()) {
 					$b_temp_tot += $this->fields['beer_temp'];
