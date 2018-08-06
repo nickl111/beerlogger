@@ -1,4 +1,11 @@
-
+<?php
+$d = new data($db);
+if($cur = $d->getCurrent()) {
+	$b_temp = $cur['b_temp'];
+	$a_temp = $cur['a_temp'];
+	$avg_bloop = $cur['avg_bloop'];
+}
+?>
 	<div class="hero">
 		<h1 class="title">Session <?php print $s->fields['name'];?> in progress</h1>
 	
@@ -8,14 +15,20 @@
 			<div class="tile">
 				<div class="tile is-parent">
 					<article class="tile is-child box">
-						<p class="subtitle">Temperature</p>
-						<div class="title">99 &deg;C</div>
+						<p class="subtitle">Beer</p>
+						<div class="title"><?php print $b_temp; ?> &deg;C</div>
+					</article>
+				</div>
+				<div class="tile is-parent">
+					<article class="tile is-child box">
+						<p class="subtitle">Ambient</p>
+						<div class="title"><?php print $a_temp; ?> &deg;C</div>
 					</article>
 				</div>
 				<div class="tile is-parent">
 					<article class="tile is-child box">
 						<p class="subtitle">Activity</p>
-						<div class="title">High</div>
+						<div class="title"><?php print $avg_bloop; ?></div>
 					</article>
 				</div>
 			</div>
@@ -25,23 +38,27 @@
 				</article>
 			</div>
 			<div class="tile is-parent">
-				<div class="is-child has-text-centered container"><a class="button is-info is-large is-centered" href="?view=session&amp;do=endSession">Bottle!</a></div>
+				<div class="is-child has-text-centered container"><a class="button is-info is-large is-centered" href="?view=session&amp;do=endSession">Bottle it!</a></div>
 			</div>
 		</div>
 	</div>
-	<?php
-	$d = $s->getData();
-	foreach($d as $drow){
-		// we need to bin the data here for the chart.
-	}
-	?>
+<?php
+$b = $d->getBins(3600, $s->fields['ts_start'], $s->fields['ts_end']);
+foreach($b as $binNo => $bAry) {
+	$bs[] 	= $bAry['b_temp'];
+	$as[] 	= $bAry['a_temp'];
+	$bcs[] 	= $bAry['avg_bloop'];
+}
+?>
 <script language="javascript">
 	var data = {
 	// A labels array that can contain any sort of values
 	labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
 	// Our series array that contains series objects or in this case series data arrays
 	series: [
-		[5, 2, 4, 2, 0]
+		[<?php print implode(', ',$bs);?>],
+		[<?php print implode(', ',$as);?>],
+		[<?php print implode(', ',$bcs);?>]
 	]
 	};
 	

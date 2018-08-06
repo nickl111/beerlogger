@@ -246,7 +246,7 @@ class Session extends vbc {
 	 */
 	function getSamples() {
 		$samples = array();
-		$sample = new Sample();
+		$sample = new Sample($this->db);
 		$sample->find('session_id = '.$this->fields['id']);
 		while($sample->load()) {
 			$samples[] = $sample;
@@ -260,7 +260,7 @@ class Session extends vbc {
 	 */
 	function getData() {
 		$datas = array();
-		$data = new Data();
+		$data = new Data($this->db);
 		if($this->fields['end'] == 'NULL') { // current session
 			$data->find('ts >= '.$this->fields['start']);
 		} else {
@@ -319,6 +319,110 @@ class recipe extends vbc {
  */
 class data extends vbc {
 	protected $tablename = 'data';
+	
+	/**
+	 * Calculate the current data values (an average of the last few anyway)
+	 * @return array A 3 value array : 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min
+	 */
+	function getCurrent(){
+		$b_temp_tot = 0;
+		$a_temp_tot = 0;
+		$bloop_tot = 0;
+		$steps = 10;
+		$actual_steps = 0; // for the edge case where we have less than 10 readings!
+		$bloop_gap = 0;
+		
+		$c_bloop = false;
+		$bloops = array();
+		if($this->find('1=1 ORDER BY ts DESC LIMIT 0,'.$steps)) {
+			while($this->load()) {
+				$actual_steps++;
+				$b_temp_tot += $this->fields['beer_temp'];
+				$a_temp_tot += $this->fields['amb_temp'];
+				$last_bloop = $c_bloop;
+				$c_bloop = $this->fields['bloops'];
+				
+				if($last_bloop !== false) {
+					if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
+						$bloop_gap = $c_bloop - $last_bloop;
+					}
+					
+					$bloop_tot += $bloop_gap;
+				}
+				
+			}
+		} else {
+			return false;
+		}
+		
+		if($steps != $actual_steps) {
+			error_log('Data : getCurrent : Warning: Actual data readings were less than requested');
+		}
+		
+		$b_temp 	= round($b_temp_tot / $actual_steps, 1);
+		$a_temp 	= round($a_temp_tot / $actual_steps, 1);
+		$avg_bloop 	= round($bloop_tot / $actual_steps, 0);
+		return array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+	}
+	
+	/**
+	 * @param int $binLength Bin size in seconds (min 120)
+	 * @param int $start Timestamp of start time.
+	 * @param int $end Timestamp of end time. Default is now.
+	 * @return array An array of arrays of binned data : 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min
+	 */
+	function getBins($binLength, $start, $end=false){
+		if($binLength < 120) {
+			error_log('Bin Length cannot be less than 120 seconds');
+			return false;
+		}
+		
+		$ts_start = $start;
+		if(!$end) {
+			$end = time();
+		}
+
+		$bins = array();
+		$thisbin = 0;
+		for($bin_start=$ts_start;$bin_start<=$end;$bin_start+=$binLength) {
+			$thisbin++;
+			$b_temp_tot = 0;
+			$a_temp_tot = 0;
+			$bloop_tot = 0;
+			$actual_steps = 0;
+			$bloop_gap = 0;
+			
+			$c_bloop = false;
+			$bloops = array();
+			if($this->find("ts >= $bin_start AND ts < ".($bin_start + $binLength)." ORDER BY ts ASC")) {
+				print "ts >= $bin_start AND ts < ".($bin_start + $binLength)." ORDER BY ts ASC";
+				$actual_steps = count($this->collection);
+				while($this->load()) {
+					$b_temp_tot += $this->fields['beer_temp'];
+					$a_temp_tot += $this->fields['amb_temp'];
+					$last_bloop = $c_bloop;
+					$c_bloop = $this->fields['bloops'];
+					
+					if($last_bloop !== false) {
+						if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
+							$bloop_gap = $c_bloop - $last_bloop;
+						}
+						
+						$bloop_tot += $bloop_gap;
+					}
+				}
+			} else {
+				error_log("Data : getBins : Data finding query failed");
+				return false;
+			}
+			
+			$b_temp 	= round($b_temp_tot / $actual_steps, 1);
+			$a_temp 	= round($a_temp_tot / $actual_steps, 1);
+			$avg_bloop 	= round($bloop_tot / $actual_steps, 0);
+			$bins[] =  array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+		}
+		return $bins;
+	}
 }
 
 
