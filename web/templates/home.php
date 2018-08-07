@@ -31,7 +31,7 @@ if($ago < 3600) {
 			stroke: yellow;
 		}
 	</style>
-	<h1 class="title">Session <?php print $s->fields['name'];?></h1>
+	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
 	<h2 class="subtitle">In progress for <?php print $agoStr;?></h2>
 	<div class="tile is-ancestor" style="margin-top: 2em">
 		<div class="tile is-8 is-vertical">
