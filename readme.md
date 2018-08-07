@@ -68,7 +68,11 @@ Note that I've substituted some parts that were missing or broken. The actual pa
 There is also a molex connector not shown for the the temp sensors, which are on the end of a wire and covered in heatshrink, to connect to.
 
 In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted driectly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below it didn't exactly all fit together but you should get the idea.
-![Bonnet Pic](https://raw.github.com/nickl111/beerlogger/master/docs/BrauBot-Bonnet_bb.png) 
+![Bonnet Pic](https://raw.github.com/nickl111/beerlogger/master/docs/BrauBot-Bonnet_bb.png)
+
+![Photo 1](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 1.jpg "Braubot Photo")
+![Photo 2](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 2.jpg "Braubot Photo")
+![Photo 3](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 3.jpg "Braubot Photo")
 
 Note that originally I had the ambient temp sensor directly on the board but this picked up too much heat from the pi cpu so I moved it so both were on the remote wire, one just shorter than the other.
 
