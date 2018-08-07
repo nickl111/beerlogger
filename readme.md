@@ -70,9 +70,8 @@ There is also a molex connector not shown for the the temp sensors, which are on
 In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted driectly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below it didn't exactly all fit together but you should get the idea.
 <img src="https://raw.github.com/nickl111/beerlogger/master/docs/BrauBot-Bonnet_bb.png" width="200">
 
-<img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 1.jpg" width="200">
-<img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 2.jpg" width="200">
-<img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 3.jpg" width="200">
+And some pics of it in action:
+<img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 1.jpg" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 2.jpg" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 3.jpg" width="200">
 
 Note that originally I had the ambient temp sensor directly on the board but this picked up too much heat from the pi cpu so I moved it so both were on the remote wire, one just shorter than the other.
 
