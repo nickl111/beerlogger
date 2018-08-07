@@ -26,9 +26,9 @@ Obviously you can set about altering apache configs, gpio pins, and whatever you
 Stick the pi & board firmly to the airlock. I used the bottom half of a pi case so I could still remove the board when required.
 
 Once fitted you need to tune the potentiometer to detect bloops correctly. The correct setting is going to depend on your situation.
-If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible. However you might struggle if your environment is noisy. This also probably needs to be done while some real fermenting is happening and you may find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration.
+If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible and it probably needs to be done while some real fermenting is happening. You may find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration.
 
-To help with this a bit I weighted my airlock lid with a couple of large washers (weight to follow).
+To help with this a bit I weighted my airlock lid with a couple of large washers.
 
 ## Usage
 Now you should now have a service on your pi logging constantly to a sqlite database and producing pretty graphs. It is pretty much fire and forget, but don't forget your data is on the pi, not in the cloud. If you reclaim the pi for something else and want to keep the data you will need to move it (/usr/share/beerlog by default).
@@ -49,7 +49,7 @@ There is a rate limit on the counter that will stop it counting more than 2 per 
 Here's the circuit diagram:
 ![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubot Schematic")
 
-Note that I've substituted some parts that were missing or broken. The actual part list is:
+Note that I've substituted some parts that were missing or broken in Eagle. The actual part list is:
 
 | Name | Part | Value |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ Note that I've substituted some parts that were missing or broken. The actual pa
 
 (Note I've forgotten to connect up the capacitor in the schematic: it just goes from live to ground.)
 
-There is also a molex connector not shown for the the temp sensors, which are on the end of a wire and covered in heatshrink, to connect to.
+There is also a molex connector not shown for the temp sensors, which are on the end of a wire and covered in heatshrink, to connect to.
 
 In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted directly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below it Fritzing isn't exactly ideal for this but it's easier than doing it on paper.
 
