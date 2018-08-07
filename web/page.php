@@ -20,7 +20,7 @@ class Page {
 	function output($title, $content) {
 		print $this->header($title);
 		print $this->menu();
-		print '<div class="column" style="padding-top: 1.5em; padding-right: 2em">'.$content.'</div>';
+		print '<div class="column">'.$content.'</div>';
 		print $this->footer();
 	}
 	
@@ -115,7 +115,7 @@ class Page {
 						  'sample' 		=> 'Samples',
 						  'data' 		=> 'Data'
 						);
-		$str = '<div class="column is-one-fifth" style="margin: 1.5em"><aside class="menu"><ul class="menu-list">';
+		$str = '<div class="column is-narrow" style="margin: 1.5em"><aside class="menu"><ul class="menu-list">';
 		foreach($menuList as $view => $name) {
 			$str .= '<li><a '.($this->view == $view ? 'class="is-active" ' : '').'href="?view='.$view.'">'.$name."</a></li>\n";
 		}

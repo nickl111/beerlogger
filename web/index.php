@@ -98,7 +98,7 @@ switch($view) {
 					$o->destroy();
 				}
 			
-			case '':
+			case '':	//list
 				$o = new $view($db);
 				
 				$content = '<h2 class="title is-2">'.ucfirst($view)."s</h2>\n";
@@ -161,9 +161,12 @@ switch($view) {
 			break;
 			case 'newSession':
 				$s = new Session($db);
-				$s->fields['name']		= $_POST['field_name'];
 				$s->fields['ts_start'] 	= strtotime($_POST['start_date'].' '.$_POST['start_time']);
-				$s->fields['notes'] 	= $_POST['field_notes'];
+				foreach($_POST as $k => $v) {
+					if(substr($k,0,6) == 'field_') {
+						$s->fields[substr($k,6)] = $v;
+					}
+				}
 				$s->save();
 				header("Location: /?view=home");
 				exit;
@@ -174,6 +177,18 @@ switch($view) {
 					$s->fields['ts_end'] = time();
 					$s->save();
 				}
+				header("Location: /?view=home");
+				exit;
+				break;
+			case 'newSample':
+				$s = new sample($db);
+				$s->fields['ts'] 	= strtotime($_POST['start_date'].' '.$_POST['start_time']);
+				foreach($_POST as $k => $v) {
+					if(substr($k,0,6) == 'field_') {
+						$s->fields[substr($k,6)] = $v;
+					}
+				}
+				$s->save();
 				header("Location: /?view=home");
 				exit;
 				break;

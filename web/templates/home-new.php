@@ -1,4 +1,4 @@
-<section class="section">
+
 	<div class="hero">
 		<h1 class="title">Welcome to Beerlogger!</h1>
 	
@@ -9,4 +9,3 @@
 	?><div class="has-text-centered"><a class="button" href="?view=session&amp;do=resumePrevSession">Resume Previous Session</a></div><?php
 	}
 	?>
-</section>

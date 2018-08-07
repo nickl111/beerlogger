@@ -6,52 +6,65 @@ if($cur = $d->getCurrent()) {
 	$a_temp 	= $ary['a_temp'];
 	$avg_bloop 	= $ary['avg_bloop'];
 }
-?>
-<style type="text/css">
-	.beer_temp {
-		stroke: red;
-	}
-	.amb_temp {
-		stroke: orange;
-	}
-	.avg_bloop {
-		stroke: yellow;
-	}
+
+$ago = time() - $s->fields['ts_start'];
+if($ago < 3600) {
+	// minutes
+	$agoStr = round($ago / 60).' minutes';
+} elseif($ago < 86400) {
+	// hours
+	$agoStr = round($ago / 3600).' hours';
+} else {
+	// days
+	$agoStr = round($ago / 86400).' days';
 }
 
-</style>
-	<div class="hero">
-		<h1 class="title">Session <?php print $s->fields['name'];?> in progress</h1>
-	</div>
+?>
+	<style type="text/css">
+		.beer_temp {
+			stroke: red;
+		}
+		.amb_temp {
+			stroke: orange;
+		}
+		.avg_bloop {
+			stroke: yellow;
+		}
+	</style>
+	<h1 class="title">Session <?php print $s->fields['name'];?></h1>
+	<h2 class="subtitle">In progress for <?php print $agoStr;?></h2>
 	<div class="tile is-ancestor" style="margin-top: 2em">
 		<div class="tile is-8 is-vertical">
 			<div class="tile">
 				<div class="tile is-parent">
 					<article class="tile is-child box">
 						<p class="subtitle">Beer</p>
-						<div class="title"><?php print $b_temp; ?> &deg;C</div>
+						<div class="title has-text-centered"><?php print $b_temp; ?> &deg;C</div>
 					</article>
 				</div>
 				<div class="tile is-parent">
 					<article class="tile is-child box">
 						<p class="subtitle">Ambient</p>
-						<div class="title"><?php print $a_temp; ?> &deg;C</div>
+						<div class="title has-text-centered"><?php print $a_temp; ?> &deg;C</div>
 					</article>
 				</div>
 				<div class="tile is-parent">
 					<article class="tile is-child box">
 						<p class="subtitle">Activity</p>
-						<div class="title"><?php print $avg_bloop; ?></div>
+						<div class="title has-text-centered"><?php print $avg_bloop; ?></div>
 					</article>
 				</div>
 			</div>
 			<div class="tile is-parent">
 				<article class="tile box is-child">
-					<div class="ct-chart ct-perfect-fourth"></div>
+					<div class="ct-chart ct-minor-sixth"></div>
 				</article>
 			</div>
 			<div class="tile is-parent">
-				<div class="is-child has-text-centered container"><a class="button is-info is-large is-centered" href="?view=session&amp;do=endSession">Bottle it!</a></div>
+				<div class="is-child has-text-centered container">
+					<a class="button is-large" href="?view=sample&amp;do=edit&amp;session_id=<?php print $s->fields['id'] ;?>">New Sample</a>
+					<a class="button is-info is-large" href="?view=session&amp;do=endSession">Bottle it!</a>
+				</div>
 			</div>
 		</div>
 	</div>
