@@ -1,14 +1,27 @@
 <?php
 $d = new data($db);
 if($cur = $d->getCurrent()) {
-	$b_temp = $cur['b_temp'];
-	$a_temp = $cur['a_temp'];
-	$avg_bloop = $cur['avg_bloop'];
+	$ary = current($cur);
+	$b_temp 	= $ary['b_temp'];
+	$a_temp 	= $ary['a_temp'];
+	$avg_bloop 	= $ary['avg_bloop'];
 }
 ?>
+<style type="text/css">
+	.beer_temp {
+		stroke: red;
+	}
+	.amb_temp {
+		stroke: orange;
+	}
+	.avg_bloop {
+		stroke: yellow;
+	}
+}
+
+</style>
 	<div class="hero">
 		<h1 class="title">Session <?php print $s->fields['name'];?> in progress</h1>
-	
 	</div>
 	<div class="tile is-ancestor" style="margin-top: 2em">
 		<div class="tile is-8 is-vertical">
@@ -48,22 +61,45 @@ foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
 	$as[] 	= $bAry['a_temp'];
 	$bcs[] 	= $bAry['avg_bloop'];
+	
+	$day = date('D',$binNo);
+	if($oldDay != $day) {
+		$label = $day;
+	} else {
+		$label = '';
+	}
+	$labels[] = "'$label'";
+	$oldDay = $day;
 }
 ?>
+
 <script language="javascript">
 	var data = {
 	// A labels array that can contain any sort of values
-	labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+	labels: [<?php print implode(', ',$labels) ;?>],
 	// Our series array that contains series objects or in this case series data arrays
 	series: [
-		[<?php print implode(', ',$bs);?>],
-		[<?php print implode(', ',$as);?>],
-		[<?php print implode(', ',$bcs);?>]
+		{
+			className: 'beer_temp',
+			name: 'Beer Temperature',
+			data: [<?php print implode(', ',$bs);?>]
+		},
+		{
+			className: 'amb_temp',
+			name: 'Ambient Temperature',
+			data: [<?php print implode(', ',$as);?>]
+		},
+		{
+			className: 'avg_bloop',
+			name: 'Bloops/min',
+			data: [<?php print implode(', ',$bcs);?>]
+		}
 	]
 	};
 	
 	// Create a new line chart object where as first parameter we pass in a selector
 	// that is resolving to our chart container element. The Second parameter
 	// is the actual data object.
-	new Chartist.Line('.ct-chart', data);
+	 new Chartist.Line('.ct-chart', data);
+	
 </script>

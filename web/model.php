@@ -115,7 +115,9 @@ class vbc {
 	 */
 	function find($sqlwhere='1=1') {
 		$q = 'SELECT '.$this->sqlpk().' FROM '.$this->tablename.' WHERE '.$this->db->escapeString($sqlwhere);
+		$this->collection = array();
 		if($r = $this->db->query($q)) {
+			
 			while($row = $r->fetchArray(SQLITE3_ASSOC)) {
 				$this->collection[] = $row;
 			}
@@ -322,47 +324,9 @@ class data extends vbc {
 	
 	/**
 	 * Calculate the current data values (an average of the last few anyway)
-	 * @return array A 3 value array : 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min
 	 */
 	function getCurrent(){
-		$b_temp_tot = 0;
-		$a_temp_tot = 0;
-		$bloop_tot = 0;
-		$steps = 10;
-		$actual_steps = 0; // for the edge case where we have less than 10 readings!
-		$bloop_gap = 0;
-		
-		$c_bloop = false;
-		$bloops = array();
-		if($this->find('1=1 ORDER BY ts DESC LIMIT 0,'.$steps)) {
-			while($this->load()) {
-				$actual_steps++;
-				$b_temp_tot += $this->fields['beer_temp'];
-				$a_temp_tot += $this->fields['amb_temp'];
-				$last_bloop = $c_bloop;
-				$c_bloop = $this->fields['bloops'];
-				
-				if($last_bloop !== false) {
-					if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
-						$bloop_gap = $c_bloop - $last_bloop;
-					}
-					
-					$bloop_tot += $bloop_gap;
-				}
-				
-			}
-		} else {
-			return false;
-		}
-		
-		if($steps != $actual_steps) {
-			error_log('Data : getCurrent : Warning: Actual data readings were less than requested');
-		}
-		
-		$b_temp 	= round($b_temp_tot / $actual_steps, 1);
-		$a_temp 	= round($a_temp_tot / $actual_steps, 1);
-		$avg_bloop 	= round($bloop_tot / $actual_steps, 0);
-		return array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+		return $this->getBins(600, time()-600);
 	}
 	
 	/**
@@ -386,17 +350,17 @@ class data extends vbc {
 		$thisbin = 0;
 		for($bin_start=$ts_start;$bin_start<=$end;$bin_start+=$binLength) {
 			$thisbin++;
-			$b_temp_tot = 0;
-			$a_temp_tot = 0;
-			$bloop_tot = 0;
-			$actual_steps = 0;
-			$bloop_gap = 0;
+			$b_temp_tot 	= 0;
+			$a_temp_tot 	= 0;
+			$bloop_tot 		= 0;
+			$actual_steps 	= 0;
+			$bloop_gap 		= 0;
 			
 			$c_bloop = false;
 			$bloops = array();
 			if($this->find("ts >= $bin_start AND ts < ".($bin_start + $binLength)." ORDER BY ts ASC")) {
-				$actual_steps = count($this->collection);
 				while($this->load()) {
+					$actual_steps++;
 					$b_temp_tot += $this->fields['beer_temp'];
 					$a_temp_tot += $this->fields['amb_temp'];
 					$last_bloop = $c_bloop;
@@ -415,10 +379,10 @@ class data extends vbc {
 				return false;
 			}
 			
-			$b_temp 	= round($b_temp_tot / $actual_steps, 1);
-			$a_temp 	= round($a_temp_tot / $actual_steps, 1);
-			$avg_bloop 	= round($bloop_tot / $actual_steps, 0);
-			$bins[] =  array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+			$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
+			$a_temp 	= ($actual_steps > 0 ? round($a_temp_tot / $actual_steps, 1) : 0 );
+			$avg_bloop 	= ($actual_steps > 0 ? round($bloop_tot / ($actual_steps-1), 0) : 0);
+			$bins[$bin_start] =  array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
 		}
 		return $bins;
 	}
