@@ -31,13 +31,14 @@ If you turn it back and forth you will find a zone where the orange LED flashes 
 To help with this a bit I weighted my airlock lid with a couple of large washers (weight to follow).
 
 ## Usage
-Now you should now have a service on your pi logging constantly to a sqlite database and producing pretty graphs at http://[yourpiip]:8336/. It is pretty much fire and forget, but don't forget your data is on the pi, not in the cloud. If you reclaim the pi for something else and want to keep the data you will need to move it (/usr/share/beerlog by default).
+Now you should now have a service on your pi logging constantly to a sqlite database and producing pretty graphs. It is pretty much fire and forget, but don't forget your data is on the pi, not in the cloud. If you reclaim the pi for something else and want to keep the data you will need to move it (/usr/share/beerlog by default).
 ### LEDs
 After a little dance on start up the green led should be on when the service is running (it's enabled on boot by default so this should be always and systemd should recover it if something unexpected happens). It will unflash every minute when a temperature reading is taken.
 The orange LED flashes whenever a bloop is detected. The red LED will only come on if an error is detected. Your first (and hopefully only) step in troubleshooting this is to turn it off and then on again. Restarting the service/losing power will not affect the data other than missing a few readings.
 
 ### Web Interface
-It's basic at the moment but usable and it should be largely self explanatory.
+It's basic at the moment but usable and it should be largely self explanatory. Go to http://[yourpiip]:8336/ and browse around. "Monitor" shows you constant monitoring whereas "Session" will only show you what has happened in a given session.
+It is a Work in Progress atm.
 
 ## Implementation Details
 The bloop counter is a simple incrementer and will reset to 0 every time the service restarts. If you're reading the output from the db directly you need to look at the difference between readings rather than the absolute value (and obviously extrapolate when the reading is less than the previous one).
@@ -67,7 +68,8 @@ Note that I've substituted some parts that were missing or broken. The actual pa
 
 There is also a molex connector not shown for the the temp sensors, which are on the end of a wire and covered in heatshrink, to connect to.
 
-In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted driectly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below it didn't exactly all fit together but you should get the idea.
+In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted directly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below it Fritzing isn't exactly ideal for this but it's easier than doing it on paper.
+
 <img src="https://raw.github.com/nickl111/beerlogger/master/docs/BrauBot-Bonnet_bb.png" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 1.jpg" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 2.jpg" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 3.jpg" width="200">
 
 Note that originally I had the ambient temp sensor directly on the board but this picked up too much heat from the pi cpu so I moved it so both were on the remote wire, one just shorter than the other.
