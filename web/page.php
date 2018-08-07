@@ -108,19 +108,10 @@ class Page {
 	 * @return string HTML
 	 */
 	function menu() {
-		$menuList = array('home' 		=> 'Home',
-						  'monitor' 	=> 'Monitor',
-						  'session' 	=> 'Sessions',
-						  'recipe' 		=> 'Recipes',
-						  'sample' 		=> 'Samples',
-						  'data' 		=> 'Data'
-						);
-		$str = '<div class="column is-narrow" style="margin: 1.5em"><aside class="menu"><ul class="menu-list">';
-		foreach($menuList as $view => $name) {
-			$str .= '<li><a '.($this->view == $view ? 'class="is-active" ' : '').'href="?view='.$view.'">'.$name."</a></li>\n";
-		}
-		$str .= '</ul></aside></div>';
-		return $str;
+		ob_start();
+		include('templates/menu.php');
+		$output = ob_get_clean();
+		return $output;
 	}
 	
 	/**

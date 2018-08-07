@@ -10,13 +10,13 @@ if($cur = $d->getCurrent()) {
 $ago = time() - $s->fields['ts_start'];
 if($ago < 3600) {
 	// minutes
-	$agoStr = round($ago / 60).' minutes';
+	$agoStr = round($ago / 60).(round($ago / 60) == 1 ? ' minute' : ' minutes');
 } elseif($ago < 86400) {
 	// hours
-	$agoStr = round($ago / 3600).' hours';
+	$agoStr = round($ago / 3600).(round($ago / 3600) == 1 ? ' hour' : ' hours');
 } else {
 	// days
-	$agoStr = round($ago / 86400).' days';
+	$agoStr = round($ago / 86400).(round($ago / 86400) == 1 ? ' day' : ' days');
 }
 
 ?>
