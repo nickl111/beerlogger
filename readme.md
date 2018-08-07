@@ -49,6 +49,7 @@ Here's the circuit diagram:
 ![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubot Schematic")
 
 Note that I've substituted some parts that were missing or broken. The actual part list is:
+
 | Name | Part | Value |
 | --- | --- | --- |
 | Vibro | Minisense 100 Vertical | |
