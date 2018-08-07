@@ -37,7 +37,7 @@ After a little dance on start up the green led should be on when the service is 
 The orange LED flashes whenever a bloop is detected. The red LED will only come on if an error is detected. Your first (and hopefully only) step in troubleshooting this is to turn it off and then on again. Restarting the service/losing power will not affect the data other than missing a few readings.
 
 ### Web Interface
-To follow when I've written it...
+It's basic at the moment but usable and it should be largely self explanatory.
 
 ## Implementation Details
 The bloop counter is a simple incrementer and will reset to 0 every time the service restarts. If you're reading the output from the db directly you need to look at the difference between readings rather than the absolute value (and obviously extrapolate when the reading is less than the previous one).
@@ -45,8 +45,31 @@ The bloop counter is a simple incrementer and will reset to 0 every time the ser
 There is a rate limit on the counter that will stop it counting more than 2 per second. You can change this in the config file if you think this is too low. This was introduced to limit the data pollution from accidental knocks and the like. I found, probably because of my terrible soldering, that putting my fingers near the sensor was enough to trigger it hundreds of times per second.
 	
 ## Braubot
+Here's the circuit diagram:
+![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubot Schematic")
 
-Schema and board layout to follow.
+Note that I've substituted some parts that were missing or broken. The actual part list is:
+| Name | Part | Value
+| ---|---|---
+| Vibro | Minisense 100 Vertical |
+| R1 | Resistor | 100M Ohm
+| D1 & D2 | Zener Diode | 5.1V
+| R2 | Potentiometer | 10k Ohm
+| IC1 | LM293 Comparator
+| IC2 & IC3 | DS18B20 |
+| R6 | Resistor | 4.7k Ohm
+| R3, R4, R5 | Resistor | 560 Ohm
+| LED1, 2, 3 | 3mm LED | ?
+| C1 | Capacitor | 0.1uF
+
+(Note I've forgotten to connect up the capacitor in the schematic: it just goes from live to ground.)
+
+There is also a molex connector not shown for the the temp sensors, which are on the end of a wire and covered in heatshrink, to connect to.
+
+In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted driectly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below it didn't exactly all fit together but you should get the idea.
+![Bonnet Pic](https://raw.github.com/nickl111/beerlogger/master/docs/BrauBot-Bonnet_bb.png) 
+
+Note that originally I had the ambient temp sensor directly on the board but this picked up too much heat from the pi cpu so I moved it so both were on the remote wire, one just shorter than the other.
 
 ## Acknowledgments
 - I borrowed part of the circuit design for the piezo sensors from here: https://scienceprog.com/thoughts-on-interfacing-piezo-vibration-sensor/
@@ -57,7 +80,7 @@ Schema and board layout to follow.
 - Producing RRD graphs every minute is probably overkill
 - The web interface is basic and probably hideously insecure. Don't expose it to the world.
 - I used 5.1V Zeners instead of 3.6V because that's what I had. I don't know how much difference this makes. (But I do know that 3.3V Zeners don't work)
-- I used a smaller resistor across the piezo than recommended because the larger one was physically too large to fit on the board. I don't think this makes much difference for this application.
+- I used a smaller resistor across the piezo than recommended (320M) because the larger one was physically too large to fit on the board. I don't think this makes much difference for this application.
 - Airlock activity doesn't completely represent fermentation activity. I know. This is a guide only.
 - Braubot might be being used by someone else. I haven't checked. It's not meant to be serious.
 - Electricity and beer do not mix. Be careful.
