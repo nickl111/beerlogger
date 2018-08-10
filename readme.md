@@ -49,7 +49,7 @@ There is a rate limit on the counter that will stop it counting more than 2 per 
 Here's the circuit diagram:
 ![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubot Schematic")
 
-Note that I've substituted some parts that were missing or broken in Eagle. The actual part list is:
+I've substituted some parts that were missing or broken in Eagle so don't pay attention to the names on the diagram. The actual part list is:
 
 | Name | Part | Value |
 | --- | --- | --- |
@@ -64,15 +64,17 @@ Note that I've substituted some parts that were missing or broken in Eagle. The 
 | LED1, 2, 3 | 3mm LED | ? |
 | C1 | Capacitor | 0.1uF |
 
-(Note I've forgotten to connect up the capacitor in the schematic: it just goes from live to ground.)
+(I've forgotten to connect up the capacitor in the schematic: it just goes from live to ground.)
 
-There is also a molex connector not shown for the temp sensors, which are on the end of a wire and covered in heatshrink, to connect to.
+There is also a molex connector not shown for the temp sensors, which are on the end of a wire and covered in heatshrink.
 
 In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted directly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below it Fritzing isn't exactly ideal for this but it's easier than doing it on paper.
 
 <img src="https://raw.github.com/nickl111/beerlogger/master/docs/BrauBot-Bonnet_bb.png" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 1.jpg" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 2.jpg" width="200"> | <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 3.jpg" width="200">
 
 Note that originally I had the ambient temp sensor directly on the board but this picked up too much heat from the pi cpu so I moved it so both were on the remote wire, one just shorter than the other.
+
+I have an Inkbird temperature controller with a brew belt that is actually controlling the heating (and no cooling because I live in Devon). In principle it wouldn't be much work to get the Pi to control the heating via a relay but in practice it's simpler and safer and probably as cheap to just to run the Inkbird. 
 
 ## Acknowledgments
 - I borrowed part of the circuit design for the piezo sensors from here: https://scienceprog.com/thoughts-on-interfacing-piezo-vibration-sensor/
