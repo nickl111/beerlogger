@@ -1,24 +1,24 @@
-# Beer Logger for Braubot
+# Beer Logger for Braubonnet
 
-Beer logger is a simple linux service that logs temperature and airlock bloops from my Braubot (a raspbian running pi zero w with some gidgets attached). As we are running on a pi however we can also run a web server and make the results available to the world (though router config and system capacity for this I'm afraid is your problem). It is designed to fit on the large Speidel style airlock.
+Beer logger is a simple linux service that logs temperature and airlock bloops from my Braubonnet (a bonnet for a Pi zero). As we are running on a Pi however we can also run a web server and make the results available to the world (though router config and system capacity for this I'm afraid is your problem). It is designed to fit on the large Speidels style airlock.
 
 It was designed to stop me having to go out to the garage to see what was happening all the time.
 
 ## Installation
-Install it on a fresh copy of raspbian on a Pi Zero W. Make sure you get wifi working reliably first and raspbian updated. Then
+Install it on a fresh copy of Raspbian on a Pi Zero W. Make sure you get wifi working reliably first and raspbian updated. Then
 ```
 git clone https://github.com/nickl111/beerlogger.git
 cd beerlogger
 bash install.sh install
 ```
 
-Other pi versions probably work and other Debians probably work too but I've not tested. Other linuxes that use systemd may also work except for the apache set up.
+Other Pi versions probably work and other Debians probably work too but I've not tested. Other linuxes that use systemd may also work except for the apache set up.
 
 Should you decide you don't want it `bash install.sh uninstall` should remove it cleanly but leave the data in /usr/share/beerlog.
 
 ## Configuration
 ### Software
-The only software configuration that is required is to select the correct temperature sensors. Unfortunately it is impossible from the outside to determine which sensor is which so trial and error is the only way... You will be asked to select during installation and half of you will need to select again when it turns out you guessed incorrectly. By default the selection script is in `/usr/local/beerlog/selectTemp.sh`, just run this.
+The only software configuration that is required is to select the correct temperature sensors. Unfortunately it is impossible from the outside to determine which sensor is which so trial and error is the only way... You will be asked to select during installation and half of you will need to select again when it turns out you guessed incorrectly. By default the selection script is in `/usr/local/beerlog/selectTemp.sh`, just run this to reselect.
 
 Obviously you can set about altering apache configs, gpio pins, and whatever you want if you feel like it.
 
@@ -45,9 +45,9 @@ The bloop counter is a simple incrementer and will reset to 0 every time the ser
 
 There is a rate limit on the counter that will stop it counting more than 2 per second. You can change this in the config file if you think this is too low. This was introduced to limit the data pollution from accidental knocks and the like. I found, probably because of my terrible soldering, that putting my fingers near the sensor was enough to trigger it hundreds of times per second.
 	
-## Braubot
+## Braubonnet
 Here's the circuit diagram:
-![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubot Schematic")
+![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubonnet Schematic")
 
 I've substituted some parts that were missing or broken in Eagle so don't pay attention to the names on the diagram. The actual part list is:
 
@@ -68,13 +68,13 @@ I've substituted some parts that were missing or broken in Eagle so don't pay at
 
 There is also a molex connector not shown for the temp sensors, which are on the end of a wire and covered in heatshrink.
 
-In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted directly on top of the Pi (and it was important that it was small enough to fit on the airlock. This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below Fritzing isn't exactly ideal for this (or anything) but it's easier than doing it on paper.
+In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted directly on top of the Pi (and it was important that it was small enough to fit on the airlock). This was a bit of a stretch to fit on so I used Fritzing eventually to fit the pieces on. As you can see below Fritzing isn't exactly ideal for this (or anything) but it's easier than doing it on paper.
 
 <img src="https://raw.github.com/nickl111/beerlogger/master/docs/BrauBot-Bonnet_bb.png" width="200"> <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 1.jpg" width="200"> <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 2.jpg" width="200"> <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 3.jpg" width="200">
 
 Note that originally I had the ambient temp sensor directly on the board but this picked up too much heat from the pi cpu so I moved it so both were on the remote wire, one just shorter than the other.
 
-I have an Inkbird temperature controller with a brew belt that is actually controlling the heating (and no cooling because I live in Devon). In principle it wouldn't be much work to get the Pi to control the heating via a relay but in practice it's simpler and safer and probably as cheap to just to run the Inkbird. 
+I have an Inkbird temperature controller with a brew belt that is actually controlling the heating (and no cooling because I live in Devon). In principle it wouldn't be much work to get the Pi to control the heating via a relay but in practice it's simpler and safer and as cheap to just to run the Inkbird. 
 
 ## Acknowledgments
 - I borrowed part of the circuit design for the piezo sensors from here: https://scienceprog.com/thoughts-on-interfacing-piezo-vibration-sensor/
@@ -87,5 +87,4 @@ I have an Inkbird temperature controller with a brew belt that is actually contr
 - I used 5.1V Zeners instead of 3.6V because that's what I had. I don't know how much difference this makes. (But I do know that 3.3V Zeners don't work)
 - I used a smaller resistor across the piezo than recommended (320M) because the larger one was physically too large to fit on the board. I don't think this makes much difference for this application.
 - Airlock activity doesn't completely represent fermentation activity. I know. This is a guide only.
-- Braubot might be being used by someone else. I haven't checked. It's not meant to be serious.
 - Electricity and beer do not mix. Be careful.
