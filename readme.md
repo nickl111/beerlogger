@@ -25,7 +25,6 @@ Obviously you can set about altering apache configs, gpio pins, and whatever you
 ### Hardware
 Stick the pi & board firmly to the airlock. I used the bottom half of a pi case so I could still remove the board when required.
 
-*!Important!*
 Once fitted you need to tune the potentiometer to detect bloops correctly. The correct setting is going to depend on your situation.
 If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone (I find just "below" it seems best) far enough so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible and needs to be done while some real fermenting is happening. You may find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration. To help with this a bit I weighted my airlock lid with a couple of large washers.
 
