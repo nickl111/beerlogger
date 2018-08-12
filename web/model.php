@@ -273,6 +273,19 @@ class Session extends vbc {
 		}
 		return $datas;
 	}
+	
+	/**
+	 * Get recipe associated with this session
+	 * @return array A recipe object (or false)
+	 */
+	function getRecipe() {
+		$r = new Recipe($this->db);
+
+		if(!$r->load($this->fields['recipe_id'])) {
+			return false;
+		}
+		return $r;
+	}
 
 }
 

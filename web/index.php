@@ -11,7 +11,7 @@ $SQL_DB = "/usr/share/beerlog/db/beerlog.db";
 $db 	= new SQLite3($SQL_DB);
 
 $perm_views 	= array('','home','monitor','session','data','recipe','sample','newSession');
-$perm_actions 	= array('','view','edit','save','delete','resumePrevSession','newSession','endSession');
+$perm_actions 	= array('','view','edit','save','delete','resumePrevSession','newSession','endSession','newSample');
 $perm_graphs 	= array('day','hour','week','month','year');
 
 // keys
@@ -189,7 +189,7 @@ switch($view) {
 					}
 				}
 				$s->save();
-				header("Location: /?view=home");
+				header("Location: /?view=sample");
 				exit;
 				break;
 			default:

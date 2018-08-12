@@ -10,13 +10,13 @@ if($cur = $d->getCurrent()) {
 $ago = time() - $s->fields['ts_start'];
 if($ago < 3600) {
 	// minutes
-	$agoStr = round($ago / 60).(round($ago / 60) == 1 ? ' minute' : ' minutes');
+	$agoStr = round($ago / 60).(round($ago / 60) == 1 ? ' Minute' : ' Minutes');
 } elseif($ago < 86400) {
 	// hours
-	$agoStr = round($ago / 3600).(round($ago / 3600) == 1 ? ' hour' : ' hours');
+	$agoStr = round($ago / 3600).(round($ago / 3600) == 1 ? ' Hour' : ' Hours');
 } else {
 	// days
-	$agoStr = round($ago / 86400).(round($ago / 86400) == 1 ? ' day' : ' days');
+	$agoStr = round($ago / 86400).(round($ago / 86400) == 1 ? ' Day' : ' Days');
 }
 
 ?>
@@ -32,42 +32,42 @@ if($ago < 3600) {
 		}
 	</style>
 	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
-	<h2 class="subtitle">In progress for <?php print $agoStr;?></h2>
-	<div class="tile is-ancestor" style="margin-top: 2em">
-		<div class="tile is-8 is-vertical">
-			<div class="tile">
-				<div class="tile is-parent">
-					<article class="tile is-child box">
-						<p class="subtitle">Beer</p>
-						<div class="title has-text-centered"><?php print $b_temp; ?> &deg;C</div>
-					</article>
-				</div>
-				<div class="tile is-parent">
-					<article class="tile is-child box">
-						<p class="subtitle">Ambient</p>
-						<div class="title has-text-centered"><?php print $a_temp; ?> &deg;C</div>
-					</article>
-				</div>
-				<div class="tile is-parent">
-					<article class="tile is-child box">
-						<p class="subtitle">Activity</p>
-						<div class="title has-text-centered"><?php print $avg_bloop; ?></div>
-					</article>
-				</div>
-			</div>
-			<div class="tile is-parent">
-				<article class="tile box is-child">
-					<div class="ct-chart ct-minor-sixth"></div>
-				</article>
-			</div>
-			<div class="tile is-parent">
-				<div class="is-child has-text-centered container">
-					<a class="button is-large" href="?view=sample&amp;do=edit&amp;session_id=<?php print $s->fields['id'] ;?>">New Sample</a>
-					<a class="button is-info is-large" href="?view=session&amp;do=endSession">Bottle it!</a>
-				</div>
+	<nav class="level box" style="margin-top: 2em">
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Age</p>
+				<p class="title"><?php print $agoStr; ?></p>
 			</div>
 		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Beer</p>
+				<p class="title"><?php print $b_temp; ?> &deg;C</p>
+			</div>
+		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Ambient</p>
+				<p class="title"><?php print $a_temp; ?> &deg;C</p>
+			</div>
+		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Activity</p>
+				<p class="title"><?php print $avg_bloop; ?></p>
+			</div>
+		</div>
+	</nav>
+	
+	<article class="box">
+		<div class="ct-chart ct-minor-sixth"></div>
+	</article>
+
+	<div class="has-text-centered">
+		<a class="button is-large" href="?view=sample&amp;do=edit&amp;session_id=<?php print $s->fields['id'] ;?>">New Sample</a>
+		<a class="button is-info is-large" href="?view=session&amp;do=endSession">Bottle it!</a>
 	</div>
+
 <?php
 $b = $d->getBins(3600, $s->fields['ts_start'], $s->fields['ts_end']);
 foreach($b as $binNo => $bAry) {
