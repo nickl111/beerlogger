@@ -33,7 +33,7 @@ if($ago < 3600) {
 	</style>
 	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
 	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?></p>
-	<nav class="level box" style="margin-top: 2em">
+	<nav class="level box">
 		<div class="level-item has-text-centered">
 			<div>
 				<p class="heading">Age</p>
@@ -61,7 +61,7 @@ if($ago < 3600) {
 	</nav>
 	
 	<article class="box">
-		<div class="ct-chart ct-minor-sixth"></div>
+		<div class="ct-chart ct-octave"></div>
 	</article>
 
 	<div class="has-text-centered">
