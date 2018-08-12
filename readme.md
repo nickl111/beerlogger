@@ -25,10 +25,11 @@ Obviously you can set about altering apache configs, gpio pins, and whatever you
 ### Hardware
 Stick the pi & board firmly to the airlock. I used the bottom half of a pi case so I could still remove the board when required.
 
+*!Important!*
 Once fitted you need to tune the potentiometer to detect bloops correctly. The correct setting is going to depend on your situation.
-If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible and it probably needs to be done while some real fermenting is happening. You may find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration.
+If you turn it back and forth you will find a zone where the orange LED flashes rapidly. You need to move it to just outside this zone (I find just "below" it seems best) far enough so it's not randomly triggering but close enough that the tiny vibration from the airlock blooping does trigger it. This is fiddly but possible and needs to be done while some real fermenting is happening. You may find it needs tuning a bit more when the bloops get down to one every 5 minutes or so as they produce less vibration. To help with this a bit I weighted my airlock lid with a couple of large washers.
 
-To help with this a bit I weighted my airlock lid with a couple of large washers.
+The airlock can be a bit inconsistent, especially if you have StarSan or something that foams as the liquid. I am working on this...
 
 ## Usage
 Now you should now have a service on your pi logging constantly to a sqlite database and producing pretty graphs. It is pretty much fire and forget, but don't forget your data is on the pi, not in the cloud. If you reclaim the pi for something else and want to keep the data you will need to move it (/usr/share/beerlog by default).
@@ -46,7 +47,7 @@ The bloop counter is a simple incrementer and will reset to 0 every time the ser
 There is a rate limit on the counter that will stop it counting more than 2 per second. You can change this in the config file if you think this is too low. This was introduced to limit the data pollution from accidental knocks and the like. I found, probably because of my terrible soldering, that putting my fingers near the sensor was enough to trigger it hundreds of times per second.
 	
 ## Braubonnet
-Here's the circuit diagram:
+This is the DIY part! Here's the circuit diagram:
 ![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubonnet Schematic")
 
 I've substituted some parts that were missing or broken in Eagle so don't pay attention to the names on the diagram. The actual part list is:
