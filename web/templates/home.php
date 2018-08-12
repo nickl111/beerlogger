@@ -32,6 +32,7 @@ if($ago < 3600) {
 		}
 	</style>
 	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
+	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?></p>
 	<nav class="level box" style="margin-top: 2em">
 		<div class="level-item has-text-centered">
 			<div>
