@@ -10,7 +10,7 @@ class vbc {
 	protected $tableinfo = array();
 	public $fields = array();
 	public $pk = array();
-
+	private $cache;
 	/**
 	 * The constructor
 	 * @param $db A usable database handle
@@ -23,8 +23,17 @@ class vbc {
 		} else {
 			$this->db = $db;
 		}
+		$this->cache = new Memcache();
+		$this->cache->connect('127.0.0.1', 11211);
 		$this->setTableInfo();
 		return true;
+	}
+	
+	/**
+	 *
+	 */
+	private function getCacheKey($id){
+		return 'beerlog.'.$this->tablename.'.'.implode('-',$id);
 	}
 	
 	/**
@@ -39,12 +48,19 @@ class vbc {
 			}
 			
 			$q = "SELECT * FROM ".$this->tablename." WHERE ".$this->sqlpk($id);
+			
+			if($r = $this->cache->get($this->getCacheKey($id))){
+				$this->fields = $r;
+				return true;
+			}
+			
 			if($results = $this->db->query($q)) {
 				while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
 					foreach($row as $k => $v) {
 						$this->fields[$k] = $v;
 					}
 				}
+				$this->cache->set($this->getCacheKey($id), $this->fields);
 				return true;
 			} else {
 				error_log("Load : Query: $q failed");
@@ -91,6 +107,7 @@ class vbc {
 			error_log("Save : query failed: $q");
 			return false;
 		}
+		$this->cache->delete($this->getCacheKey($this->getPKValues()));
 		return true;
 	}
 	
