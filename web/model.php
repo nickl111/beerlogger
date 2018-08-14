@@ -120,6 +120,7 @@ class vbc {
 		if ($vs = $this->getPKValues()) {
 			$q = 'DELETE FROM '.$this->tablename.' WHERE '.$this->sqlpk($vs);
 			$this->db->query($q);
+			$this->cache->delete($this->getCacheKey($this->getPKValues()));
 		} else {
 			return false;
 		}
