@@ -37,6 +37,14 @@ class vbc {
 	}
 	
 	/**
+	 * Query abstraction
+	 */
+	private function query($q) {
+		error_log("Query: $q");
+		return $this->db->query($q);
+	}
+	
+	/**
 	 * Instantiate an object.
 	 * @param array $id Array of primary key values. Non-arrays will be turned into single value arrays.
 	 * @return boolean Success or no
@@ -47,14 +55,14 @@ class vbc {
 				$id = array($id);
 			}
 			
-			$q = "SELECT * FROM ".$this->tablename." WHERE ".$this->sqlpk($id);
-			
 			if($r = $this->cache->get($this->getCacheKey($id))){
 				$this->fields = $r;
 				return true;
 			}
 			
-			if($results = $this->db->query($q)) {
+			$q = "SELECT * FROM ".$this->tablename." WHERE ".$this->sqlpk($id);
+			
+			if($results = $this->query($q)) {
 				while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
 					foreach($row as $k => $v) {
 						$this->fields[$k] = $v;
@@ -103,7 +111,7 @@ class vbc {
 			$q .= substr($c,0,-1).') VALUES ('.substr($p,0,-1).')';
 			error_log("Save : query worked: $q");
 		}
-		if(!$this->db->query($q)){
+		if(!$this->query($q)){
 			error_log("Save : query failed: $q");
 			return false;
 		}
@@ -119,7 +127,7 @@ class vbc {
 		// only do this if we have pk values
 		if ($vs = $this->getPKValues()) {
 			$q = 'DELETE FROM '.$this->tablename.' WHERE '.$this->sqlpk($vs);
-			$this->db->query($q);
+			$this->query($q);
 			$this->cache->delete($this->getCacheKey($this->getPKValues()));
 		} else {
 			return false;
@@ -134,7 +142,7 @@ class vbc {
 	function find($sqlwhere='1=1') {
 		$q = 'SELECT '.$this->sqlpk().' FROM '.$this->tablename.' WHERE '.$this->db->escapeString($sqlwhere);
 		$this->collection = array();
-		if($r = $this->db->query($q)) {
+		if($r = $this->query($q)) {
 			
 			while($row = $r->fetchArray(SQLITE3_ASSOC)) {
 				$this->collection[] = $row;
@@ -208,7 +216,7 @@ class vbc {
 		if($this->tableinfo && !$force) {
 			return true;
 		}
-		$r = $this->db->query("PRAGMA table_info(".$this->tablename.")");
+		$r = $this->query("PRAGMA table_info(".$this->tablename.")");
 		while ($row = $r->fetchArray(SQLITE3_ASSOC)) {
 			 $this->tableinfo[$row['name']] = $row;
 		}
@@ -377,44 +385,69 @@ class data extends vbc {
 			$end = time();
 		}
 
+		$allBins = array();
 		$bins = array();
-		$thisbin = 0;
-		for($bin_start=$ts_start;$bin_start<=$end;$bin_start+=$binLength) {
-			$thisbin++;
+		$Bcounter=0;
+	
+		if($this->find("ts >= $ts_start AND ts < $end ORDER BY ts ASC")) {
+			$bin_start = $ts_start;
+			$actual_steps 	= 0;
+			$bin_start+=$binLength;
 			$b_temp_tot 	= 0;
 			$a_temp_tot 	= 0;
 			$bloop_tot 		= 0;
-			$actual_steps 	= 0;
 			$bloop_gap 		= 0;
-			
-			$c_bloop = false;
-			$bloops = array();
-			if($this->find("ts >= $bin_start AND ts < ".($bin_start + $binLength)." ORDER BY ts ASC")) {
-				while($this->load()) {
-					$actual_steps++;
-					$b_temp_tot += $this->fields['beer_temp'];
-					$a_temp_tot += $this->fields['amb_temp'];
-					$last_bloop = $c_bloop;
-					$c_bloop = $this->fields['bloops'];
+			$c_bloop 		= false;
 					
-					if($last_bloop !== false) {
-						if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
-							$bloop_gap = $c_bloop - $last_bloop;
+			while($this->load()) {
+
+				if($this->fields['ts'] >= $bin_start + $binLength) {
+					// finished bin.
+					if($actual_steps > 0) {
+						$b_temp 	= round($b_temp_tot / $actual_steps, 1);
+						$a_temp 	= round($a_temp_tot / $actual_steps, 1);
+						if($actual_steps > 1) {
+							$avg_bloop = round($bloop_tot / ($actual_steps-1), 0);
+						} else {
+							$avg_bloop = $bloop_tot;
 						}
-						
-						$bloop_tot += $bloop_gap;
 					}
+					
+					$bins[$bin_start] = array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+					
+					$actual_steps 	= 0;
+					$bin_start+=$binLength;
+					$b_temp_tot 	= 0;
+					$a_temp_tot 	= 0;
+					$bloop_tot 		= 0;
+					$bloop_gap 		= 0;
+					$c_bloop 		= false;
 				}
-			} else {
-				error_log("Data : getBins : Data finding query failed");
-				return false;
+
+				$actual_steps++;
+				$b_temp_tot += $this->fields['beer_temp'];
+				$a_temp_tot += $this->fields['amb_temp'];
+				$last_bloop = $c_bloop;
+				$c_bloop = $this->fields['bloops'];
+				
+				if($last_bloop !== false) {
+					if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
+						$bloop_gap = $c_bloop - $last_bloop;
+					}
+					
+					$bloop_tot += $bloop_gap;
+				}
 			}
 			
-			$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
-			$a_temp 	= ($actual_steps > 0 ? round($a_temp_tot / $actual_steps, 1) : 0 );
-			$avg_bloop 	= ($actual_steps > 0 ? round($bloop_tot / ($actual_steps-1), 0) : 0);
-			$bins[$bin_start] =  array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+			// last unfinshed bin
+			if($actual_steps > 0) {
+				$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
+				$a_temp 	= ($actual_steps > 0 ? round($a_temp_tot / $actual_steps, 1) : 0 );
+				$avg_bloop 	= ($actual_steps > 1 ? round($bloop_tot / ($actual_steps-1), 0) : 0);
+				$bins[$bin_start] = array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+			}
 		}
+
 		return $bins;
 	}
 }

@@ -40,3 +40,11 @@ CREATE TABLE data (
 	beer_temp DECIMAL(5,3) default NULL,
 	amb_temp DECIMAL(5,3) default NULL
 );
+
+CREATE TABLE databinned (
+	ts INTEGER PRIMARY KEY,
+	binLength INTEGER default 0,
+	bloops INTEGER default 0,
+	beer_temp DECIMAL(5,3) default NULL,
+	amb_temp DECIMAL(5,3) default NULL
+);
