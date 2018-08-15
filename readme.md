@@ -56,17 +56,16 @@ I've substituted some parts that were missing or broken in Eagle so don't pay at
 | Name | Part | Value |
 | --- | --- | --- |
 | Vibro | Minisense 100 Vertical | |
-| R1 | Resistor | 100M Ohm |
-| D1 & D2 | Zener Diode | 5.1V |
-| R2 | Potentiometer | 10k Ohm |
 | IC1 | LM293 Comparator | |
 | IC2 & IC3 | DS18B20 | |
-| R6 | Resistor | 4.7k Ohm |
+| D1 & D2 | Zener Diode | 5.1V |
+| R1 | Resistor | 100M Ohm |
+| R2 | Potentiometer | 10k Ohm |
 | R3, R4, R5 | Resistor | 560 Ohm |
-| LED1, 2, 3 | 3mm LED | ? |
+| R6 | Resistor | 4.7k Ohm |
+| LED1, 2, 3 | 3mm LED | |
 | C1 | Capacitor | 0.1uF |
 
-(I've forgotten to connect up the capacitor in the schematic: it just goes from live to ground.)
 
 There is also a molex connector not shown for the temp sensors, which are on the end of a wire and covered in heatshrink.
 
