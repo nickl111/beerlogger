@@ -36,7 +36,7 @@ CREATE TABLE sample (
 
 CREATE TABLE data (
 	ts INTEGER PRIMARY KEY,
-	bloops DECIMAL(5,2) default 0,
+	bloops INTEGER default 0,
 	beer_temp DECIMAL(5,3) default NULL,
 	amb_temp DECIMAL(5,3) default NULL
 );
