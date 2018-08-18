@@ -28,9 +28,10 @@ if($ago < 3600) {
 			stroke: orange;
 		}
 		.avg_bloop {
-			stroke: yellow;
+			stroke: purple;
 		}
 	</style>
+<div class="content">
 	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
 	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?></p>
 	<nav class="level box">
@@ -63,12 +64,46 @@ if($ago < 3600) {
 	<article class="box">
 		<div class="ct-chart ct-octave"></div>
 	</article>
+	
+	<?php
+	$samples = $s->getSamples();
+	if(count($samples) > 0) {
+		?>
+		<article>
+			<h3 class="title">Samples</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Gravity</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					foreach($samples as $sample) {
+					?>
+					<tr>
+						<td><?php print date("D jS M Y h:i",$sample->fields['ts']);?></td>
+						<td><?php print $sample->fields['sg'];?></td>
+						<td><?php print $sample->fields['note'];?></td>
+					</tr>
+					<?php
+					}
+					?>
+				</tbody>
+			</table>
+		</article>
+		<hr />
+		<?php
+	}
+	?>
 
 	<div class="has-text-centered">
 		<a class="button is-large" href="?view=sample&amp;do=edit&amp;session_id=<?php print $s->fields['id'] ;?>">New Sample</a>
 		<a class="button is-info is-large" href="?view=session&amp;do=endSession">Bottle it!</a>
 	</div>
-
+</div>
 <?php
 $oldDay = false;
 $b = $d->getBins(3600, $s->fields['ts_start'], $s->fields['ts_end']);
