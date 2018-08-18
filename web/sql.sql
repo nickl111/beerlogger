@@ -36,7 +36,7 @@ CREATE TABLE sample (
 
 CREATE TABLE data (
 	ts INTEGER PRIMARY KEY,
-	bloops INTEGER default 0,
+	bloops DECIMAL(5,2) default 0,
 	beer_temp DECIMAL(5,3) default NULL,
 	amb_temp DECIMAL(5,3) default NULL
 );
@@ -44,7 +44,7 @@ CREATE TABLE data (
 CREATE TABLE archive (
 	ts INTEGER,
 	binLength INTEGER default 0,
-	bloops INTEGER default 0,
+	bloops DECIMAL(5,2) default 0,
 	beer_temp DECIMAL(5,3) default NULL,
 	amb_temp DECIMAL(5,3) default NULL,
 	PRIMARY KEY (ts,binLength)

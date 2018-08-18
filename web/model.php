@@ -408,7 +408,7 @@ class data extends vbc {
 						$b_temp 	= round($b_temp_tot / $actual_steps, 1);
 						$a_temp 	= round($a_temp_tot / $actual_steps, 1);
 						if($actual_steps > 1) {
-							$avg_bloop = round($bloop_tot / ($actual_steps-1), 0);
+							$avg_bloop = round($bloop_tot / ($actual_steps-1), 2);
 						} else {
 							$avg_bloop = $bloop_tot;
 						}
@@ -456,7 +456,7 @@ class data extends vbc {
 			if($actual_steps > 0) {
 				$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
 				$a_temp 	= ($actual_steps > 0 ? round($a_temp_tot / $actual_steps, 1) : 0 );
-				$avg_bloop 	= ($actual_steps > 1 ? round($bloop_tot / ($actual_steps-1), 0) : 0);
+				$avg_bloop 	= ($actual_steps > 1 ? round($bloop_tot / ($actual_steps-1), 2) : 0);
 				$bins[$bin_start] = array('b_temp' 		=> $b_temp,
 										  'a_temp' 		=> $a_temp,
 										  'avg_bloop' 	=> $avg_bloop);
