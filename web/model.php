@@ -92,6 +92,11 @@ class vbc {
 			$c = $p = '';
 			$q = 'INSERT INTO '.$this->tablename.' (';
 			foreach($this->fields as $k => $v) {
+				if(in_array($k,$this->pk)){
+					if(!$v) { 
+						continue;
+					}
+				}
 				$c .= "$k,";
 				$p .= "'$v',";
 			}
