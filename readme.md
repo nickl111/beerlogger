@@ -80,10 +80,10 @@ I have an Inkbird temperature controller with a brew belt that is actually contr
 - I borrowed the idea of counting airlock bloops from Speidels themselves. Their [GÄRSPUNDmobil](https://www.speidels-braumeister.de/en/braumeister/gaerspundmobil-and-gaermeister-control.html) is basically the same thing (though note I've not actually seen one so I don't know how it actually works internally. And I would have just bought one if they were €50 instead of €150). 
 
 ## Known Issues
-- Using apache is overkill
+- Using apache is ~~overkill~~ good and easy
 - Producing RRD graphs every minute is probably overkill
 - The web interface is basic and probably hideously insecure. Don't expose it to the world.
 - I used 5.1V Zeners instead of 3.6V because that's what I had. I don't know how much difference this makes. (But I do know that 3.3V Zeners don't work)
-- I used a smaller resistor across the piezo than recommended (320M) because the larger one was physically too large to fit on the board. I don't think this makes much difference for this application.
-- Airlock activity doesn't completely represent fermentation activity. I know. This is a guide only.
+- I used a smaller resistor across the piezo than recommended (320M) because the larger one was physically too large to fit on the board. This amplifies the signal from the peizo less but doesn't really matter to us.
+- Airlock activity doesn't completely represent fermentation activity. I know. I am not trying to estimate SG because it's a) hard and b) pointless. It will take as long as it takes. We are monitoring only.
 - Electricity and beer do not mix. Be careful.
