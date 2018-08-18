@@ -41,10 +41,11 @@ CREATE TABLE data (
 	amb_temp DECIMAL(5,3) default NULL
 );
 
-CREATE TABLE databinned (
-	ts INTEGER PRIMARY KEY,
+CREATE TABLE archive (
+	ts INTEGER,
 	binLength INTEGER default 0,
 	bloops INTEGER default 0,
 	beer_temp DECIMAL(5,3) default NULL,
-	amb_temp DECIMAL(5,3) default NULL
+	amb_temp DECIMAL(5,3) default NULL,
+	PRIMARY KEY (ts,binLength)
 );
