@@ -10,7 +10,6 @@ class vbc {
 	protected $tableinfo = array();
 	public $fields = array();
 	public $pk = array();
-	private $cache;
 	private $is_loaded = false;
 	
 	/**
@@ -25,17 +24,8 @@ class vbc {
 		} else {
 			$this->db = $db;
 		}
-		$this->cache = new Memcache();
-		$this->cache->connect('127.0.0.1', 11211);
 		$this->setTableInfo();
 		return true;
-	}
-	
-	/**
-	 *
-	 */
-	private function getCacheKey($id){
-		return 'beerlog.'.$this->tablename.'.'.implode('-',$id);
 	}
 	
 	/**
@@ -57,11 +47,6 @@ class vbc {
 				$id = array($id);
 			}
 			
-			if($r = $this->cache->get($this->getCacheKey($id))){
-				$this->fields = $r;
-				return true;
-			}
-			
 			$q = "SELECT * FROM ".$this->tablename." WHERE ".$this->sqlpk($id);
 			
 			if($results = $this->query($q)) {
@@ -70,7 +55,6 @@ class vbc {
 						$this->fields[$k] = $v;
 					}
 				}
-				$this->cache->set($this->getCacheKey($id), $this->fields);
 				$this->is_loaded = true;
 				return true;
 			} else {
@@ -118,7 +102,6 @@ class vbc {
 			error_log("Save : query failed: $q");
 			return false;
 		}
-		$this->cache->delete($this->getCacheKey($this->getPKValues()));
 		return true;
 	}
 	
@@ -131,7 +114,6 @@ class vbc {
 		if ($vs = $this->getPKValues()) {
 			$q = 'DELETE FROM '.$this->tablename.' WHERE '.$this->sqlpk($vs);
 			$this->query($q);
-			$this->cache->delete($this->getCacheKey($this->getPKValues()));
 			$this->is_loaded = false;
 		} else {
 			return false;
