@@ -142,7 +142,7 @@ switch($view) {
 					if(file_exists('templates/'.$do.'-'.$view.'.php')){
 						ob_start();
 						include 'templates/'.$do.'-'.$view.'.php';
-						$content .= ob_get_clean();
+						$content = ob_get_clean();
 					} else {
 						$content = $p->editObject($o);
 					}

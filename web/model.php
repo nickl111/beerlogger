@@ -101,7 +101,6 @@ class vbc {
 				$p .= "'$v',";
 			}
 			$q .= substr($c,0,-1).') VALUES ('.substr($p,0,-1).')';
-			error_log("Save : query worked: $q");
 		}
 		if(!$this->query($q)){
 			error_log("Save : query failed: $q");
