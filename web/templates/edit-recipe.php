@@ -1,7 +1,7 @@
 <div class="content">
 	
 	<h2 class="title is-2">Recipe</h2>
-	<form method="POST">
+	<form method="POST" action="?">
 	<div class="field is-size-6">
 		<label class="label" for="name-input">Name</label>
 		<div class="control">
@@ -14,5 +14,9 @@
 	</div>
 	<a class="button" href="?view=recipe">Cancel</a><input type="hidden" name="field_id" value="<?php print $o->fields['id']; ?>">
 	<input type="submit" class="button is-primary is-pulled-right" value="Save">
-	<input type="hidden" name="do" value="save"></form>
+	<input type="hidden" name="do" value="save">
+	<input type="hidden" name="view" value="recipe">
+	<input type="hidden" name="pks" value="<?php print $o->fields['id']; ?>">
+	</form>
+	
 </div>

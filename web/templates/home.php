@@ -20,17 +20,6 @@ if($ago < 3600) {
 }
 
 ?>
-	<style type="text/css">
-		.beer_temp {
-			stroke: red;
-		}
-		.amb_temp {
-			stroke: orange;
-		}
-		.avg_bloop {
-			stroke: purple;
-		}
-	</style>
 <div class="content">
 	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
 	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?></p>
@@ -62,7 +51,7 @@ if($ago < 3600) {
 	</nav>
 	
 	<article class="box">
-		<div class="ct-chart ct-octave"></div>
+		<canvas id="myChart" width="900" height="400"></canvas>
 	</article>
 	
 	<?php
@@ -81,6 +70,8 @@ if($ago < 3600) {
 				</thead>
 				<tbody>
 					<?php
+					$sample_data = array();
+					$sample_label = array();
 					foreach($samples as $sample) {
 					?>
 					<tr>
@@ -89,6 +80,8 @@ if($ago < 3600) {
 						<td><?php print $sample->fields['note'];?></td>
 					</tr>
 					<?php
+						// also collect some data for the chart
+						$sample_data[] = array($sample->fields['sg'],$sample->fields['ts']);
 					}
 					?>
 				</tbody>
@@ -105,51 +98,110 @@ if($ago < 3600) {
 	</div>
 </div>
 <?php
-$oldDay = false;
+
+$sms = array();
+$this_sample = reset($sample_data);
+
 $b = $d->getBins(3600, $s->fields['ts_start'], $s->fields['ts_end']);
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
 	$as[] 	= $bAry['a_temp'];
 	$bcs[] 	= $bAry['avg_bloop'];
 	
-	$day = date('D',$binNo);
-	if($oldDay != $day) {
-		$label = $day;
+	if($this_sample[1] < $binNo) {
+		$sms[] = $this_sample[0];
+		$this_sample = next($sample_data);
+		
 	} else {
-		$label = '';
+		$sms[] = '';
 	}
+	
+	$label = date('j M H:i', $binNo);
 	$labels[] = "'$label'";
-	$oldDay = $day;
+
+}
+
+// Put OG on the graph for free
+if($s->fields['g_orig']) {
+	$sms[0] = $s->fields['g_orig'];
 }
 ?>
 
 <script language="javascript">
-	var data = {
-	// A labels array that can contain any sort of values
-	labels: [<?php print implode(', ',$labels) ;?>],
-	// Our series array that contains series objects or in this case series data arrays
-	series: [
-		{
-			className: 'beer_temp',
-			name: 'Beer Temperature',
-			data: [<?php print implode(', ',$bs);?>]
-		},
-		{
-			className: 'amb_temp',
-			name: 'Ambient Temperature',
-			data: [<?php print implode(', ',$as);?>]
-		},
-		{
-			className: 'avg_bloop',
-			name: 'Bloops/min',
-			data: [<?php print implode(', ',$bcs);?>]
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+	type: 'line',
+	data: { 
+		labels: [<?php print implode(', ',$labels) ;?>],
+		datasets: [
+			{
+				label: 'Beer Temperature',
+				borderColor: 'rgba(255, 0, 0, 0.2)',
+				backgroundColor: 'rgba(255, 0, 0, 0.2)',
+				fill: false,
+				yAxisID: 'y-axis-1',
+				data: [<?php print implode(', ',$bs);?>]
+			},
+			{
+				label: 'Ambient Temperature',
+				borderColor: 'rgba(255, 99, 132, 0.2)',
+				backgroundColor: 'rgba(255, 99, 132, 0.2)',
+				fill: false,
+				yAxisID: 'y-axis-1',
+				data: [<?php print implode(', ',$as);?>]
+			},
+			{
+				label: 'Activity/min',
+				borderColor: 'rgba(0, 99, 132, 0.2)',
+				backgroundColor: 'rgba(0, 99, 132, 0.2)',
+				fill: false,
+				yAxisID: 'y-axis-1',
+				data: [<?php print implode(', ',$bcs);?>]
+			},
+			{
+				label: 'Gravity',
+				borderColor: 'rgba(0,0,255,0.8)',
+				backgroundColor: 'rgba(0,0,255,0.8)',
+				fill: false,
+				yAxisID: 'y-axis-2',
+				data: [<?php print implode(', ',$sms);?>]
+			}
+		]
+	},
+	options: {
+		responsive: true,
+		scales: {
+			yAxes: [{
+				type: 'linear',
+				display: true,
+				position: 'left',
+				id: 'y-axis-1',
+				ticks: {
+					beginAtZero:true
+				},
+				scaleLabel: {
+					display: true,
+					labelString: '°C / Bloops'
+				}
+			}, {
+				type: 'linear',
+				display: true,
+				position: 'right',
+				id: 'y-axis-2',
+				// grid line settings
+				gridLines: {
+					drawOnChartArea: false, // only want the grid lines for one axis to show up
+				},
+				ticks: {
+					suggestedMin: 1,
+					suggestedMax: 1.070
+				},
+				scaleLabel: {
+					display: true,
+					labelString: 'Gravity'
+				}
+			}]
 		}
-	]
-	};
-	
-	// Create a new line chart object where as first parameter we pass in a selector
-	// that is resolving to our chart container element. The Second parameter
-	// is the actual data object.
-	 new Chartist.Line('.ct-chart', data);
-	
+    }
+});
 </script>

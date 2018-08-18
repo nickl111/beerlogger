@@ -1,7 +1,7 @@
 <div class="content">
 	
 	<h2 class="title is-2">Sample</h2>
-	<form method="POST">
+	<form method="POST" action="?">
 		
 		<div class="field">
 			<label class="label" for="name-input">Session</label>
@@ -45,5 +45,7 @@
 		<a class="button" href="?view=sample">Cancel</a><input type="hidden" name="field_id" value="<?php print $o->fields['id']; ?>">
 		<input type="submit" class="button is-primary is-pulled-right" value="Save">
 		<input type="hidden" name="do" value="newSample">
+		<input type="hidden" name="view" value="sample">
+		<input type="hidden" name="pks" value="<?php print $o->fields['id']; ?>">
 	</form>
 </div>

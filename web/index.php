@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This is quick and dirty MVC. I will put something better in place in time.
+ * This is quick and dirty MVC.
  */
 require_once('model.php');
 require_once('page.php');
@@ -15,7 +15,9 @@ $perm_actions 	= array('','view','edit','save','delete','resumePrevSession','new
 $perm_graphs 	= array('day','hour','week','month','year');
 
 // keys
-$pks = explode(',', $_REQUEST['pks']);
+if($_REQUEST['pks']) {
+	$pks = explode(',', $_REQUEST['pks']);
+}
 
 // Security
 if(in_array($_REQUEST['view'],$perm_views)) {
@@ -126,6 +128,9 @@ switch($view) {
 				break;
 			case 'save':
 				$o = new $view($db);
+				if($pks) {
+					$o->load($pks);
+				}
 				foreach($_POST as $k => $v) {
 					if(substr($k,0,6) == 'field_') {
 						$o->fields[substr($k,6)] = $v;
@@ -165,6 +170,9 @@ switch($view) {
 			break;
 			case 'newSession':
 				$s = new Session($db);
+				if($pks) {
+					$s->load($pks);
+				}
 				$s->fields['ts_start'] 	= strtotime($_POST['start_date'].' '.$_POST['start_time']);
 				foreach($_POST as $k => $v) {
 					if(substr($k,0,6) == 'field_') {
@@ -186,6 +194,9 @@ switch($view) {
 				break;
 			case 'newSample':
 				$s = new sample($db);
+				if($pks) {
+					$s->load($pks);
+				}
 				$s->fields['ts'] 	= strtotime($_POST['start_date'].' '.$_POST['start_time']);
 				foreach($_POST as $k => $v) {
 					if(substr($k,0,6) == 'field_') {

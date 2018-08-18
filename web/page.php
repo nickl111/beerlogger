@@ -56,7 +56,7 @@ class Page {
 	 * @return string HTML for the page
 	 */
 	function editObject($o) {
-		$str = '<h2 class="title is-2">'.ucfirst(get_class($o)).'</h2><form method="POST">';
+		$str = '<h2 class="title is-2">'.ucfirst(get_class($o)).'</h2><form method="POST" action="?">';
 		foreach($o->fields as $name => $value) {
 			if(in_array($name,$o->pk)){ continue; }	// don't allowing editing of any primary key fields
 			$str .= $this->field($name, $value);
@@ -65,7 +65,7 @@ class Page {
 		foreach($o->pk as $k) {
 			$str .= '<input type="hidden" name="field_'.$k.'" value="'.$o->fields[$k].'">';
 		}
-		$str .= '<input type="submit" class="button is-primary is-pulled-right" value="Save"><input type="hidden" name="do" value="save"></form>';
+		$str .= '<input type="submit" class="button is-primary is-pulled-right" value="Save"><input type="hidden" name="do" value="save"><input type="hidden" name="view" value="'.get_class($o).'"><input type="hidden" name="pks" value="'.implode(',', $o->getPKValues()).'"></form>';
 		return $str;
 	}
 	
