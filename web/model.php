@@ -11,6 +11,8 @@ class vbc {
 	public $fields = array();
 	public $pk = array();
 	private $cache;
+	private $is_loaded = false;
+	
 	/**
 	 * The constructor
 	 * @param $db A usable database handle
@@ -69,6 +71,7 @@ class vbc {
 					}
 				}
 				$this->cache->set($this->getCacheKey($id), $this->fields);
+				$this->is_loaded = true;
 				return true;
 			} else {
 				error_log("Load : Query: $q failed");
@@ -91,7 +94,7 @@ class vbc {
 	 * @return boolean Success or no
 	 */
 	function save() {
-		if ($this->getPKValues()) {
+		if ($this->is_loaded) {
 			// is an object instantiated
 			$q = 'UPDATE '.$this->tablename.' SET ';
 			foreach($this->fields as $k => $v) {
@@ -99,12 +102,12 @@ class vbc {
 				$q .= "$k = '".$v."', ";
 			}
 			$q = substr($q,0,-2);
-			$q .= "WHERE ".$this->sqlpk($this->getPKValues());
+			$q .= " WHERE ".$this->sqlpk($this->getPKValues());
 		} else {
 			// new object
+			$c = $p = '';
 			$q = 'INSERT INTO '.$this->tablename.' (';
 			foreach($this->fields as $k => $v) {
-				if(in_array($k,$this->pk)){ continue; }
 				$c .= "$k,";
 				$p .= "'$v',";
 			}
@@ -129,6 +132,7 @@ class vbc {
 			$q = 'DELETE FROM '.$this->tablename.' WHERE '.$this->sqlpk($vs);
 			$this->query($q);
 			$this->cache->delete($this->getCacheKey($this->getPKValues()));
+			$this->is_loaded = false;
 		} else {
 			return false;
 		}
@@ -353,6 +357,13 @@ class recipe extends vbc {
 	protected $tablename = 'recipe';
 }
 
+/**
+ * This is data that is archived into bins
+ * @package beerlogger
+ */
+class archive extends vbc {
+	protected $tablename = 'archive';
+}
 
 /**
  * This is data from the logger.
@@ -376,7 +387,7 @@ class data extends vbc {
 	 */
 	function getBins($binLength, $start, $end=false){
 		if($binLength < 120) {
-			error_log('Bin Length cannot be less than 120 seconds');
+			error_log('Data : getBins : Bin Length cannot be less than 120 seconds');
 			return false;
 		}
 		
@@ -385,22 +396,30 @@ class data extends vbc {
 			$end = time();
 		}
 
-		$allBins = array();
 		$bins = array();
-		$Bcounter=0;
+		
+		// Check the archive first
+		$archive = new archive($this->db);
+		if($archive->find("ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
+			while($archive->load()) {
+				$bins[$archive->fields['ts']] = array('b_temp' 		=> $archive->fields['beer_temp'],
+													  'a_temp' 		=> $archive->fields['amb_temp'],
+													  'avg_bloop' 	=> $archive->fields['bloops']);
+				$ts_start = $archive->fields['ts'] + $binLength;
+			}
+		}
+		unset($archive);
 	
-		if($this->find("ts >= $ts_start AND ts < $end ORDER BY ts ASC")) {
-			$bin_start = $ts_start;
+		if($this->find("ts > $ts_start AND ts < $end ORDER BY ts ASC")) {
+			$bin_start 		= $ts_start;
 			$actual_steps 	= 0;
-			$bin_start+=$binLength;
 			$b_temp_tot 	= 0;
 			$a_temp_tot 	= 0;
 			$bloop_tot 		= 0;
 			$bloop_gap 		= 0;
 			$c_bloop 		= false;
-					
-			while($this->load()) {
 
+			while($this->load()) {
 				if($this->fields['ts'] >= $bin_start + $binLength) {
 					// finished bin.
 					if($actual_steps > 0) {
@@ -413,10 +432,22 @@ class data extends vbc {
 						}
 					}
 					
-					$bins[$bin_start] = array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+					$bins[$bin_start] = array('b_temp' 		=> $b_temp,
+											  'a_temp' 		=> $a_temp,
+											  'avg_bloop' 	=> $avg_bloop);
+					
+					// archive this so we never need do it again
+					if($a = new archive($this->db)) {
+						$a->fields['ts'] 		= $bin_start;
+						$a->fields['binLength'] = $binLength;
+						$a->fields['beer_temp'] = $b_temp;
+						$a->fields['amb_temp'] 	= $a_temp;
+						$a->fields['bloops'] 	= $avg_bloop;
+						$a->save();
+					}
 					
 					$actual_steps 	= 0;
-					$bin_start+=$binLength;
+					$bin_start		+= $binLength;
 					$b_temp_tot 	= 0;
 					$a_temp_tot 	= 0;
 					$bloop_tot 		= 0;
@@ -438,16 +469,18 @@ class data extends vbc {
 					$bloop_tot += $bloop_gap;
 				}
 			}
-			
-			// last unfinshed bin
+
+			// last unfinshed bin. Should not be archived
 			if($actual_steps > 0) {
 				$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
 				$a_temp 	= ($actual_steps > 0 ? round($a_temp_tot / $actual_steps, 1) : 0 );
 				$avg_bloop 	= ($actual_steps > 1 ? round($bloop_tot / ($actual_steps-1), 0) : 0);
-				$bins[$bin_start] = array('b_temp' => $b_temp, 'a_temp' => $a_temp, 'avg_bloop' => $avg_bloop);
+				$bins[$bin_start] = array('b_temp' 		=> $b_temp,
+										  'a_temp' 		=> $a_temp,
+										  'avg_bloop' 	=> $avg_bloop);
+				
 			}
 		}
-
 		return $bins;
 	}
 }

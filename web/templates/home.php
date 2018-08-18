@@ -1,7 +1,7 @@
 <?php
 $d = new data($db);
 if($cur = $d->getCurrent()) {
-	$ary = current($cur);
+	$ary = end($cur);
 	$b_temp 	= $ary['b_temp'];
 	$a_temp 	= $ary['a_temp'];
 	$avg_bloop 	= $ary['avg_bloop'];
@@ -54,7 +54,7 @@ if($ago < 3600) {
 		</div>
 		<div class="level-item has-text-centered">
 			<div>
-				<p class="heading">Activity</p>
+				<p class="heading">Activity / min</p>
 				<p class="title"><?php print $avg_bloop; ?></p>
 			</div>
 		</div>
@@ -70,6 +70,7 @@ if($ago < 3600) {
 	</div>
 
 <?php
+$oldDay = false;
 $b = $d->getBins(3600, $s->fields['ts_start'], $s->fields['ts_end']);
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];

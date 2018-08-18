@@ -44,6 +44,7 @@ $p = new Page($view);
 switch($view) {
 	case '':
 	case 'home':
+		$title = 'Home';
 		$s = new Session($db);
 		if($s->getCurrent()) {
 			// We have an existing session.
@@ -83,9 +84,11 @@ switch($view) {
 		}
 		break;
 	case 'monitor':
+		$title = 'Monitor';
 		$content = $p->showMonitor($graph);
 		break;
 	case 'newSession':
+		$title = 'New Session';
 		ob_start();
 		include 'templates/new-session.php';
 		$content = ob_get_clean();
@@ -99,8 +102,8 @@ switch($view) {
 				}
 			
 			case '':	//list
+				$title = $view;
 				$o = new $view($db);
-				
 				$content = '<h2 class="title is-2">'.ucfirst($view)."s</h2>\n";
 				$content .= '<div class="columns">';
 				
@@ -146,6 +149,7 @@ switch($view) {
 				} else {
 					$content = "Unknown object";
 				}
+				$title = 'Edit '.$view;
 			break;
 			case 'resumePrevSession':
 				//special case
