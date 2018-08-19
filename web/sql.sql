@@ -23,7 +23,14 @@ CREATE TABLE session (
 CREATE TABLE recipe (
 	id INTEGER PRIMARY KEY,
 	name TEXT default NULL,
-	notes TEXT default NULL
+	notes TEXT default NULL,
+	yeast_id INTEGER default NULL
+);
+
+CREATE TABLE yeast (
+	id INTEGER PRIMARY KEY,
+	name TEXT default NULL,
+	description TEXT default NULL
 );
 
 CREATE TABLE sample (

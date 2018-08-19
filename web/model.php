@@ -344,6 +344,14 @@ class recipe extends vbc {
 }
 
 /**
+ * This is a yeast type
+ * @package beerlogger
+ */
+class yeast extends vbc {
+	protected $tablename = 'yeast';
+}
+
+/**
  * This is data that is archived into bins
  * @package beerlogger
  */

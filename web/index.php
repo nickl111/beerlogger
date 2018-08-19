@@ -6,11 +6,10 @@
 require_once('model.php');
 require_once('page.php');
 
-
 $SQL_DB = "/usr/share/beerlog/db/beerlog.db";
 $db 	= new SQLite3($SQL_DB);
 
-$perm_views 	= array('','home','monitor','session','data','recipe','sample','newSession');
+$perm_views 	= array('','home','monitor','session','data','recipe','sample','newSession','yeast');
 $perm_actions 	= array('','view','edit','save','delete','resumePrevSession','newSession','endSession','newSample');
 $perm_graphs 	= array('day','hour','week','month','year');
 
