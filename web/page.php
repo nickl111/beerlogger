@@ -90,7 +90,7 @@ class Page {
 	 */
 	function listItem($view, $id, $value='') {
 		if(!$value) { $value = implode(', ',$id) ; }
-		$str = '<tr><td><a href="?view='.$view.'&amp;do=edit&amp;pks='.implode(',',$id).'">'.$value.'</a></td><td><a href="?do=delete&amp;view='.$view.'&amp;pks='.implode(',',$id).'" class="button is-danger is-small">X</a></td></tr>';
+		$str = '<tr><td><a href="?view='.$view.'&amp;do=edit&amp;pks='.implode(',',$id).'">'.$value.'</a></td><td><a class="open-modal button is-danger is-small" data-do="delete" data-view="'.$view.'" data-pks="'.implode(',',$id).'" data-modal-id="#my-modal">X</a></td></tr>';
 		return $str;
 	}
 	
@@ -100,7 +100,40 @@ class Page {
 	 * @return string HTML
 	 */
 	function listWrapper($content) {
-		return '<div class="column"><table class="table is-striped"><tbody>'.$content."</tbody></table></div>\n";
+		$s = '<div class="column"><table class="table is-striped"><tbody>'.$content."</tbody></table></div>\n";
+		$s .= '<div id="my-modal" class="modal" data-do="" data-view="" data-pks="">
+  <div class="modal-background" data-modal-id="#my-modal"></div>
+  <div class="modal-content">
+    <div class="box">
+          <div class="content">
+            <p>
+              Are you sure you want to delete <span id="whatamideleting">this</span>?
+            </p>
+          </div>
+		  <button class="button is-danger delete-modal" data-modal-id="#my-modal">Yes, Delete it</button>
+		 <button class="button open-modal" data-modal-id="#my-modal">Cancel</button>
+    </div>
+  </div>
+</div>
+<script>
+function toggleModalClasses(event) {
+    var modalId = event.currentTarget.dataset.modalId;
+    var modal = $(modalId);
+    modal.toggleClass(\'is-active\');
+    $(\'html\').toggleClass(\'is-clipped\');
+	$(\'#my-modal\').data.pks = event.currentTarget.dataset.pks;
+	$(\'#my-modal\').data.view = event.currentTarget.dataset.view;
+	$(\'#my-modal\').data.do = event.currentTarget.dataset.do;
+  };
+function doDelete(event) {
+	var href = "?do="+$(\'#my-modal\').data.do+"&view="+$(\'#my-modal\').data.view+"&pks="+$(\'#my-modal\').data.pks;
+	window.location.href = href;
+};
+
+$(\'.open-modal\').click(toggleModalClasses);
+
+$(\'.delete-modal\').click(doDelete);</script>';
+		return $s;
 	}
 	
 	/**
