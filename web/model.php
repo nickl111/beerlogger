@@ -106,6 +106,13 @@ class vbc {
 			error_log("Save : query failed: $q");
 			return false;
 		}
+		// go through values and if the primary key is an autonumber field (there can only be one) set it to the last insert id
+		if(count($this->pk) == 1) {
+			$p = reset($this->pk);
+			if(!$this->fields[$p]) {
+				$this->fields[$p] = $this->db->lastInsertRowid();
+			}
+		}
 		return true;
 	}
 	
@@ -119,6 +126,7 @@ class vbc {
 			$q = 'DELETE FROM '.$this->tablename.' WHERE '.$this->sqlpk($vs);
 			$this->query($q);
 			$this->is_loaded = false;
+			return true;
 		} else {
 			return false;
 		}
