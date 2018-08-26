@@ -37,7 +37,7 @@ After a little dance on start up the green led should be on when the service is 
 The orange LED flashes whenever a bloop is detected. The red LED will only come on if an error is detected. Your first (and hopefully only) step in troubleshooting this is to turn it off and then on again. Restarting the service/losing power will not affect the data other than missing a few readings.
 
 ### Web Interface
-It's basic at the moment but usable and it should be largely self explanatory. Go to http://[yourpiip]:8336/ and browse around. "Monitor" shows you constant monitoring whereas "Session" will only show you what has happened in a given session.
+It's basic at the moment but usable and it should be largely self explanatory. Go to http://[yourpiip]:8336/ and browse around. "Monitor" shows you constant monitoring whereas "Brew" will only show you what has happened in a given brew.
 It is a Work in Progress atm.
 
 ## Implementation Details

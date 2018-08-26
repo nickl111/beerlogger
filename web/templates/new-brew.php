@@ -1,11 +1,11 @@
 <div class="content">
-	<h2 class="title is-2">New Session</h2>
+	<h2 class="title is-2">New Brew</h2>
 	<form method="POST" action="/">
 		
 	<div class="field is-size-6">
 		<label class="label" for="name-input">Name</label>
 		<div class="control">
-			<input class="input" name="field_name" id="name-input" type="text" placeholder="A name for your session, eg Red IPA 2 or VPA Version 4">
+			<input class="input" name="field_name" id="name-input" type="text" placeholder="A name for your brew, eg Red IPA 2 or VPA Version 4">
 		</div>
 	</div>
 	<div class="field">
@@ -59,8 +59,8 @@
 	</div>
 
 	<input type="submit" class="button is-primary is-pulled-right" value="Save">
-	<input type="hidden" name="do" value="newSession">
-	<input type="hidden" name="view" value="session">
+	<input type="hidden" name="do" value="newBrew">
+	<input type="hidden" name="view" value="brew">
 		
 	</form>
 </div>

@@ -16,10 +16,10 @@ $y->load($o->fields['yeast_id']);
 <blockquote><?php print $o->fields['notes']; ?></blockquote>
 
 <?php
-$s = new session($db);
+$s = new brew($db);
 if($s->find("recipe_id = ".$o->fields['id']." ORDER BY ts_start DESC")) {
 	?>
-	<h4>Sessions brewing this recipe</h4>
+	<h4>Brews of this recipe</h4>
 	<?php
 	while($s->load()) {
 		?>
@@ -33,7 +33,7 @@ if($s->find("recipe_id = ".$o->fields['id']." ORDER BY ts_start DESC")) {
   <div class="media-content">
     <div class="content">
       <p>
-        <strong><a href="?view=session&amp;do=view&amp;pks=<?php print $s->fields['id']; ?>"><?php print $s->getDisplayName(); ?></a></strong> <small><?php print date("jS F Y",$s->fields['ts_start']) ;?></small>	
+        <strong><a href="?view=brew&amp;do=view&amp;pks=<?php print $s->fields['id']; ?>"><?php print $s->getDisplayName(); ?></a></strong> <small><?php print date("jS F Y",$s->fields['ts_start']) ;?></small>	
         <br>
 		<?php print $s->fields['notes'] ;?>
       </p>
@@ -48,7 +48,7 @@ if($s->find("recipe_id = ".$o->fields['id']." ORDER BY ts_start DESC")) {
 	}
 } else {
 	?>
-	<h4>No Sessions Yet</h4>
+	<h4>No Brews Yet</h4>
 	<?php
 }
 ?>

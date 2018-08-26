@@ -11,7 +11,7 @@ $db 	= new SQLite3($SQL_DB);
 $r = array();	//response object
 $r['meta'] = array('status' => '200' , 'errno' => '0', 'message' => '');
 
-$perm_objects 	= array('session','data','recipe','sample','yeast');
+$perm_objects 	= array('brew','data','recipe','sample','yeast');
 $perm_actions 	= array('','create','read','update','delete','list');
 
 // Security

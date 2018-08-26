@@ -10,7 +10,7 @@
 	}
 </style>
 <div class="content">
-	<h2 class="title is-3">Session <?php print $o->fields['name']; ?></h2>
+	<h2 class="title is-3">Brew <?php print $o->fields['name']; ?></h2>
 	<p class="subtitle is-5">Started: <?php print date("D jS M Y h:i",$o->fields['ts_start']) ; if ($o->fields['ts_end']) { print "&nbsp; Finished: ".date("D jS M Y h:i",$o->fields['ts_end']) ; }?></p>
 	<article class="box">
 		<canvas id="myChart" width="900" height="400"></canvas>
@@ -165,12 +165,12 @@ if($o->fields['g_final']) {
 			<textarea class="textarea" name="field_notes" placeholder="Recipe Details"><?php print $o->fields['notes']; ?></textarea>
 		</div>
 		<div class="field">
-			<a class="button" href="?view=session">Cancel</a><input type="hidden" name="field_id" value="<?php print $o->fields['id']; ?>">
+			<a class="button" href="?view=brew">Cancel</a><input type="hidden" name="field_id" value="<?php print $o->fields['id']; ?>">
 			<input type="submit" class="button is-primary is-pulled-right" value="Save">
 			<input type="hidden" name="do" value="save">
 			<input type="hidden" name="field_ts_end" value="<?php print $o->fields['ts_end']; ?>">
 			<input type="hidden" name="field_ts_start" value="<?php print $o->fields['ts_start']; ?>">
-			<input type="hidden" name="view" value="session">
+			<input type="hidden" name="view" value="brew">
 			<input type="hidden" name="pks" value="<?php print $o->fields['id']; ?>">
 		</div>
 	</form>

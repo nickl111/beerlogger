@@ -1,4 +1,4 @@
-CREATE TABLE session (
+CREATE TABLE brew (
 	id INTEGER PRIMARY KEY,
 	recipe_id INTEGER default NULL,
 	name TEXT default NULL,
@@ -35,7 +35,7 @@ CREATE TABLE yeast (
 
 CREATE TABLE sample (
 	id INTEGER PRIMARY KEY,
-	session_id INTEGER default NULL,
+	brew_id INTEGER default NULL,
 	ts INTEGER default NULL,
 	sg DECIMAL(8,4) default NULL,
 	note TEXT default NULL

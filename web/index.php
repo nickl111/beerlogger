@@ -9,8 +9,8 @@ require_once('page.php');
 $SQL_DB = "/usr/share/beerlog/db/beerlog.db";
 $db 	= new SQLite3($SQL_DB);
 
-$perm_views 	= array('','home','monitor','session','data','recipe','sample','newSession','yeast');
-$perm_actions 	= array('','view','edit','save','delete','resumePrevSession','newSession','endSession','newSample');
+$perm_views 	= array('','home','monitor','brew','data','recipe','sample','newBrew','yeast');
+$perm_actions 	= array('','view','edit','save','delete','resumePrevBrew','newBrew','endBrew','newSample');
 $perm_graphs 	= array('day','hour','week','month','year');
 
 // keys
@@ -46,7 +46,7 @@ switch($view) {
 	case '':
 	case 'home':
 		$title = 'Home';
-		$s = new Session($db);
+		$s = new Brew($db);
 		if($s->getCurrent()) {
 			// We have an existing session.
 			// - Show details
@@ -82,10 +82,10 @@ switch($view) {
 		$title = 'Monitor';
 		$content = $p->showMonitor($graph);
 		break;
-	case 'newSession':
-		$title = 'New Session';
+	case 'newBrew':
+		$title = 'New Brew';
 		ob_start();
-		include 'templates/new-session.php';
+		include 'templates/new-brew.php';
 		$content = ob_get_clean();
 		break;
 	default:
@@ -149,9 +149,9 @@ switch($view) {
 				}
 				$title = 'Edit '.$view;
 			break;
-			case 'resumePrevSession':
+			case 'resumePrevBrew':
 				//special case
-				$s = new Session($db);
+				$s = new Brew($db);
 				if($s->find('1=1 ORDER BY ts_end DESC LIMIT 0,1')) {
 					if($s->load()) {
 						$s->fields['ts_end'] = '';
@@ -161,8 +161,8 @@ switch($view) {
 				header("Location: /?view=home");
 				exit;
 			break;
-			case 'newSession':
-				$s = new Session($db);
+			case 'newBrew':
+				$s = new Brew($db);
 				if($pks) {
 					$s->load($pks);
 				}
@@ -176,8 +176,8 @@ switch($view) {
 				header("Location: /?view=home");
 				exit;
 				break;
-			case 'endSession':
-				$s = new Session($db);
+			case 'endBrew':
+				$s = new Brew($db);
 				if($s->getCurrent()) {
 					$s->fields['ts_end'] = time();
 					$s->save();

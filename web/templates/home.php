@@ -93,8 +93,8 @@ if($ago < 3600) {
 	?>
 
 	<div class="has-text-centered">
-		<a class="button is-large" href="?view=sample&amp;do=edit&amp;session_id=<?php print $s->fields['id'] ;?>">New Sample</a>
-		<a class="button is-info is-large" href="?view=session&amp;do=endSession">Bottle it!</a>
+		<a class="button is-large" href="?view=sample&amp;do=edit&amp;brew_id=<?php print $s->fields['id'] ;?>">New Sample</a>
+		<a class="button is-info is-large" href="?view=brew&amp;do=endBrew">Bottle it!</a>
 	</div>
 </div>
 <?php

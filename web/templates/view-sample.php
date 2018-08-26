@@ -4,13 +4,13 @@
 	<form method="POST" action="?">
 		
 		<div class="field">
-			<label class="label" for="name-input">Session</label>
+			<label class="label" for="name-input">Brew</label>
 			<div class="select">
 				
-				<select name="field_session_id">
+				<select name="field_brew_id">
 					<?php
-						$sessId = intval($_REQUEST['session_id']);
-						$s = new session($db);
+						$sessId = intval($_REQUEST['brew_id']);
+						$s = new brew($db);
 						if($s->find()) {
 							while($s->load()) {
 								print '<option value="'.$s->fields['id'].'"'.($sessId == $s->fields['id'] ? ' selected="selected"' : '').'>'.$s->fields['name']."</option>\n";

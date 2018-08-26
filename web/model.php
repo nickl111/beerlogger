@@ -248,13 +248,13 @@ class vbc {
  * This is a Fermenting/Brewing session
  * @package beerlogger
  */
-class Session extends vbc {
+class Brew extends vbc {
 	
-	protected $tablename = 'session';
+	protected $tablename = 'brew';
 	
 	/**
-	 * If there's a current session load it
-	 * @return boolean Current session or no
+	 * If there's a current brew load it
+	 * @return boolean Current brew or no
 	 */
 	function getCurrent() {
 		if($this->find('ts_end = "" AND ts_start <> "" ORDER BY ts_start DESC LIMIT 0,1') > 0) {
@@ -266,13 +266,13 @@ class Session extends vbc {
 	}
 	
 	/**
-	 * Get samples associated with this session
+	 * Get samples associated with this brew
 	 * @return array An array of Sample objects
 	 */
 	function getSamples() {
 		$samples = array();
 		$sample = new Sample($this->db);
-		$sample->find('session_id = '.$this->fields['id']);
+		$sample->find('brew_id = '.$this->fields['id']);
 		while($sample->load()) {
 			$samples[] = $sample;
 		}
@@ -280,13 +280,13 @@ class Session extends vbc {
 	}
 	
 	/**
-	 * get data that happened between this session's start and end (if any)
+	 * get data that happened between this brew's start and end (if any)
 	 * @return array An array of Data objects
 	 */
 	function getData() {
 		$datas = array();
 		$data = new Data($this->db);
-		if($this->fields['end'] == 'NULL') { // current session
+		if($this->fields['end'] == 'NULL') { // current brew
 			$data->find('ts >= '.$this->fields['start']);
 		} else {
 			$data->find('ts >= '.$this->fields['start'].' AND $ts <= '.$this->fields['end']);
@@ -298,7 +298,7 @@ class Session extends vbc {
 	}
 	
 	/**
-	 * Get recipe associated with this session
+	 * Get recipe associated with this brew
 	 * @return array A recipe object (or false)
 	 */
 	function getRecipe() {
@@ -324,16 +324,16 @@ class sample extends vbc {
 	 * @return string The "name" of this sample
 	 */
 	function getDisplayName() {
-		return $this->getSessionName()." ".date('jS F Y H:i',$this->fields['ts']);
+		return $this->getBrewName()." ".date('jS F Y H:i',$this->fields['ts']);
 	}
 	
 	/**
-	 * Get the name of the Session this sample was for
+	 * Get the name of the Brew this sample was for
 	 * @return string The name (or false on fail)
 	 */
-	function getSessionName() {
-		$s = new Session($this->db);
-		if($s->load($this->fields['session_id'])){
+	function getBrewName() {
+		$s = new brew($this->db);
+		if($s->load($this->fields['brew_id'])){
 			return $s->getDisplayName();
 		} else {
 			return false;
