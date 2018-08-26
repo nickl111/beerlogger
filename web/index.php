@@ -89,6 +89,7 @@ switch($view) {
 		$content = ob_get_clean();
 		break;
 	default:
+		// this should be retired in favour of the rest script
 		switch ($do) {
 			case 'delete':
  				$o = new $view($db);

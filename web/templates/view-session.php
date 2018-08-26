@@ -70,9 +70,12 @@ foreach($b as $binNo => $bAry) {
 	$label = date('j M H:i', $binNo);
 	$labels[] = "'$label'";
 }
-// Put OG on the graph for free
+// Put OG and FG on the graph for free
 if($o->fields['g_orig']) {
 	$sms[0] = $o->fields['g_orig'];
+}
+if($o->fields['g_final']) {
+	$sms[] = $o->fields['g_final'];
 }
 ?>
 	<form method="POST" action="?">
