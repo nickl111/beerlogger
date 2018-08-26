@@ -1,12 +1,13 @@
-<div class="content">
-	<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-		<a class="navbar-item <?php print ($graph == 'hour' ? 'is-active' : ''); ?>" href="?view=monitor&amp;graph=hour">Hour<a>
-		<a class="navbar-item <?php print ($graph == 'day' ? 'is-active' : ''); ?>" href="?view=monitor&amp;graph=day">Day<a>
-		<a class="navbar-item <?php print ($graph == 'week' ? 'is-active' : ''); ?>" href="?view=monitor&amp;graph=week">Week<a>
-		<a class="navbar-item <?php print ($graph == 'month' ? 'is-active' : ''); ?>" href="?view=monitor&amp;graph=month">Month<a>
-		<a class="navbar-item <?php print ($graph == 'year' ? 'is-active' : ''); ?>" href="?view=monitor&amp;graph=year">Year<a>
-		</div>
-	</nav>
+
+	<div class="tabs">
+		<ul>
+			<li<?php print ($graph == 'hour' ? ' class="is-active"' : ''); ?>><a href="?view=monitor&amp;graph=hour">Hour</a></li>
+			<li<?php print ($graph == 'day' ? ' class="is-active"' : ''); ?>><a href="?view=monitor&amp;graph=day">Day</a></li>
+			<li<?php print ($graph == 'week' ? ' class="is-active"' : ''); ?>><a href="?view=monitor&amp;graph=week">Week</a></li>
+			<li<?php print ($graph == 'month' ? ' class="is-active"' : ''); ?>><a href="?view=monitor&amp;graph=month">Month</a></li>
+			<li<?php print ($graph == 'year' ? ' class="is-active"' : ''); ?>><a href="?view=monitor&amp;graph=year">Year</a></li>
+		</ul>
+	</div>
+	<div class="content">
 	<img src="/beerlog-<?php print $graph;?>.png">
 </div>
