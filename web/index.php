@@ -137,9 +137,8 @@ switch($view) {
 				}
 				$o->save();
 			case 'view':
-				$do = 'save';	// reset if we've flowed from save
+				$do = 'view';	// reset if we've flowed from save
 			case 'edit':
-				$do = 'edit';
 				$o = new $view($db);
 				if($o->load($pks)) {
 					// see if we have a custom template first

@@ -56,16 +56,26 @@ class Page {
 	 * @return string HTML for the page
 	 */
 	function editObject($o) {
-		$str = '<h2 class="title is-2">'.ucfirst(get_class($o)).'</h2><form method="POST" action="?">';
+		$str = '<h2 class="title is-2">'.ucfirst(get_class($o)).'</h2><form id="save-form">';
 		foreach($o->fields as $name => $value) {
 			if(in_array($name,$o->pk)){ continue; }	// don't allowing editing of any primary key fields
 			$str .= $this->field($name, $value);
 		}
-		$str .= '<a class="button" href="?view='.get_class($o).'">Cancel</a>';
+		
 		foreach($o->pk as $k) {
-			$str .= '<input type="hidden" name="field_'.$k.'" value="'.$o->fields[$k].'">';
+			$str .= '<input type="hidden" name="'.$k.'" value="'.$o->fields[$k].'">';
 		}
-		$str .= '<input type="submit" class="button is-primary is-pulled-right" value="Save"><input type="hidden" name="do" value="save"><input type="hidden" name="view" value="'.get_class($o).'"><input type="hidden" name="pks" value="'.implode(',', $o->getPKValues()).'"></form>';
+		$str .= '</form><a class="button save-button is-primary is-pulled-right">Save</a>';
+		$str .= '<a class="button" href="?view='.get_class($o).'">Cancel</a>';
+		$str .= '<script>
+
+		function saveObject(event) {
+			$.post("/rest.php?do=update&o='.get_class($o).'&pks='.implode(',', $o->getPKValues()).'", $("#save-form").serialize());
+			$(".save-button").toggleClass("is-success");
+		}
+
+		$(".save-button").click(saveObject);
+		</script>';
 		return $str;
 	}
 	
@@ -77,7 +87,7 @@ class Page {
 	 */
 	function field($name, $value='') {
 		$str = '<div class="field is-size-6"><label class="label" for="'.$name.'-input">'.$name.'</label>';
-		$str .= '<div class="control"><input class="input" name="field_'.$name.'" id="'.$name.'-input" type="text" value="'.$value.'"></div></div>'."\n";
+		$str .= '<div class="control"><input class="input" name="'.$name.'" id="'.$name.'-input" type="text" value="'.$value.'"></div></div>'."\n";
 		return $str;
 	}
 	
@@ -90,7 +100,7 @@ class Page {
 	 */
 	function listItem($view, $id, $value='') {
 		if(!$value) { $value = implode(', ',$id) ; }
-		$str = '<tr><td><a href="?view='.$view.'&amp;do=edit&amp;pks='.implode(',',$id).'">'.$value.'</a></td><td><a class="open-modal button is-danger is-small" data-do="delete" data-view="'.$view.'" data-pks="'.implode(',',$id).'" data-modal-id="#my-modal">X</a></td></tr>';
+		$str = '<tr><td><a href="?view='.$view.'&amp;do=view&amp;pks='.implode(',',$id).'">'.$value.'</a></td><td><a class="edit" href="?view='.$view.'&amp;do=edit&amp;pks='.implode(',',$id).'"><span class="icon has-text-grey"><i class="fas fa-edit"></i></span></a></td><td><a class="open-modal" data-do="delete" data-view="'.$view.'" data-pks="'.implode(',',$id).'" data-modal-id="#my-modal"><span class="icon has-text-danger"><i class="fas fa-ban"></i></span></a></td></tr>';
 		return $str;
 	}
 	

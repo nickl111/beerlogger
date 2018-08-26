@@ -135,7 +135,7 @@ class vbc {
 	/**
 	 * Create a collection of objects based on a sql query
 	 * @param string $sqlwhere A SQL string
-	 * @return boolean Success or no
+	 * @return boolean Number of results or false (beware 0 !== false)
 	 */
 	function find($sqlwhere='1=1') {
 		$q = 'SELECT '.$this->sqlpk().' FROM '.$this->tablename.' WHERE '.$this->db->escapeString($sqlwhere);
@@ -149,7 +149,7 @@ class vbc {
 			error_log("find : DB error: $q");
 			return false;
 		}
-		return true;
+		return count($this->collection);
 	}
 	
 	/**
@@ -257,9 +257,8 @@ class Session extends vbc {
 	 * @return boolean Current session or no
 	 */
 	function getCurrent() {
-		if($this->find('ts_end = "" AND ts_start <> "" ORDER BY ts_start DESC LIMIT 0,1')) {
-			if(count($this->collection) > 0) {
-				$this->load();
+		if($this->find('ts_end = "" AND ts_start <> "" ORDER BY ts_start DESC LIMIT 0,1') > 0) {
+			if($this->load()) {
 				return true;
 			}
 		}
