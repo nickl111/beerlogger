@@ -7,7 +7,7 @@ $y->load($o->fields['yeast_id']);
 	<a class="edit" href="?view=recipe&amp;do=edit&amp;pks=<?php print $o->fields['id']; ?>"><span class="icon has-text-grey"><i class="fas fa-edit"></i></span></a>
 </div>
 <h1 class="title" style="margin-top: 0">
-  <?php print $o->fields['name']; ?>
+  <?php print $o->getDisplayName(); ?>
 </h1>
 <h3 class="subtitle">
  <a href="?view=yeast&amp;do=view&amp;pks=<?php print $o->fields['yeast_id'];?>"><?php print $y->getDisplayName(); ?></a>
@@ -19,7 +19,7 @@ $y->load($o->fields['yeast_id']);
 $s = new session($db);
 if($s->find("recipe_id = ".$o->fields['id']." ORDER BY ts_start DESC")) {
 	?>
-	<h4>Sessions</h4>
+	<h4>Sessions brewing this recipe</h4>
 	<?php
 	while($s->load()) {
 		?>

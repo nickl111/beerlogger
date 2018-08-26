@@ -73,12 +73,6 @@ switch($view) {
 			// - List previous sessions
 			
 			// Is there a previous session
-			$s = new Session($db);
-			if($s->find('1=1 ORDER BY ts_end DESC LIMIT 0,1')) {	
-				if($s->load()) {
-					$prevSess = $s->fields['id'];
-				}
-			}
 			ob_start();
 			include 'templates/home-new.php';
 			$content = ob_get_clean();
