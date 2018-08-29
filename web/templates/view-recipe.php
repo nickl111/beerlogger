@@ -27,7 +27,7 @@ if($s->find("recipe_id = ".$o->fields['id']." ORDER BY ts_start DESC")) {
 		<article class="media">
   <figure class="media-left">
     <p class="image is-64x64">
-      <img src="https://bulma.io/images/placeholders/128x128.png">
+      <a href="?view=brew&amp;do=view&amp;pks=<?php print $s->fields['id']; ?>"><img src="/lib/identicon.php?size=128&hash=<?php print $s->getHash();?>"></a>
     </p>
   </figure>
   <div class="media-content">

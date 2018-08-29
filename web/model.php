@@ -309,6 +309,10 @@ class Brew extends vbc {
 		}
 		return $r;
 	}
+	
+	function getHash() {
+		return md5($this->fields['id']."|".$this->fields['ts_start']."|".$this->fields['recipe_id']);
+	}
 
 }
 

@@ -11,20 +11,31 @@ if($s->find('1=1 ORDER BY ts_end DESC')) {
 	<h3>Previous Brews</h3>
 	<?php
 	while($s->load()) {
+		$ago = time() - $s->fields['ts_end'];
+		if($ago < 3600) {
+			// minutes
+			$agoStr = round($ago / 60).(round($ago / 60) == 1 ? ' Minute' : ' Minutes');
+		} elseif($ago < 86400) {
+			// hours
+			$agoStr = round($ago / 3600).(round($ago / 3600) == 1 ? ' Hour' : ' Hours');
+		} else {
+			// days
+			$agoStr = round($ago / 86400).(round($ago / 86400) == 1 ? ' Day' : ' Days');
+		}
 		?>
 		<hr/>
 		<article class="media">
 			<figure class="media-left">
 			  <p class="image is-64x64">
-				<img src="https://bulma.io/images/placeholders/128x128.png">
+				<a href="?view=brew&amp;do=view&amp;pks=<?php print $s->fields['id']; ?>"><img src="/lib/identicon.php?size=128&hash=<?php print $s->getHash();?>"></a>
 			  </p>
 			</figure>
 			<div class="media-content">
 			  <div class="content">
 				<p>
-				  <strong><a href="?view=brew&amp;do=view&amp;pks=<?php print $s->fields['id']; ?>"><?php print $s->getDisplayName(); ?></a></strong> <small><?php print date("jS F Y",$s->fields['ts_start']) ;?></small>	
+				  <strong><a href="?view=brew&amp;do=view&amp;pks=<?php print $s->fields['id']; ?>"><?php print $s->getDisplayName(); ?></a></strong> <small>Brewed: <?php print date("jS F Y",$s->fields['ts_start']) ;?></small>	&mdash; <small>Bottled: <?php print date("jS F Y",$s->fields['ts_end'])." ($agoStr ago)";?></small>
 				  <br>
-				  <?php print $s->fields['notes'] ;?>
+				  <?php print nl2br(htmlentities($s->fields['notes'])) ;?>
 				</p>
 			  </div>
 			  </div>

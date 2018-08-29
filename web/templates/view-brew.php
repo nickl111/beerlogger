@@ -10,8 +10,9 @@
 	}
 </style>
 <div class="content">
+	<figure class="image is-64x64 is-pulled-left"><img class="" src="/lib/identicon.php?size=128&hash=<?php print $o->getHash();?>"></figure>
 	<h2 class="title is-3">Brew <?php print $o->fields['name']; ?></h2>
-	<p class="subtitle is-5">Started: <?php print date("D jS M Y h:i",$o->fields['ts_start']) ; if ($o->fields['ts_end']) { print "&nbsp; Finished: ".date("D jS M Y h:i",$o->fields['ts_end']) ; }?></p>
+	<p class="subtitle is-5">Started: <?php print date("D jS M Y h:i",$o->fields['ts_start']) ; if ($o->fields['ts_end']) { print "&nbsp; Bottled: ".date("D jS M Y h:i",$o->fields['ts_end']) ; }?></p>
 	<article class="box">
 		<canvas id="myChart" width="900" height="400"></canvas>
 	</article>
