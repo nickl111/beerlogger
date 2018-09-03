@@ -4,6 +4,8 @@ Beer logger is a simple linux service that logs temperature and airlock bloops f
 
 It was designed to stop me having to go out to the garage to see what was happening all the time.
 
+![Graph](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/Screen%20Shot%202018-09-03%20at%2012.41.47.png "Web Interface Graph")
+
 ## Installation
 Install it on a fresh copy of Raspbian on a Pi Zero W. Make sure you get wifi working reliably first and raspbian updated. Then
 ```
