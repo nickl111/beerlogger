@@ -274,7 +274,7 @@ class Brew extends vbc {
 		$sample = new Sample($this->db);
 		$sample->find('brew_id = '.$this->fields['id']);
 		while($sample->load()) {
-			$samples[] = $sample;
+			$samples[] = clone $sample;
 		}
 		return $samples;
 	}
@@ -283,18 +283,94 @@ class Brew extends vbc {
 	 * get data that happened between this brew's start and end (if any)
 	 * @return array An array of Data objects
 	 */
-	function getData() {
-		$datas = array();
-		$data = new Data($this->db);
-		if($this->fields['end'] == 'NULL') { // current brew
-			$data->find('ts >= '.$this->fields['start']);
-		} else {
-			$data->find('ts >= '.$this->fields['start'].' AND $ts <= '.$this->fields['end']);
+	function getData($binLength=3600) {
+		$d = new data($this->db);
+		return $d->getBins($binLength,$this->fields['ts_start'],$this->fields['ts_end']);
+	}
+	
+	/**
+	 * Find peak activity (if any).
+	 * Must be confirmed by at least five hours following being lower
+	 */
+	function getPeakActivity() {
+		$b = $this->getData(3600);
+		$max_threshold = 5; // number of periods post peak need to confirm the peak
+		$max = 0;
+		$ret = false;
+		foreach($b as $ts => $ary) {
+			if($ary['avg_bloop'] > $max) {
+				$max = $ary['avg_bloop'];
+				$max_ts = $ts;
+				$max_counter = 0;
+			} else {
+				$max_counter++;
+			}
+			if($max_counter >= $max_threshold) {
+				$ret = array();
+				$ret['ts'] = $max_ts;
+				$ret['avg_bloop'] = $max;
+				$max_counter = 0;
+			}
 		}
-		while($data->load()) {
-			$datas[] = $data;
+		return $ret;
+	}
+	
+	function getActivity($level, $direction) {
+		
+		if($direction != 'up' && $direction != 'down') {
+			error_log('Brew : getActivity: direction must be up or down');
+			return false;
 		}
-		return $datas;
+		$b = $this->getData(3600);
+		$hit_threshold = 5; // number of periods post peak need to confirm the level
+		
+		$peak = $this->getPeakActivity();
+		
+		foreach($b as $ts => $ary) {
+			if($direction == 'down') {
+				if($ts < $peak['ts']) {
+					continue;
+				}
+			} else {
+				if($ts > $peak['ts']) {
+					break;
+				}
+ 			}
+			// ok if we're going up we should only see ups and down only downs here
+			if($direction == 'down') {
+				$hit_counter = 0;
+				if($ary['avg_bloop'] < $level) {
+					if($hit_counter == 0) {
+						$hit = $ary['avg_bloop'];
+						$hit_ts = $ts;
+					}
+					$hit_counter++;
+				} else {
+					$hit_counter = 0;
+				}
+				if($hit_counter >= $hit_threshold) {
+					break;
+				}
+				
+			} else {
+				$hit_counter = 0;
+				if($ary['avg_bloop'] > $level) {
+					if($hit_counter == 0) {
+						$hit = $ary['avg_bloop'];
+						$hit_ts = $ts;
+					}
+					$hit_counter++;
+				} else {
+					$hit_counter = 0;
+				}
+				if($hit_counter >= $hit_threshold) {
+					break;
+				}
+			}
+		}
+		
+		return array('ts' => $hit_ts, 'avg_bloop' => $hit);
+		
 	}
 	
 	/**
@@ -371,6 +447,14 @@ class archive extends vbc {
 }
 
 /**
+ * Notes/events
+ * @package beerlogger
+ */
+class note extends vbc {
+	protected $tablename = 'note';
+}
+
+/**
  * This is data from the logger.
  * @package beerlogger
  */
@@ -388,7 +472,7 @@ class data extends vbc {
 	 * @param int $binLength Bin size in seconds (min 120)
 	 * @param int $start Timestamp of start time.
 	 * @param int $end Timestamp of end time. Default is now.
-	 * @return array An array of arrays of binned data : 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min
+	 * @return array An array of arrays of binned data : $bin_start => [ 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min ]
 	 */
 	function getBins($binLength, $start, $end=false){
 		if($binLength < 120) {
