@@ -56,3 +56,13 @@ CREATE TABLE archive (
 	amb_temp DECIMAL(5,3) default NULL,
 	PRIMARY KEY (ts,binLength)
 );
+
+CREATE TABLE note (
+	id INTEGER PRIMARY KEY,
+	parent_id INTEGER default NULL,
+	parent_class TEXT default NULL,
+	ts_created INTEGER default NULL,
+	ts_event INTEGER default NULL,
+	text TEXT default NULL,
+	acknowledged INTEGER default 0
+)

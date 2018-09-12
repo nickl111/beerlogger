@@ -1,18 +1,10 @@
-<style type="text/css">
-	.beer_temp {
-		stroke: red;
-	}
-	.amb_temp {
-		stroke: orange;
-	}
-	.avg_bloop {
-		stroke: yellow;
-	}
-</style>
+<script src="/js/Chart.bundle.min.js"></script>
+<script src="/js/chartjs-plugin-annotation.min.js"></script>
+<script src="/js/chartjs-plugin-zoom.min.js"></script>
 <div class="content">
 	<figure class="image is-64x64 is-pulled-left"><img class="" src="/lib/identicon.php?size=128&hash=<?php print $o->getHash();?>"></figure>
 	<h2 class="title is-3">Brew <?php print $o->fields['name']; ?></h2>
-	<p class="subtitle is-5">Started: <?php print date("D jS M Y h:i",$o->fields['ts_start']) ; if ($o->fields['ts_end']) { print "&nbsp; Bottled: ".date("D jS M Y h:i",$o->fields['ts_end']) ; }?></p>
+	<p class="subtitle is-5">Started: <?php print date("D jS M Y H:i",$o->fields['ts_start']) ; if ($o->fields['ts_end']) { print "&nbsp; Bottled: ".date("D jS M Y H:i",$o->fields['ts_end']) ; }?></p>
 	<article class="box">
 		<canvas id="myChart" width="900" height="400"></canvas>
 	</article>
@@ -35,7 +27,7 @@
 					foreach($samples as $sample) {
 					?>
 					<tr>
-						<td><?php print date("D jS M Y h:i",$sample->fields['ts']);?></td>
+						<td><?php print date("D jS M Y H:i",$sample->fields['ts']);?></td>
 						<td><?php print $sample->fields['sg'];?></td>
 						<td><?php print $sample->fields['note'];?></td>
 					</tr>
@@ -51,10 +43,9 @@
 		<?php
 	}
 	
-$d = new data($db);
 $sms = array();
 $this_sample = reset($sample_data);
-$b = $d->getBins(3600, $o->fields['ts_start'], $o->fields['ts_end']);
+$b = $o->getData();
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
 	$as[] 	= $bAry['a_temp'];
@@ -250,6 +241,10 @@ var myChart = new Chart(ctx, {
 					labelString: 'Gravity'
 				}
 			}]
+		},
+		zoom: {
+			enabled: true,
+			mode: 'y'
 		}
     }
 });

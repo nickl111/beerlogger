@@ -20,6 +20,9 @@ if($ago < 3600) {
 }
 
 ?>
+<script src="/js/Chart.bundle.min.js"></script>
+<script src="/js/chartjs-plugin-annotation.min.js"></script>
+<script src="/js/chartjs-plugin-zoom.min.js"></script>
 <div class="content">
 	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
 	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?></p>
@@ -75,7 +78,7 @@ if($ago < 3600) {
 					foreach($samples as $sample) {
 					?>
 					<tr>
-						<td><?php print date("D jS M Y h:i",$sample->fields['ts']);?></td>
+						<td><?php print date("D jS M Y H:i",$sample->fields['ts']);?></td>
 						<td><?php print $sample->fields['sg'];?></td>
 						<td><?php print $sample->fields['note'];?></td>
 					</tr>
@@ -102,13 +105,13 @@ if($ago < 3600) {
 $sms = array();
 $this_sample = reset($sample_data);
 
-$b = $d->getBins(3600, $s->fields['ts_start'], $s->fields['ts_end']);
+$b = $s->getData();
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
 	$as[] 	= $bAry['a_temp'];
 	$bcs[] 	= $bAry['avg_bloop'];
 	
-	if($this_sample[1] < $binNo) {
+	if($sample_data && $this_sample[1] < $binNo) {
 		$sms[] = $this_sample[0];
 		$this_sample = next($sample_data);
 		
