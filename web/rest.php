@@ -19,8 +19,8 @@ if(in_array($_GET['o'],$perm_objects)) {
 	$o_name = $_GET['o'];
 	$o = new $o_name($db);
 } else {
-	// unpermitted view. Should probably log an error somewhere
 	$r['meta'] = array('status' => '400' , 'errno' => '1', 'message' => 'Object does not exist');
+	error_log('Rest.php : unpermitted object : '.$_GET['o']);
 	$do = '';
 }
 

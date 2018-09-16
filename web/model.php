@@ -248,7 +248,7 @@ class vbc {
  * This is a Fermenting/Brewing session
  * @package beerlogger
  */
-class Brew extends vbc {
+class brew extends vbc {
 	
 	protected $tablename = 'brew';
 	
