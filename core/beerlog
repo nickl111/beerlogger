@@ -57,7 +57,7 @@ get_temp() {
 		fi
 	done
 	rawt=`tail -1 $TMPF`
-	rawt=${rawt: -5}
+	rawt=${rawt: 2}
 	temp=`echo "scale=2; $rawt / 1000" | bc`
         
 	echo $temp
