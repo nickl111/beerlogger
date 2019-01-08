@@ -56,9 +56,11 @@ get_temp() {
 			return 1
 		fi
 	done
+	
 	rawt=`tail -1 $TMPF`
-	rawt=${rawt: 2}
-	temp=`echo "scale=2; $rawt / 1000" | bc`
+	IFS='='; arrIN=($rawt); unset IFS;
+	rawtt=${arrIN[1]}
+	temp=`echo "scale=2; $rawtt / 1000" | bc`
         
 	echo $temp
 	rm -f $TMPF
@@ -208,6 +210,10 @@ case $1 in
 		do_stop
 		sleep 2
 		do_start
+		;;
+	temp)
+		get_temp T1
+		get_temp T2
 		;;
 	*)
 		echo Action \'"$@"\' is not supported.
