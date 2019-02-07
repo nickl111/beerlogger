@@ -15,7 +15,7 @@ fi
 
 case $1 in
 	install)
-		apt-get install apache2 php rrdtool sqlite3 wiringpi php-sqlite3
+		apt-get install apache2 php rrdtool sqlite3 wiringpi php-sqlite3 bc
 
 		mkdir -p $HOME_DIR
 		mkdir -p $RUN_DIR
@@ -50,10 +50,12 @@ case $1 in
 		echo "*/1 * * * * $HOME_DIR/rrd/rrd.sh graph" >> $mycron
 		crontab $mycron
 		rm $mycron
+		echo "dtoverlay=w1-gpio" >> /boot/config.txt
+		sudo dtoverlay w1-gpio gpiopin=4 pullup=0
 		
 		bash $HOME_DIR/selectTemp.sh
 		
-		sqlite3 $DATA_DIR/beerlog.db < $THIS_DIR/web/sql.sql
+		sqlite3 $SQL_DB < $THIS_DIR/web/sql.sql
 		
 		systemctl start beerlog
 		systemctl restart apache2
