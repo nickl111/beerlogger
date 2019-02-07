@@ -76,7 +76,6 @@ do_start() {
 	
 	#init pins
 	gpio -g mode $IN in
-	gpio -g mode $IN up
 	gpio -g mode $LED_R out
 	gpio -g mode $LED_G out
 	gpio -g mode $LED_O out
