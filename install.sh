@@ -33,6 +33,8 @@ case $1 in
 		ln -s /etc/apache2/sites-available/beerlogger.conf /etc/apache2/sites-enabled/beerlogger.conf
 		mkdir -p $OUT_DIR/html
 		mkdir -p $OUT_DIR/logs
+
+		rsync -a $THIS_DIR/web/ $OUT_DIR/html/
 		
 		mkdir -p $DATA_DIR/db
 		chgrp www-data $DATA_DIR/db
@@ -54,6 +56,7 @@ case $1 in
 		sqlite3 $DATA_DIR/beerlog.db < $THIS_DIR/web/sql.sql
 		
 		systemctl start beerlog
+		systemctl restart apache2
 	;;
 	uninstall)
 		# TODO Warning about data loss
