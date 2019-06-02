@@ -48,7 +48,9 @@ There is a rate limit on the counter that will stop it counting more than 2 per 
 This is the DIY part! Here's the circuit diagram:
 ![Schematic](docs/schematic.png "Braubonnet Schematic")
 
-I've substituted some parts that were missing or broken in Eagle so don't pay attention to the names on the diagram. The actual part list is:
+The Pi part is illustrative only. Which pins you connect up to will probably depend on how accessible they are physically but the ones I am using for this version are 12, 13 and 16 for Red, Orange and Green LEDs respectively and 22 for the comparator output (GPIO/BCM numbers). The 1-wire pin is 4 but that is non-negotiable.
+
+I've substituted some parts that were missing or broken in Eagle so pay no attention to the names on the diagram. The actual part list is:
 
 | Name | Part | Value | 
 | --- | --- | --- |
