@@ -4,7 +4,7 @@ Beer logger is a simple linux service that logs temperature and airlock bloops f
 
 It was designed to stop me having to go out to the garage to see what was happening all the time.
 
-![Graph](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/Screen%20Shot%202018-09-03%20at%2012.41.47.png "Web Interface Graph")
+![Graph](docs/Screen%20Shot%202018-09-03%20at%2012.41.47.png "Web Interface Graph")
 
 ## Installation
 Install it on a fresh copy of Raspbian on a Pi Zero W. Make sure you get wifi working reliably first and raspbian updated. Then
@@ -46,7 +46,7 @@ There is a rate limit on the counter that will stop it counting more than 2 per 
 
 ## Braubonnet
 This is the DIY part! Here's the circuit diagram:
-![Schematic](https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/schematic.png "Braubonnet Schematic")
+![Schematic](docs/schematic.png "Braubonnet Schematic")
 
 I've substituted some parts that were missing or broken in Eagle so don't pay attention to the names on the diagram. The actual part list is:
 
@@ -70,7 +70,7 @@ The temp sensors are on the end of long wires and covered in heatshrink.
 
 In physically building it I used an Adafruit Pi Zero Bonnet as the base so that it fitted directly on top of the Pi (and it was important that it was small enough to fit on the airlock).
 
-<img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 1.jpg" width="400"> <img src="https://raw.githubusercontent.com/nickl111/beerlogger/master/docs/BB Photo 2.jpg" width="400"> 
+<img src="docs/BB Photo 1.jpg" width="400"> <img src="docs/BB Photo 2.jpg" width="400"> 
 
 Note that originally I had the ambient temp sensor directly on the board but this picked up too much heat from the cpu so I moved it so both were on the remote wire, one just shorter than the other. 
 
