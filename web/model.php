@@ -548,11 +548,24 @@ class data extends vbc {
 				$b_temp_tot += $this->fields['beer_temp'];
 				$a_temp_tot += $this->fields['amb_temp'];
 				$last_bloop = $c_bloop;
+				$last_gap = $bloop_gap;
 				$c_bloop = $this->fields['bloops'];
+				$c_reset = false;
 				
 				if($last_bloop !== false) {
 					if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
 						$bloop_gap = $c_bloop - $last_bloop;
+					}
+					
+					// there is a situation that this does not catch:
+					// When the pi loses power it seems to store the last time stamp somewhere. When it boots again it assumes the time is the same as this stored time until NTP is synced over the internet.
+					// This means that before the NTP sync is complete there is a period where it thinks it is in the past and is inserting data using an old time. This makes the counter data bad.
+					// The only way to counter this is to do some sanity checking on the bloop gap. (We can't wait for ntp to sync because it might never do that and there's no numerical check on the counter we can do)
+					
+					// So if the gap is more than 100x the previous gap we abandon it
+					if($last_gap == 0) { $last_gap = 1; }
+					if($bloop_gap > $last_gap * 100) {
+						continue;
 					}
 					
 					$bloop_tot += $bloop_gap;
