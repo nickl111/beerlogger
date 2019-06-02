@@ -78,7 +78,7 @@ Note that originally I had the ambient temp sensor directly on the board but thi
 
 I have an Inkbird temperature controller actually controlling the heating and cooling (a brewbelt on the fermenter and the whole thing is in a fridge). In principle it wouldn't be much work to get the Pi to control the heating via a relay but in practice it's simpler and safer and as cheap to just to run the Inkbird.
 
-Should you be comparing this to a previous version note that I realised the comparator needs a 5V supply to work properly (probably the source of my earlier problems) and I have also added a pull up resistor and a decuopling capacitor on its output (as recommended in the datasheet I finally read properly). I've also used a decent sealed trimmer that allows for much more sensitive tuning.
+Should you be comparing this to a previous version note that I realised the comparator needs a 5V supply to work properly (probably the source of my earlier problems) and I have also added a pull up resistor and a decoupling capacitor on its output (as recommended in the datasheet I finally read properly). I've also used a decent sealed trimmer that allows for much more sensitive tuning.
 
 ## Acknowledgments
 - I borrowed part of the circuit design for the piezo sensors from here: https://scienceprog.com/thoughts-on-interfacing-piezo-vibration-sensor/
