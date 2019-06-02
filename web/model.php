@@ -550,7 +550,6 @@ class data extends vbc {
 				$last_bloop = $c_bloop;
 				$last_gap = $bloop_gap;
 				$c_bloop = $this->fields['bloops'];
-				$c_reset = false;
 				
 				if($last_bloop !== false) {
 					if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
