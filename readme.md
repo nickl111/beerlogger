@@ -1,5 +1,3 @@
-** V2 of the hardware is on it's way! (V1 is a little unreliable) **
-
 # Beer Logger for Braubonnet 
 
 Beer logger is a simple linux service that logs temperature and airlock bloops from my Braubonnet (a bonnet for a Pi zero). As we are running on a Pi however we can also run a web server and make the results available to the world (though router config and system capacity for this I'm afraid is your problem). It is designed to fit on the large Speidels style airlock.
