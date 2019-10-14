@@ -2,10 +2,10 @@
 
 # Config file
 
-IN=24		# Pin to monitor the interrupt on
-LED_R=23	# Pin that drives the Red LED
-LED_G=27	# Pin that drives the Green LED
-LED_O=22	# Pin that drives the Orange LED
+IN=22		# Pin to monitor the interrupt on
+LED_R=12	# Pin that drives the Red LED
+LED_G=16	# Pin that drives the Green LED
+LED_O=13	# Pin that drives the Orange LED
 OW=4		#1-wire pin. We don't reference it anywhere but just a reminder not to use it
 
 RATE_LIMIT=0.5
