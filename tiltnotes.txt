@@ -70,13 +70,16 @@ Payload seems to start at 20
 42+43 is SG * 1000
 44 is apparently weeks since battery change 
 
+// bad data example
+2020-03-13 17:38:47.899488 > 04 3E 0C 02 01 04 01 B3 1A F8 6A ED 60 00
 
 hcidump -t --raw | grep --after-context=2 "3E 7C 7A 26 5F F0" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//" | sed "s/04 3E //;  s/02 01 03 01//" | sed "s/  19 02 01 04 15 FF 99//"   |sed "s/201.-..-..//;  s/[[:digit:]]\{3,3\} //; s/1A 1E 4A 74 FA F7//" 
 
 USE THIS ONE:
 
-hcidump -t --raw | grep --after-context=2 " > "  | sed "N ;s/\n//; N; s/\n//" | grep "4C   00 02 15 A4 95" | awk '{printf "%sT%s %s %d %d %d\n", $1, $2,$30, "0x"$43$44, "0x"$45$46, "0x"$47}'
+hcidump -t --raw | grep --after-context=2 " > "  | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//" | grep "4C   00 02 15 A4 95" | awk '{printf "%sT%s %s %d %d %d\n", $1, $2,$30, "0x"$43$44, "0x"$45$46, "0x"$47}'
 
+hcidump -t --raw | grep -C 1 "00 02 15 A4 95" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//"    | awk '{printf "%sT%s %s %d %d %d\n", $1, $2,$30, "0x"$43$44, "0x"$45$46, "0x"$47}'
 -----------------
 
 
