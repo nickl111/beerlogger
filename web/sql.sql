@@ -43,9 +43,9 @@ CREATE TABLE sample (
 
 CREATE TABLE data (
 	ts INTEGER PRIMARY KEY,
-	bloops INTEGER default 0,
 	beer_temp DECIMAL(5,3) default NULL,
-	amb_temp DECIMAL(5,3) default NULL
+	amb_temp DECIMAL(5,3) default NULL,
+	sg DECIMAL(8,4) default NULL
 );
 
 CREATE TABLE archive (

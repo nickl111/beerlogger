@@ -28,111 +28,15 @@ fi
 
 COUNTER=0
 
-# Function to read temp from a 1-wire thermometer
-get_temp() {
-
-	eval "TADDR=`echo \\$${1}_ADDR`"
-	TFILE=/sys/bus/w1/devices/$TADDR/w1_slave
-	if [ ! -e $TFILE ]
-	then
-		echo "NULL"
-		return 1
-	fi
-
-	TMPF=`mktemp`
-
-	cat $TFILE > $TMPF
-	lines=$(head -1 $TMPF)
-	TCNT=0
-	while [[ ${lines: -3} != 'YES' ]] ; do
-		sleep 0.2
-		cat $TFILE > $TMPF
-		lines=$(head -1 $TMPF)
-		TCNT=`expr $TCNT + 1`
-		if [[ $TCNT -ge 10 ]]
-		then
-			echo "NULL"
-			rm -f $TMPF
-			return 1
-		fi
-	done
-	
-	rawt=`tail -1 $TMPF`
-	IFS='='; arrIN=($rawt); unset IFS;
-	rawtt=${arrIN[1]}
-	temp=`echo "scale=2; $rawtt / 1000" | bc`
-        
-	echo $temp
-	rm -f $TMPF
-	return 0
-}
 
 do_start() {
-	#GPIO is not terribly reliable at initialising pins so do it manually
-	echo $IN > /sys/class/gpio/export > /dev/null 2>&1
-	echo $LED_R > /sys/class/gpio/export > /dev/null 2>&1
-	echo $LED_G > /sys/class/gpio/export > /dev/null 2>&1
-	echo $LED_O > /sys/class/gpio/export > /dev/null 2>&1
+
 	
-	#init pins
-	gpio -g mode $IN in
-	gpio -g mode $LED_R out
-	gpio -g mode $LED_G out
-	gpio -g mode $LED_O out
+	hcidump -t --raw | grep -C 1 "00 02 15 A4 95" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//"    | awk '{printf "%sT%s %s %d %d %d\n", $1, $2,$30, "0x"$43$44, "0x"$45$46, "0x"$47}'
 	
-	led_hello
-	
-	# This listens for interupts on $IN and increments a counter.
-	echo -n $COUNTER > $COUNTERFILE
-	(while true; do
-		gpio -g wfi $IN rising
-		COUNTER=`expr $COUNTER + 1`
-		echo -n $COUNTER > $COUNTERFILE
-		led_flash $LED_O
-		sleep $RATE_LIMIT
-	done ) &
-	INT_PID=$!
-	echo $INT_PID>$INT_PID_FILE
-	
-	# This logs the temperatures and whatever the current value of the counter is every minute
-	# Note that this counter will reset everytime the service is restarted!
-	( while true ; do
-		sleep 60
-		t1=`get_temp T1`
-		t2=`get_temp T2`
-		date=`date +%s`
-		bct=`cat $COUNTERFILE`
+	#"INSERT INTO data VALUES (${date},${bct},${t1},${t2})" | sqlite3 $SQL_DB
 		
-		echo "INSERT INTO data VALUES (${date},${bct},${t1},${t2})" | sqlite3 $SQL_DB
 		
-		if [[ $t2 == 'NULL' ]]
-		then
-			t2='U';
-		fi
-		
-		if [[ $t1 == 'NULL' ]]
-		then
-			t1='U';
-		fi
-		
-		echo -n "$date:$bct:$t1:$t2" > $OUTRRD
-		led_toggle_flash $LED_G
-		
-		#check that bloop counter is running and error if not
-		#INT_PID=`cat $INT_PID_FILE` should know this?
-		ps -hq $INT_PID > /dev/null 
-		if [[ $? -ne 0 ]]
-		then
-			echo "Bloop monitor appears to be dead! ($INT_PID)"
-			led_error
-		fi
-		
-	done ) &
-	TEMP_PID=$!
-	echo $TEMP_PID>$TEMP_PID_FILE
-	
-	led_on $LED_G
-	echo "Beer logger service started"
 }
 
 do_stop() {
@@ -173,23 +77,7 @@ do_status() {
 		fi
 	fi
 
-	if [ -e $TEMP_PID_FILE ]
-	then
-		TEMP_PID=`cat $TEMP_PID_FILE`
-		
-		ps -hq $TEMP_PID > /dev/null
-		if [[ $? -ne 0 ]]
-		then
-			echo "Temperature Logger pidfile exists but process appears to be dead ($TEMP_PID)"
-		else
-			amb=`get_temp T2`
-			beer=`get_temp T1`
-			echo "Temperature Logger process OK. Current Temps: Ambient $amb - Beer: $beer"
-		fi
-	else
-		#oops. No pid file
-		echo "Service is stopped"
-	fi
+
 }
 
 # Main controller
@@ -209,10 +97,6 @@ case $1 in
 		do_stop
 		sleep 2
 		do_start
-		;;
-	temp)
-		get_temp T1
-		get_temp T2
 		;;
 	*)
 		echo Action \'"$@"\' is not supported.
