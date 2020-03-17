@@ -3,11 +3,8 @@
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"		# Where this script lives
 
 . $THIS_DIR/config.sh
-. $THIS_DIR/led-functions.sh
 
-COUNTERFILE=/dev/shm/beerlog_counter
 INT_PID_FILE=$RUN_DIR/int.pid
-TEMP_PID_FILE=$RUN_DIR/temp.pid
 
 # make sure our environment exists
 mkdir -p $RUN_DIR
@@ -26,29 +23,21 @@ then
 	exit 2
 fi
 
-COUNTER=0
-
-
 do_start() {
-
 	
-	hcidump -t --raw | grep -C 1 "00 02 15 A4 95" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//"    | awk '{printf "%sT%s %s %d %d %d\n", $1, $2,$30, "0x"$43$44, "0x"$45$46, "0x"$47}'
+	hcitool lescan --duplicates 2>&1 > /dev/null &
+	# get pid
+	hcidump -t --raw | grep -C 1 "00 02 15 A4 95" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//"| tr '\-:' '  ' | sed "s/\.[0-9][0-9][0-9][0-9][0-9][0-9]//" | awk '{printf "INSERT INTO data VALUES (%s, %s, %d, %d, %d);\n", mktime($1" "$2" "$3" "$4" "$5" "$6), $34, strtonum("0x"$47$48), strtonum("0x"$49$50), strtonum("0x"$51)}' | mysql -D beerlogger &
+	echo $! > $INT_PID_FILE
 	
-	#"INSERT INTO data VALUES (${date},${bct},${t1},${t2})" | sqlite3 $SQL_DB
-		
-		
 }
 
 do_stop() {
 	INT_PID=`cat $INT_PID_FILE`
-	TEMP_PID=`cat $TEMP_PID_FILE`
 
 	kill $INT_PID
-	kill $TEMP_PID
 	rm -f $INT_PID_FILE
-	rm -f $TEMP_PID_FILE
 	
-	led_off $LED_G
 	echo "Beer logger service stopped"
 }
 
@@ -60,9 +49,9 @@ do_status() {
 		ps -hq $INT_PID > /dev/null 
 		if [[ $? -ne 0 ]]
 		then
-			echo "Bloop monitor pidfile exists but process appears to be dead ($INT_PID)"
+			echo "pidfile exists but process appears to be dead ($INT_PID)"
 		else
-			echo -n "Bloop monitoring process OK. Current count: "
+			echo -n "process OK. Current count: "
 			cat $COUNTERFILE
 			echo ""
 		fi
@@ -72,7 +61,7 @@ do_status() {
 		pscount=`ps aux | grep "gpio -g wfi" | wc -l`
 		if [[ $pscount -gt 1 ]]
 		then
-			echo "No Bloop monitor pidfile was found, however a process was found! You might want to investigate, it's probably orphaned"
+			echo "No pidfile was found, however a process was found! You might want to investigate, it's probably orphaned"
 			ps aux | grep "gpio -g wfi" 
 		fi
 	fi

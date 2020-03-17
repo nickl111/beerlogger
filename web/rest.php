@@ -5,8 +5,8 @@
  */
 require_once('model.php');
 
-$SQL_DB = "/usr/share/beerlog/db/beerlog.db";
-$db 	= new SQLite3($SQL_DB);
+
+$db 	= new mysqli('localhost', '', '', 'beerlogger');
 
 $r = array();	//response object
 $r['meta'] = array('status' => '200' , 'errno' => '0', 'message' => '');

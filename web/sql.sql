@@ -1,3 +1,7 @@
+CREATE DATABASE `beerlogger`;
+
+USE `beerlogger`;
+
 CREATE TABLE brew (
 	id INTEGER PRIMARY KEY,
 	recipe_id INTEGER default NULL,
@@ -43,17 +47,19 @@ CREATE TABLE sample (
 
 CREATE TABLE data (
 	ts INTEGER PRIMARY KEY,
-	beer_temp DECIMAL(5,3) default NULL,
-	amb_temp DECIMAL(5,3) default NULL,
-	sg DECIMAL(8,4) default NULL
+	color INTEGER default NULL,
+	beer_temp INTEGER default NULL,
+	sg INTEGER default NULL,
+	battery INTEGER default NULL
 );
 
 CREATE TABLE archive (
 	ts INTEGER,
 	binLength INTEGER default 0,
-	bloops DECIMAL(5,2) default 0,
-	beer_temp DECIMAL(5,3) default NULL,
-	amb_temp DECIMAL(5,3) default NULL,
+	color INTEGER default NULL,
+	beer_temp INTEGER default NULL,
+	sg INTEGER default NULL,
+	battery INTEGER default NULL,
 	PRIMARY KEY (ts,binLength)
 );
 

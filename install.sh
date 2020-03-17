@@ -15,7 +15,7 @@ fi
 
 case $1 in
 	install)
-		apt-get install apache2 php rrdtool mysql php-mysql bc
+		apt-get install apache2 php rrdtool mariadb-server php-mysql bc
 
 		mkdir -p $HOME_DIR
 		mkdir -p $RUN_DIR
@@ -51,7 +51,7 @@ case $1 in
 		crontab $mycron
 		rm $mycron
 		
-		sqlite3 $SQL_DB < $THIS_DIR/web/sql.sql
+		mysql $SQL_DB < $THIS_DIR/web/sql.sql
 		
 		systemctl start beerlog
 		systemctl restart apache2

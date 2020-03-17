@@ -50,7 +50,7 @@ class vbc {
 			$q = "SELECT * FROM ".$this->tablename." WHERE ".$this->sqlpk($id);
 			
 			if($results = $this->query($q)) {
-				while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
+				while ($row = $results->fetch_assoc()) {
 					foreach($row as $k => $v) {
 						$this->fields[$k] = $v;
 					}
@@ -110,7 +110,7 @@ class vbc {
 		if(count($this->pk) == 1) {
 			$p = reset($this->pk);
 			if(!$this->fields[$p]) {
-				$this->fields[$p] = $this->db->lastInsertRowid();
+				$this->fields[$p] = $this->db->insert_id;
 			}
 		}
 		return true;
@@ -142,7 +142,7 @@ class vbc {
 		$this->collection = array();
 		if($r = $this->query($q)) {
 			
-			while($row = $r->fetchArray(SQLITE3_ASSOC)) {
+			while($row = $r->fetch _assoc()) {
 				$this->collection[] = $row;
 			}
 		} else {
@@ -214,16 +214,16 @@ class vbc {
 		if($this->tableinfo && !$force) {
 			return true;
 		}
-		$r = $this->query("PRAGMA table_info(".$this->tablename.")");
-		while ($row = $r->fetchArray(SQLITE3_ASSOC)) {
-			 $this->tableinfo[$row['name']] = $row;
+		$r = $this->query("DESCRIBE ".$this->tablename);
+		while ($row = $r->fetch_assoc()) {
+			 $this->tableinfo[$row['Field']] = $row;
 		}
 		
 		foreach($this->tableinfo as $rownum => $v) {
-			if($v['pk'] == 1) {
-				$this->pk[] = $v['name'];
+			if($v['Key'] == 'PRI') {
+				$this->pk[] = $v['Field'];
 			}
-			$this->fields[$v['name']] = null ;
+			$this->fields[$v['Field']] = null ;
 		}
 		return true;
 	}
@@ -286,91 +286,6 @@ class brew extends vbc {
 	function getData($binLength=3600) {
 		$d = new data($this->db);
 		return $d->getBins($binLength,$this->fields['ts_start'],$this->fields['ts_end']);
-	}
-	
-	/**
-	 * Find peak activity (if any).
-	 * Must be confirmed by at least five hours following being lower
-	 */
-	function getPeakActivity() {
-		$b = $this->getData(3600);
-		$max_threshold = 5; // number of periods post peak need to confirm the peak
-		$max = 0;
-		$ret = false;
-		foreach($b as $ts => $ary) {
-			if($ary['avg_bloop'] > $max) {
-				$max = $ary['avg_bloop'];
-				$max_ts = $ts;
-				$max_counter = 0;
-			} else {
-				$max_counter++;
-			}
-			if($max_counter >= $max_threshold) {
-				$ret = array();
-				$ret['ts'] = $max_ts;
-				$ret['avg_bloop'] = $max;
-				$max_counter = 0;
-			}
-		}
-		return $ret;
-	}
-	
-	function getActivity($level, $direction) {
-		
-		if($direction != 'up' && $direction != 'down') {
-			error_log('Brew : getActivity: direction must be up or down');
-			return false;
-		}
-		$b = $this->getData(3600);
-		$hit_threshold = 5; // number of periods post peak need to confirm the level
-		
-		$peak = $this->getPeakActivity();
-		
-		foreach($b as $ts => $ary) {
-			if($direction == 'down') {
-				if($ts < $peak['ts']) {
-					continue;
-				}
-			} else {
-				if($ts > $peak['ts']) {
-					break;
-				}
- 			}
-			// ok if we're going up we should only see ups and down only downs here
-			if($direction == 'down') {
-				$hit_counter = 0;
-				if($ary['avg_bloop'] < $level) {
-					if($hit_counter == 0) {
-						$hit = $ary['avg_bloop'];
-						$hit_ts = $ts;
-					}
-					$hit_counter++;
-				} else {
-					$hit_counter = 0;
-				}
-				if($hit_counter >= $hit_threshold) {
-					break;
-				}
-				
-			} else {
-				$hit_counter = 0;
-				if($ary['avg_bloop'] > $level) {
-					if($hit_counter == 0) {
-						$hit = $ary['avg_bloop'];
-						$hit_ts = $ts;
-					}
-					$hit_counter++;
-				} else {
-					$hit_counter = 0;
-				}
-				if($hit_counter >= $hit_threshold) {
-					break;
-				}
-			}
-		}
-		
-		return array('ts' => $hit_ts, 'avg_bloop' => $hit);
-		
 	}
 	
 	/**
@@ -474,7 +389,7 @@ class data extends vbc {
 	 * @param int $end Timestamp of end time. Default is now.
 	 * @return array An array of arrays of binned data : $bin_start => [ 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min ]
 	 */
-	function getBins($binLength, $start, $end=false){
+	function getBins($color, $binLength, $start, $end=false){
 		if($binLength < 120) {
 			error_log('Data : getBins : Bin Length cannot be less than 120 seconds');
 			return false;
@@ -489,11 +404,11 @@ class data extends vbc {
 		
 		// Check the archive first
 		$archive = new archive($this->db);
-		if($archive->find("ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
+		if($archive->find("color = $color AND ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
 			while($archive->load()) {
 				$bins[$archive->fields['ts']] = array('b_temp' 		=> $archive->fields['beer_temp'],
-													  'a_temp' 		=> $archive->fields['amb_temp'],
-													  'avg_bloop' 	=> $archive->fields['bloops']);
+													  'sg' 			=> $archive->fields['sg'],
+													  'battery' 	=> $archive->fields['battery']);
 				$ts_start = $archive->fields['ts'] + $binLength;
 			}
 		}
@@ -503,82 +418,57 @@ class data extends vbc {
 			$bin_start 		= $ts_start;
 			$actual_steps 	= 0;
 			$b_temp_tot 	= 0;
-			$a_temp_tot 	= 0;
-			$bloop_tot 		= 0;
-			$bloop_gap 		= 0;
-			$c_bloop 		= false;
+			$sg_tot 		= 0;
+			$battery_tot 	= 0;
+
 
 			while($this->load()) {
 				if($this->fields['ts'] >= $bin_start + $binLength) {
 					// finished bin.
 					if($actual_steps > 0) {
 						$b_temp 	= round($b_temp_tot / $actual_steps, 1);
-						$a_temp 	= round($a_temp_tot / $actual_steps, 1);
-						if($actual_steps > 1) {
-							$avg_bloop = round($bloop_tot / ($actual_steps-1), 2);
-						} else {
-							$avg_bloop = $bloop_tot;
-						}
+						$sg 	= round($sg_tot / $actual_steps, 1);
+						
 					}
 					
 					$bins[$bin_start] = array('b_temp' 		=> $b_temp,
-											  'a_temp' 		=> $a_temp,
-											  'avg_bloop' 	=> $avg_bloop);
+											  'sg' 			=> $sg,
+											  'battery' 	=> $battery);
 					
 					// archive this so we never need do it again
 					if($a = new archive($this->db)) {
 						$a->fields['ts'] 		= $bin_start;
 						$a->fields['binLength'] = $binLength;
 						$a->fields['beer_temp'] = $b_temp;
-						$a->fields['amb_temp'] 	= $a_temp;
-						$a->fields['bloops'] 	= $avg_bloop;
+						$a->fields['sg'] 		= $sg;
+						$a->fields['battery'] 	= $battery;
 						$a->save();
 					}
 					
 					$actual_steps 	= 0;
 					$bin_start		+= $binLength;
 					$b_temp_tot 	= 0;
-					$a_temp_tot 	= 0;
-					$bloop_tot 		= 0;
-					$bloop_gap 		= 0;
-					$c_bloop 		= false;
+					$sg_tot 		= 0;
+					$battery_tot 	= 0;
+
 				}
 
 				$actual_steps++;
 				$b_temp_tot += $this->fields['beer_temp'];
-				$a_temp_tot += $this->fields['amb_temp'];
-				$last_bloop = $c_bloop;
-				$last_gap = $bloop_gap;
-				$c_bloop = $this->fields['bloops'];
+				$sg_tot += $this->fields['sg'];
+				$battery += $this->fields['battery'];
 				
-				if($last_bloop !== false) {
-					if($c_bloop >= $last_bloop) { // if this isn't true then the counter has reset and have to assume this gap is the same as the previous one.
-						$bloop_gap = $c_bloop - $last_bloop;
-					}
-					
-					// there is a situation that this does not catch:
-					// When the pi loses power it seems to store the last time stamp somewhere. When it boots again it assumes the time is the same as this stored time until NTP is synced over the internet.
-					// This means that before the NTP sync is complete there is a period where it thinks it is in the past and is inserting data using an old time. This makes the counter data bad.
-					// The only way to counter this is to do some sanity checking on the bloop gap. (We can't wait for ntp to sync because it might never do that and there's no numerical check on the counter we can do)
-					
-					// So if the gap is more than 100x the previous gap we abandon it
-					if($last_gap == 0) { $last_gap = 1; }
-					if($bloop_gap > $last_gap * 100) {
-						continue;
-					}
-					
-					$bloop_tot += $bloop_gap;
-				}
 			}
 
 			// last unfinshed bin. Should not be archived
 			if($actual_steps > 0) {
 				$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
-				$a_temp 	= ($actual_steps > 0 ? round($a_temp_tot / $actual_steps, 1) : 0 );
-				$avg_bloop 	= ($actual_steps > 1 ? round($bloop_tot / ($actual_steps-1), 2) : 0);
+				$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 );
+				$battery 	= ($actual_steps > 0 ? round($battery_tot / $actual_steps, 1) : 0 );
+				
 				$bins[$bin_start] = array('b_temp' 		=> $b_temp,
-										  'a_temp' 		=> $a_temp,
-										  'avg_bloop' 	=> $avg_bloop);
+										  'sg' 		=> $sg,
+										  'battery' 	=> $battery);
 				
 			}
 		}
