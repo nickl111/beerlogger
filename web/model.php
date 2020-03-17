@@ -138,7 +138,7 @@ class vbc {
 	 * @return boolean Number of results or false (beware 0 !== false)
 	 */
 	function find($sqlwhere='1=1') {
-		$q = 'SELECT '.$this->sqlpk().' FROM '.$this->tablename.' WHERE '.$this->db->escapeString($sqlwhere);
+		$q = 'SELECT '.$this->sqlpk().' FROM '.$this->tablename.' WHERE '.$this->db->real_escape_string($sqlwhere);
 		$this->collection = array();
 		if($r = $this->query($q)) {
 			
