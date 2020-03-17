@@ -51,7 +51,7 @@ case $1 in
 		crontab $mycron
 		rm $mycron
 		
-		mysql $SQL_DB < $THIS_DIR/web/sql.sql
+		mysql < $THIS_DIR/web/sql.sql
 		
 		systemctl start beerlog
 		systemctl restart apache2

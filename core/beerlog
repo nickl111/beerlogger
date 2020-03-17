@@ -4,7 +4,8 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"		# Where this scrip
 
 . $THIS_DIR/config.sh
 
-INT_PID_FILE=$RUN_DIR/int.pid
+SCAN_PID_FILE=$RUN_DIR/scan.pid
+DUMP_PID_FILE=$RUN_DIR/dump.pid
 
 # make sure our environment exists
 mkdir -p $RUN_DIR
@@ -27,42 +28,65 @@ do_start() {
 	
 	hcitool lescan --duplicates 2>&1 > /dev/null &
 	# get pid
+	echo $! > $SCAN_PID_FILE
 	hcidump -t --raw | grep -C 1 "00 02 15 A4 95" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//"| tr '\-:' '  ' | sed "s/\.[0-9][0-9][0-9][0-9][0-9][0-9]//" | awk '{printf "INSERT INTO data VALUES (%s, %s, %d, %d, %d);\n", mktime($1" "$2" "$3" "$4" "$5" "$6), $34, strtonum("0x"$47$48), strtonum("0x"$49$50), strtonum("0x"$51)}' | mysql -D beerlogger &
-	echo $! > $INT_PID_FILE
+	echo $! > $DUMP_PID_FILE
 	
 }
 
 do_stop() {
-	INT_PID=`cat $INT_PID_FILE`
+	DUMP_PID=`cat $DUMP_PID_FILE`
+	SCAN_PID=`cat $SCAN_PID_FILE`
 
-	kill $INT_PID
-	rm -f $INT_PID_FILE
+	kill $DUMP_PID
+	rm -f $DUMP_PID_FILE
+	
+	kill $SCAN_PID
+	rm -f $SCAN_PID_FILE
 	
 	echo "Beer logger service stopped"
 }
 
 do_status() {
-	if [ -e $INT_PID_FILE ]
+	if [ -e $SCAN_PID_FILE ]
 	then
-		INT_PID=`cat $INT_PID_FILE`
+		SCAN_PID=`cat $SCAN_PID_FILE`
 		
-		ps -hq $INT_PID > /dev/null 
+		ps -hq $SCAN_PID > /dev/null 
 		if [[ $? -ne 0 ]]
 		then
-			echo "pidfile exists but process appears to be dead ($INT_PID)"
+			echo "pidfile exists but scan process appears to be dead ($SCAN_PID)"
 		else
-			echo -n "process OK. Current count: "
-			cat $COUNTERFILE
-			echo ""
+			if [ -e $DUMP_PID_FILE ]
+			then
+				DUMP_PID=`cat $DUMP_PID_FILE`
+				
+				ps -hq $DUMP_PID > /dev/null 
+				if [[ $? -ne 0 ]]
+				then
+					echo "pidfile exists but dump process appears to be dead ($SCAN_PID)"
+				else
+					echo -n "Both processes OK [$SCAN_PID $DUMP_PID]."
+				fi
+			else
+				# no DUMP pidfile
+				
+				pscount=`ps aux | grep "hcidump" | wc -l`
+				if [[ $pscount -gt 1 ]]
+				then
+					echo "No dump pidfile was found, however a process was found! You might want to investigate, it's probably orphaned"
+					ps aux | grep "hcidump" 
+				fi
+			fi
 		fi
 	else
 		# no pidfile
 		
-		pscount=`ps aux | grep "gpio -g wfi" | wc -l`
+		pscount=`ps aux | grep "lescan" | wc -l`
 		if [[ $pscount -gt 1 ]]
 		then
-			echo "No pidfile was found, however a process was found! You might want to investigate, it's probably orphaned"
-			ps aux | grep "gpio -g wfi" 
+			echo "No scan pidfile was found, however a process was found! You might want to investigate, it's probably orphaned"
+			ps aux | grep "lescan" 
 		fi
 	fi
 
