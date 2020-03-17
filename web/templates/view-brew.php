@@ -48,8 +48,8 @@ $this_sample = reset($sample_data);
 $b = $o->getData();
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
-	$as[] 	= $bAry['a_temp'];
-	$bcs[] 	= $bAry['avg_bloop'];
+	$as[] 	= $bAry['sg'];
+	$bcs[] 	= $bAry['battery'];
 	
 	if($this_sample[1] < $binNo) {
 		$sms[] = $this_sample[0];
@@ -183,7 +183,7 @@ var myChart = new Chart(ctx, {
 				data: [<?php print implode(', ',$bs);?>]
 			},
 			{
-				label: 'Ambient Temperature',
+				label: 'Specific Gravity',
 				borderColor: 'rgba(255, 99, 132, 0.2)',
 				backgroundColor: 'rgba(255, 99, 132, 0.2)',
 				fill: false,
@@ -191,15 +191,7 @@ var myChart = new Chart(ctx, {
 				data: [<?php print implode(', ',$as);?>]
 			},
 			{
-				label: 'Activity/min',
-				borderColor: 'rgba(0, 99, 132, 0.2)',
-				backgroundColor: 'rgba(0, 99, 132, 0.2)',
-				fill: false,
-				yAxisID: 'y-axis-1',
-				data: [<?php print implode(', ',$bcs);?>]
-			},
-			{
-				label: 'Gravity',
+				label: 'Sample Gravity',
 				borderColor: 'rgba(0,0,255,0.8)',
 				backgroundColor: 'rgba(0,0,255,0.8)',
 				fill: false,
@@ -221,7 +213,7 @@ var myChart = new Chart(ctx, {
 				},
 				scaleLabel: {
 					display: true,
-					labelString: '°C / Bloops'
+					labelString: '°C'
 				}
 			}, {
 				type: 'linear',
