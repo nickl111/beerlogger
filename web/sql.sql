@@ -8,7 +8,7 @@ FLUSH PRIVILEGES;
 USE `beerlogger`;
 
 CREATE TABLE brew (
-	id INTEGER PRIMARY KEY,
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	recipe_id INTEGER default NULL,
 	name TEXT default NULL,
 	ts_start INTEGER default NULL,
@@ -30,20 +30,20 @@ CREATE TABLE brew (
 );
 
 CREATE TABLE recipe (
-	id INTEGER PRIMARY KEY,
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name TEXT default NULL,
 	notes TEXT default NULL,
 	yeast_id INTEGER default NULL
 );
 
 CREATE TABLE yeast (
-	id INTEGER PRIMARY KEY,
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name TEXT default NULL,
 	description TEXT default NULL
 );
 
 CREATE TABLE sample (
-	id INTEGER PRIMARY KEY,
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	brew_id INTEGER default NULL,
 	ts INTEGER default NULL,
 	sg DECIMAL(8,4) default NULL,
@@ -51,7 +51,7 @@ CREATE TABLE sample (
 );
 
 CREATE TABLE data (
-	ts INTEGER PRIMARY KEY,
+	ts INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	color INTEGER default NULL,
 	beer_temp INTEGER default NULL,
 	sg INTEGER default NULL,
@@ -59,7 +59,7 @@ CREATE TABLE data (
 );
 
 CREATE TABLE archive (
-	ts INTEGER,
+	ts INTEGER NOT NULL,
 	binLength INTEGER default 0,
 	color INTEGER default NULL,
 	beer_temp INTEGER default NULL,
@@ -69,7 +69,7 @@ CREATE TABLE archive (
 );
 
 CREATE TABLE note (
-	id INTEGER PRIMARY KEY,
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	parent_id INTEGER default NULL,
 	parent_class TEXT default NULL,
 	ts_created INTEGER default NULL,

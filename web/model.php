@@ -285,7 +285,7 @@ class brew extends vbc {
 	 */
 	function getData($binLength=3600) {
 		$d = new data($this->db);
-		return $d->getBins($binLength,$this->fields['ts_start'],$this->fields['ts_end']);
+		return $d->getBins(20,$binLength,$this->fields['ts_start'],$this->fields['ts_end']);
 	}
 	
 	/**
@@ -380,7 +380,7 @@ class data extends vbc {
 	 * Calculate the current data values (an average of the last few anyway)
 	 */
 	function getCurrent(){
-		return $this->getBins(600, time()-600);
+		return $this->getBins(20,600, time()-600);
 	}
 	
 	/**
