@@ -64,7 +64,7 @@ foreach($b as $binNo => $bAry) {
 }
 // Put OG and FG on the graph for free
 if($o->fields['g_orig']) {
-	$sms[0] = $o->fields['g_orig'];
+	$as[0] = $o->fields['g_orig'];
 }
 if($o->fields['g_final']) {
 	$sms[] = $o->fields['g_final'];
@@ -193,10 +193,10 @@ var myChart = new Chart(ctx, {
 			},
 			{
 				label: 'Specific Gravity',
-				borderColor: 'rgba(255, 99, 132, 0.2)',
-				backgroundColor: 'rgba(255, 99, 132, 0.2)',
+				borderColor: 'rgba(13, 99, 255, 0.2)',
+				backgroundColor: 'rgba(13, 99, 255, 0.2)',
 				fill: false,
-				yAxisID: 'y-axis-1',
+				yAxisID: 'y-axis-2',
 				data: [<?php print implode(', ',$as);?>]
 			},
 			{

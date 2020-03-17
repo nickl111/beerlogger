@@ -291,7 +291,7 @@ class brew extends vbc {
 	 * get data that happened between this brew's start and end (if any)
 	 * @return array An array of Data objects
 	 */
-	function getData($binLength=3600) {
+	function getData($binLength=600) {
 		$d = new data($this->db, $this->fields['color']);
 		return $d->getBins($binLength,$this->fields['ts_start'],$this->fields['ts_end']);
 	}
