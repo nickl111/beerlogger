@@ -9,20 +9,30 @@
 		</div>
 	</div>
 	<div class="field">
-		<label class="label" for="name-input">Recipe</label>
-		<div class="select">
-			
-			<select name="field_recipe_id">
-				<option value="">None</option>
-				<?php
-					$r = new recipe($db);
-					if($r->find()) {
-						while($r->load()) {
-							print '<option value="'.$r->fields['id'].'">'.$r->fields['name']."</option>\n";
-						}
-					}
-				?>
-			</select>
+		<div class="field is-horizontal">
+			<div class="field is-size-3" style="margin-right: 1rem">
+				<label class="label" for="color-input">Color</label>
+				<div class="control">
+					<input class="input" name="field_color" id="color-input" type="text" placeholder="Color id - Green=20">
+				</div>
+			</div>
+			<div>
+				<label class="label" for="name-input">Recipe</label>
+				<div class="select">
+					
+					<select name="field_recipe_id">
+						<option value="">None</option>
+						<?php
+							$r = new recipe($db);
+							if($r->find()) {
+								while($r->load()) {
+									print '<option value="'.$r->fields['id'].'">'.$r->fields['name']."</option>\n";
+								}
+							}
+						?>
+					</select>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div class="field">

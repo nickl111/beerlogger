@@ -15,7 +15,7 @@ fi
 
 case $1 in
 	install)
-		apt-get install apache2 php mariadb-server php-mysql bc
+		apt-get install apache2 php mariadb-server php-mysql bc bluez
 
 		mkdir -p $HOME_DIR
 		mkdir -p $RUN_DIR

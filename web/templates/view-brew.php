@@ -108,20 +108,29 @@ if($o->fields['g_final']) {
 			</div>
 			
 			<div class="column">
-				<div class="field">
-					<label class="label">Recipe</label>
-					<div class="select">
-						<select name="field_recipe_id">
-							<option value=""></option>
-							<?php
-								$r = new recipe($db);
-								if($r->find()) {
-									while($r->load()) {
-										print '<option value="'.$r->fields['id'].'"'.($o->fields['recipe_id'] == $r->fields['id'] ? ' selected="selected"' : '').'>'.$r->fields['name']."</option>\n";
+				<div class="field is-horizontal">
+					<div class="field is-size-3" style="margin-right: 1rem">
+				
+						<label class="label" for="color-input">Color</label>
+						<div class="control">
+							<input class="input" name="field_color" id="color-input" type="text" value="<?php print $o->fields['color']; ?>">
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">Recipe</label>
+						<div class="select">
+							<select name="field_recipe_id">
+								<option value=""></option>
+								<?php
+									$r = new recipe($db);
+									if($r->find()) {
+										while($r->load()) {
+											print '<option value="'.$r->fields['id'].'"'.($o->fields['recipe_id'] == $r->fields['id'] ? ' selected="selected"' : '').'>'.$r->fields['name']."</option>\n";
+										}
 									}
-								}
-							?>
-						</select>
+								?>
+							</select>
+						</div>
 					</div>
 				</div>
 				
