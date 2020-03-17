@@ -1,5 +1,10 @@
 CREATE DATABASE `beerlogger`;
 
+CREATE USER 'beerman' IDENTIFIED BY 'c21n09487b';
+GRANT USAGE ON *.* TO 'beerman'@localhost IDENTIFIED BY 'c21n09487b';
+GRANT ALL privileges ON `beerlogger`.* TO 'beerman'@localhost;
+FLUSH PRIVILEGES;
+
 USE `beerlogger`;
 
 CREATE TABLE brew (

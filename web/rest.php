@@ -5,7 +5,7 @@
  */
 require_once('model.php');
 
-$db 	= new mysqli('localhost', 'root', '', 'beerlogger');
+$db 	= new mysqli('localhost', 'beerman', 'c21n09487b', 'beerlogger');
 
 $r = array();	//response object
 $r['meta'] = array('status' => '200' , 'errno' => '0', 'message' => '');
