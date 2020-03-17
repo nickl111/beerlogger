@@ -15,7 +15,7 @@ fi
 
 case $1 in
 	install)
-		apt-get install apache2 php rrdtool mariadb-server php-mysql bc
+		apt-get install apache2 php mariadb-server php-mysql bc
 
 		mkdir -p $HOME_DIR
 		mkdir -p $RUN_DIR
@@ -40,17 +40,6 @@ case $1 in
 		chgrp www-data $DATA_DIR/db
 		chmod -R 777 $DATA_DIR/db	# This is the only permission set I can get it to work on under apache
 		
-		mkdir -p $HOME_DIR/rrd
-		cp $THIS_DIR/rrd/* $HOME_DIR/rrd
-		chmod 755 $HOME_DIR/rrd/rrd.sh
-		$HOME_DIR/rrd/rrd.sh create
-		mycron=`mktemp`
-		crontab -l > $mycron
-		echo "*/1 * * * * $HOME_DIR/rrd/rrd.sh update" >> $mycron
-		echo "*/1 * * * * $HOME_DIR/rrd/rrd.sh graph" >> $mycron
-		crontab $mycron
-		rm $mycron
-		
 		mysql < $THIS_DIR/web/sql.sql
 		
 		systemctl start beerlog
@@ -68,13 +57,6 @@ case $1 in
 		rm /etc/apache2/sites-enabled/beerlogger.conf
 		rm /etc/apache2/sites-available/beerlogger.conf
 		
-		mycron=`mktemp`
-		mycron2=`mktemp`
-		crontab -l > $mycron
-		sed "s@\*/1 \* \* \* \* $HOME_DIR/rrd/rrd\.sh update@@" $mycron > $mycron2
-		sed "s@\*/1 \* \* \* \* $HOME_DIR/rrd/rrd\.sh graph@@" $mycron2 > $mycron
-		crontab $mycron
-		rm $mycron $mycron2
 	;;
 	*)
 		echo "Unknown command ${1}"

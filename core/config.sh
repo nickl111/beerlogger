@@ -9,6 +9,5 @@ SQL_HOST=localhost
 SQL_USER=root
 SQL_PASS=
 SQL_DB=beerlogger
-OUTRRD=/dev/shm/rrd.in
 
 OUT_DIR=/var/www/beerlog
