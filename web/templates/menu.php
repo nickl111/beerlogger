@@ -2,7 +2,6 @@
 	<aside class="menu">
 		<ul class="menu-list">
 			<li><a<?php print ($this->view == 'home' ? ' class="is-active"' : '')?> href="?view=home">Home</a></li>
-			<li><a<?php print ($this->view == 'monitor' ? ' class="is-active"' : '')?> href="?view=monitor">Monitor</a></li>
 			<p class="menu-label">
 				Administration
 			  </p>

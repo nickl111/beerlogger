@@ -8,7 +8,7 @@ require_once('page.php');
 
 $db 	= new mysqli('localhost', 'beerman', 'c21n09487b', 'beerlogger');
 
-$perm_views 	= array('','home','monitor','brew','data','recipe','sample','newBrew','yeast');
+$perm_views 	= array('','home','brew','data','recipe','sample','newBrew','yeast');
 $perm_actions 	= array('','view','edit','save','delete','resumePrevBrew','newBrew','endBrew','newSample');
 $perm_graphs 	= array('day','hour','week','month','year');
 
@@ -76,10 +76,6 @@ switch($view) {
 			include 'templates/home-new.php';
 			$content = ob_get_clean();
 		}
-		break;
-	case 'monitor':
-		$title = 'Monitor';
-		$content = $p->showMonitor($graph);
 		break;
 	case 'newBrew':
 		$title = 'New Brew';
