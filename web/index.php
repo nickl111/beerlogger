@@ -6,8 +6,7 @@
 require_once('model.php');
 require_once('page.php');
 
-$SQL_DB = "/usr/share/beerlog/db/beerlog.db";
-$db 	= new SQLite3($SQL_DB);
+$db 	= new mysqli('localhost', '', '', 'beerlogger');
 
 $perm_views 	= array('','home','monitor','brew','data','recipe','sample','newBrew','yeast');
 $perm_actions 	= array('','view','edit','save','delete','resumePrevBrew','newBrew','endBrew','newSample');

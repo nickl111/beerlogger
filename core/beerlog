@@ -73,7 +73,7 @@ do_status() {
 				then
 					echo "pidfile exists but dump process appears to be dead ($SCAN_PID)"
 				else
-					echo -n "Both processes OK [$SCAN_PID $DUMP_PID]."
+					echo -n "Both processes OK [$SCAN_PID $DUMP_PID]"
 				fi
 			else
 				# no DUMP pidfile
@@ -87,13 +87,15 @@ do_status() {
 			fi
 		fi
 	else
-		# no pidfile
+		# no scan pidfile
 		
 		pscount=`ps aux | grep "lescan" | wc -l`
 		if [[ $pscount -gt 1 ]]
 		then
 			echo "No scan pidfile was found, however a process was found! You might want to investigate, it's probably orphaned"
 			ps aux | grep "lescan" 
+		else
+			echo "Not running"
 		fi
 	fi
 

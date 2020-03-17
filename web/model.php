@@ -142,7 +142,7 @@ class vbc {
 		$this->collection = array();
 		if($r = $this->query($q)) {
 			
-			while($row = $r->fetch _assoc()) {
+			while($row = $r->fetch_assoc()) {
 				$this->collection[] = $row;
 			}
 		} else {
