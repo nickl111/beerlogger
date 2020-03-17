@@ -83,7 +83,11 @@ class vbc {
 			$q = 'UPDATE '.$this->tablename.' SET ';
 			foreach($this->fields as $k => $v) {
 				if(in_array($k,$this->pk)){ continue; }
-				$q .= "$k = '".$v."', ";
+				if($v == '') {
+					$q .= "$k = NULL, ";
+				} else {
+					$q .= "$k = '".$v."', ";
+				}
 			}
 			$q = substr($q,0,-2);
 			$q .= " WHERE ".$this->sqlpk($this->getPKValues());
@@ -98,7 +102,11 @@ class vbc {
 					}
 				}
 				$c .= "$k,";
-				$p .= "'$v',";
+				if($v == '') {
+					$p .= "NULL,";
+				} else {
+					$p .= "'$v',";
+				}
 			}
 			$q .= substr($c,0,-1).') VALUES ('.substr($p,0,-1).')';
 		}
@@ -284,8 +292,8 @@ class brew extends vbc {
 	 * @return array An array of Data objects
 	 */
 	function getData($binLength=3600) {
-		$d = new data($this->db);
-		return $d->getBins(20,$binLength,$this->fields['ts_start'],$this->fields['ts_end']);
+		$d = new data($this->db, $this->fields['color']);
+		return $d->getBins($binLength,$this->fields['ts_start'],$this->fields['ts_end']);
 	}
 	
 	/**
@@ -375,12 +383,19 @@ class note extends vbc {
  */
 class data extends vbc {
 	protected $tablename = 'data';
+	protected $color;
+	
+	function __construct($db,$color) {
+		$this->color = $color;
+		parent::__construct($db);
+	}
+	
 	
 	/**
 	 * Calculate the current data values (an average of the last few anyway)
 	 */
 	function getCurrent(){
-		return $this->getBins(20,600, time()-600);
+		return $this->getBins(600, time()-600);
 	}
 	
 	/**
@@ -389,7 +404,7 @@ class data extends vbc {
 	 * @param int $end Timestamp of end time. Default is now.
 	 * @return array An array of arrays of binned data : $bin_start => [ 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min ]
 	 */
-	function getBins($color, $binLength, $start, $end=false){
+	function getBins($binLength, $start, $end=false){
 		if($binLength < 120) {
 			error_log('Data : getBins : Bin Length cannot be less than 120 seconds');
 			return false;
@@ -404,17 +419,17 @@ class data extends vbc {
 		
 		// Check the archive first
 		$archive = new archive($this->db);
-		if($archive->find("color = $color AND ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
+		if($archive->find("color = ".$this->color." AND ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
 			while($archive->load()) {
-				$bins[$archive->fields['ts']] = array('b_temp' 		=> $archive->fields['beer_temp'],
-													  'sg' 			=> $archive->fields['sg'],
+				$bins[$archive->fields['ts']] = array('b_temp' 		=> ($archive->fields['beer_temp']-32) * (5/9),
+													  'sg' 			=> $archive->fields['sg']/1000,
 													  'battery' 	=> $archive->fields['battery']);
 				$ts_start = $archive->fields['ts'] + $binLength;
 			}
 		}
 		unset($archive);
 	
-		if($this->find("ts > $ts_start AND ts < $end ORDER BY ts ASC")) {
+		if($this->find("color = ".$this->color." AND ts > $ts_start AND ts < $end ORDER BY ts ASC")) {
 			$bin_start 		= $ts_start;
 			$actual_steps 	= 0;
 			$b_temp_tot 	= 0;
@@ -431,13 +446,15 @@ class data extends vbc {
 						
 					}
 					
-					$bins[$bin_start] = array('b_temp' 		=> $b_temp,
-											  'sg' 			=> $sg,
+					$bins[$bin_start] = array('b_temp' 		=> ($b_temp-32) * (5/9),
+											  'sg' 			=> $sg/1000,
 											  'battery' 	=> $battery);
 					
 					// archive this so we never need do it again
 					if($a = new archive($this->db)) {
+						
 						$a->fields['ts'] 		= $bin_start;
+						$a->fields['color']		= $this->color;
 						$a->fields['binLength'] = $binLength;
 						$a->fields['beer_temp'] = $b_temp;
 						$a->fields['sg'] 		= $sg;
@@ -466,8 +483,8 @@ class data extends vbc {
 				$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 );
 				$battery 	= ($actual_steps > 0 ? round($battery_tot / $actual_steps, 1) : 0 );
 				
-				$bins[$bin_start] = array('b_temp' 		=> $b_temp,
-										  'sg' 		=> $sg,
+				$bins[$bin_start] = array('b_temp' 		=> ($b_temp-32) * (5/9),
+										  'sg' 			=> $sg/1000,
 										  'battery' 	=> $battery);
 				
 			}

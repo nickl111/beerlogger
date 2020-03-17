@@ -11,6 +11,7 @@ CREATE TABLE brew (
 	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	recipe_id INTEGER default NULL,
 	name TEXT default NULL,
+	color INTEGER default 20,
 	ts_start INTEGER default NULL,
 	ts_end INTEGER default NULL,
 	notes TEXT default NULL,
