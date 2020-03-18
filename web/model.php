@@ -171,6 +171,10 @@ class vbc {
 	function iterate() {
 		$colcount = count($this->results);
 		if(count($this->results) > 0) {
+			
+			if($this->iterator == $colcount) {
+				return false;
+			}
 
 			$row = $this->results[$this->iterator];
 			
@@ -180,9 +184,6 @@ class vbc {
 
 			$this->is_loaded = true;
 			$this->iterator++;
-			if($this->iterator == $colcount) {
-				return false;
-			}
 			return true;
 
 		} else {
