@@ -102,7 +102,7 @@ switch($view) {
 					$counter = 0;
 					if($o->find('1=1 LIMIT '.($i*15).',15')) {
 						$listcontent = '';
-						while($o->load()) {
+						while($o->iterate()) {
 							$listcontent .= $p->listItem($view, $o->getPKValues(),$o->getDisplayName());
 							$counter++;
 						}

@@ -7,10 +7,12 @@ class vbc {
 	public $db;
 	protected $tablename;
 	protected $collection;
+	protected $results;
 	protected $tableinfo = array();
 	public $fields = array();
 	public $pk = array();
 	private $is_loaded = false;
+	protected $iterator = 0;
 	
 	/**
 	 * The constructor
@@ -146,18 +148,46 @@ class vbc {
 	 * @return boolean Number of results or false (beware 0 !== false)
 	 */
 	function find($sqlwhere='1=1') {
-		$q = 'SELECT '.$this->sqlpk().' FROM '.$this->tablename.' WHERE '.$this->db->real_escape_string($sqlwhere);
+		$q = 'SELECT * FROM '.$this->tablename.' WHERE '.$this->db->real_escape_string($sqlwhere);
 		$this->collection = array();
+		$this->results = array();
 		if($r = $this->query($q)) {
-			
+			$counter = 0;
 			while($row = $r->fetch_assoc()) {
-				$this->collection[] = $row;
+				foreach($this->pk as $k) {
+					$myrow[$k] = $row[$k];
+				}
+				$this->collection[$counter] = $myrow;
+				$this->results[$counter++] = $row;
 			}
 		} else {
 			error_log("find : DB error: $q");
 			return false;
 		}
+		
 		return count($this->collection);
+	}
+	
+	function iterate() {
+		$colcount = count($this->results);
+		if(count($this->results) > 0) {
+
+			$row = $this->results[$this->iterator];
+			
+			foreach($row as $k => $v) {
+				$this->fields[$k] = $v;
+			}
+
+			$this->is_loaded = true;
+			$this->iterator++;
+			if($this->iterator == $colcount) {
+				return false;
+			}
+			return true;
+
+		} else {
+			return false;
+		}
 	}
 	
 	/**
