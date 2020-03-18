@@ -265,7 +265,7 @@ class brew extends vbc {
 	 * @return boolean Current brew or no
 	 */
 	function getCurrent() {
-		if($this->find('ts_end = "" AND ts_start <> "" ORDER BY ts_start DESC LIMIT 0,1') > 0) {
+		if($this->find('ts_end IS NULL AND ts_start <= NOW() ORDER BY ts_start DESC LIMIT 0,1') > 0) {
 			if($this->load()) {
 				return true;
 			}
@@ -437,7 +437,7 @@ class data extends vbc {
 			$battery_tot 	= 0;
 
 
-			while($this->load()) {
+			while($this->load()) {	// this is deeply inefficient
 				if($this->fields['ts'] >= $bin_start + $binLength) {
 					// finished bin.
 					if($actual_steps > 0) {
