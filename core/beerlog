@@ -35,7 +35,7 @@ do_start() {
 		echo "scan process refused to start for some reason, aborting"
 		return 1;
 	fi
-	hcidump -t --raw | grep -C 1 "00 02 15 A4 95" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//"| tr '\-:' '  ' | sed "s/\.[0-9][0-9][0-9][0-9][0-9][0-9]//" | awk '{printf "INSERT INTO data VALUES (%s, %s, %d, %d, %d);\n", mktime($1" "$2" "$3" "$4" "$5" "$6), $34, strtonum("0x"$47$48), strtonum("0x"$49$50), strtonum("0x"$51)}' | mysql -D beerlogger &
+	hcidump -t --raw | grep -C 1 "00 02 15 A4 95" | grep --invert-match '\-\-' | sed "N ;s/\n//; N; s/\n//"| tr '\-:' '  ' | sed "s/\.[0-9][0-9][0-9][0-9][0-9][0-9]//" | awk '{printf "INSERT IGNORE INTO data VALUES (%s, %s, %d, %d, %d);\n", mktime($1" "$2" "$3" "$4" "$5" "$6), $34, strtonum("0x"$47$48), strtonum("0x"$49$50), strtonum("0x"$51)}' | mysql -D beerlogger &
 	echo $! > $DUMP_PID_FILE
 	
 	service mysql start
