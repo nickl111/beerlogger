@@ -10,14 +10,26 @@
 	</div>
 	<div class="field">
 		<div class="field is-horizontal">
-			<div class="field is-size-3" style="margin-right: 1rem">
+			<div class="field" style="margin-right: 1rem">
 				<label class="label" for="color-input">Color</label>
-				<div class="control">
-					<input class="input" name="field_color" id="color-input" type="text" placeholder="Color id - Green=20">
+				<div class="select">
+					
+					<select name="field_color">
+						<option value="20">Green</option>
+						<option value="10">Red</option>
+						<option value="30">Black</option>
+						<option value="40">Purple</option>
+						<option value="50">Orange</option>
+						<option value="60">Blue</option>
+						<option value="70">Yellow</option>
+						<option value="80">Pink</option>
+					</select>
 				</div>
+				
+
 			</div>
 			<div>
-				<label class="label" for="name-input">Recipe</label>
+				<label class="label">Recipe</label>
 				<div class="select">
 					
 					<select name="field_recipe_id">

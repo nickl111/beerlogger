@@ -102,11 +102,19 @@ foreach($b as $binNo => $bAry) {
 			
 			<div class="column">
 				<div class="field is-horizontal">
-					<div class="field is-size-3" style="margin-right: 1rem">
-				
-						<label class="label" for="color-input">Color</label>
-						<div class="control">
-							<input class="input" name="field_color" id="color-input" type="text" value="<?php print $o->fields['color']; ?>">
+					<div class="field" style="margin-right: 1rem">
+						<label class="label">Color</label>
+						<div class="select">
+							<select name="field_color">
+								<option value="20"<?php print ($o->fields['color'] == 20 ? ' selected="selected"' : ''); ?>>Green</option>
+								<option value="10"<?php print ($o->fields['color'] == 10 ? ' selected="selected"' : ''); ?>>Red</option>
+								<option value="30"<?php print ($o->fields['color'] == 30 ? ' selected="selected"' : ''); ?>>Black</option>
+								<option value="40"<?php print ($o->fields['color'] == 40 ? ' selected="selected"' : ''); ?>>Purple</option>
+								<option value="50"<?php print ($o->fields['color'] == 50 ? ' selected="selected"' : ''); ?>>Orange</option>
+								<option value="60"<?php print ($o->fields['color'] == 60 ? ' selected="selected"' : ''); ?>>Blue</option>
+								<option value="70"<?php print ($o->fields['color'] == 70 ? ' selected="selected"' : ''); ?>>Yellow</option>
+								<option value="80"<?php print ($o->fields['color'] == 80 ? ' selected="selected"' : ''); ?>>Pink</option>
+							</select>
 						</div>
 					</div>
 					<div class="field">
