@@ -1,10 +1,10 @@
 <?php
-$d = new data($db);
+$d = new data($db,20);
 if($cur = $d->getCurrent()) {
 	$ary = end($cur);
 	$b_temp 	= $ary['b_temp'];
-	$a_temp 	= $ary['a_temp'];
-	$avg_bloop 	= $ary['avg_bloop'];
+	$sg 		= $ary['sg'];
+	$battery 	= $ary['battery'];
 }
 
 $ago = time() - $s->fields['ts_start'];
@@ -35,20 +35,15 @@ if($ago < 3600) {
 		</div>
 		<div class="level-item has-text-centered">
 			<div>
-				<p class="heading">Beer</p>
+				<p class="heading">Temp</p>
 				<p class="title"><?php print $b_temp; ?> &deg;C</p>
 			</div>
 		</div>
+
 		<div class="level-item has-text-centered">
 			<div>
-				<p class="heading">Ambient</p>
-				<p class="title"><?php print $a_temp; ?> &deg;C</p>
-			</div>
-		</div>
-		<div class="level-item has-text-centered">
-			<div>
-				<p class="heading">Activity / min</p>
-				<p class="title"><?php print $avg_bloop; ?></p>
+				<p class="heading">Gravity</p>
+				<p class="title"><?php print $sg; ?></p>
 			</div>
 		</div>
 	</nav>
@@ -108,8 +103,8 @@ $this_sample = reset($sample_data);
 $b = $s->getData();
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
-	$as[] 	= $bAry['a_temp'];
-	$bcs[] 	= $bAry['avg_bloop'];
+	$as[] 	= $bAry['sg'];
+	$bcs[] 	= $bAry['battery'];
 	
 	if($sample_data && $this_sample[1] < $binNo) {
 		$sms[] = $this_sample[0];
@@ -122,11 +117,6 @@ foreach($b as $binNo => $bAry) {
 	$label = date('j M H:i', $binNo);
 	$labels[] = "'$label'";
 
-}
-
-// Put OG on the graph for free
-if($s->fields['g_orig']) {
-	$sms[0] = $s->fields['g_orig'];
 }
 ?>
 
@@ -146,23 +136,15 @@ var myChart = new Chart(ctx, {
 				data: [<?php print implode(', ',$bs);?>]
 			},
 			{
-				label: 'Ambient Temperature',
-				borderColor: 'rgba(255, 99, 132, 0.2)',
-				backgroundColor: 'rgba(255, 99, 132, 0.2)',
+				label: 'Specific Gravity',
+				borderColor: 'rgba(13, 99, 255, 0.2)',
+				backgroundColor: 'rgba(13, 99, 255, 0.2)',
 				fill: false,
-				yAxisID: 'y-axis-1',
+				yAxisID: 'y-axis-2',
 				data: [<?php print implode(', ',$as);?>]
 			},
 			{
-				label: 'Activity/min',
-				borderColor: 'rgba(0, 99, 132, 0.2)',
-				backgroundColor: 'rgba(0, 99, 132, 0.2)',
-				fill: false,
-				yAxisID: 'y-axis-1',
-				data: [<?php print implode(', ',$bcs);?>]
-			},
-			{
-				label: 'Gravity',
+				label: 'Sample Gravity',
 				borderColor: 'rgba(0,0,255,0.8)',
 				backgroundColor: 'rgba(0,0,255,0.8)',
 				fill: false,
