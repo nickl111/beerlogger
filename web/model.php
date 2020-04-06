@@ -452,8 +452,8 @@ class data extends vbc {
 		$archive = new archive($this->db);
 		if($archive->find("color = ".$this->color." AND ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
 			while($archive->load()) {
-				$bins[$archive->fields['ts']] = array('b_temp' 		=> ($archive->fields['beer_temp']-32) * (5/9),
-													  'sg' 			=> $archive->fields['sg']/1000,
+				$bins[$archive->fields['ts']] = array('b_temp' 		=> number_format(($archive->fields['beer_temp']-32) * (5/9),2),
+													  'sg' 			=> number_format($archive->fields['sg']/1000,4),
 													  'battery' 	=> $archive->fields['battery']);
 				$ts_start = $archive->fields['ts'] + $binLength;
 			}
@@ -472,13 +472,13 @@ class data extends vbc {
 				if($this->fields['ts'] >= $bin_start + $binLength) {
 					// finished bin.
 					if($actual_steps > 0) {
-						$b_temp 	= round($b_temp_tot / $actual_steps, 1);
+						$b_temp = round($b_temp_tot / $actual_steps, 1);
 						$sg 	= round($sg_tot / $actual_steps, 1);
 						
 					}
 					
-					$bins[$bin_start] = array('b_temp' 		=> ($b_temp-32) * (5/9),
-											  'sg' 			=> $sg/1000,
+					$bins[$bin_start] = array('b_temp' 		=> number_format(($b_temp-32) * (5/9),2),
+											  'sg' 			=> number_format($sg/1000,4),
 											  'battery' 	=> $battery);
 					
 					// archive this so we never need do it again
@@ -514,8 +514,8 @@ class data extends vbc {
 				$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 );
 				$battery 	= ($actual_steps > 0 ? round($battery_tot / $actual_steps, 1) : 0 );
 				
-				$bins[$bin_start] = array('b_temp' 		=> ($b_temp-32) * (5/9),
-										  'sg' 			=> $sg/1000,
+				$bins[$bin_start] = array('b_temp' 		=> number_format(($b_temp-32) * (5/9),2),
+										  'sg' 			=> number_format($sg/1000,4),
 										  'battery' 	=> $battery);
 				
 			}
