@@ -142,7 +142,7 @@ var myChart = new Chart(ctx, {
 				fill: false,
 				yAxisID: 'y-axis-2',
 				data: [<?php print implode(', ',$as);?>]
-			},
+			}/*,
 			{
 				label: 'Sample Gravity',
 				borderColor: 'rgba(0,0,255,0.8)',
@@ -150,7 +150,7 @@ var myChart = new Chart(ctx, {
 				fill: false,
 				yAxisID: 'y-axis-2',
 				data: [<?php print implode(', ',$sms);?>]
-			}
+			}*/
 		]
 	},
 	options: {
@@ -176,10 +176,6 @@ var myChart = new Chart(ctx, {
 				// grid line settings
 				gridLines: {
 					drawOnChartArea: false, // only want the grid lines for one axis to show up
-				},
-				ticks: {
-					suggestedMin: 1,
-					suggestedMax: 1.070
 				},
 				scaleLabel: {
 					display: true,
