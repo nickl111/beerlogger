@@ -349,6 +349,62 @@ class brew extends vbc {
 		return md5($this->fields['id']."|".$this->fields['ts_start']."|".$this->fields['recipe_id']);
 	}
 
+	/**
+	 * Calculate ABV based on the formula
+	 * ABV =(76.08 * (og-fg) / (1.775-og)) * (fg / 0.794)
+	 * @param boolean $actual Return anticipated or actual
+	 * @return float ABV as a percentage. False on error.
+	 */
+	function getABV($actual=true){
+		if(!$this->fields['g_orig']) {
+			return false;
+		}
+		
+		$og = $this->fields['g_orig'];
+		
+		if($actual) {
+			// this is dumb. Need to reimagine this bit. need a getLatestData function and to remove the concept of data being independent of brew
+			$da = $this->getData();
+			$ld = end($da);
+			$fg = $ld['sg'];
+		} else {
+			if(!$this->fields['g_final']) {
+				return false;
+			}
+			$fg = $this->fields['g_final'];
+		}
+		
+		$abv = (76.08 * ($og-$fg) / (1.775-$og)) * ($fg / 0.794);
+		return $abv;
+	}
+	
+	/**
+	 * Calculate apparent attenuation from the formula
+	 * (OG - FG) / OG
+	 * @param boolean $actual Return anticipated or actual
+	 * @return float Attenuation as a percentage. False on error.
+	 */
+	function getAttenuation($actual=true) {
+		if(!$this->fields['g_orig']) {
+			return false;
+		}
+		
+		$og = $this->fields['g_orig'];
+		
+		if($actual) {
+			// this is dumb. Need to reimagine this bit. need a getLatestData function and to remove the concept of data being independent of brew
+			$da = $this->getData();
+			$ld = end($da);
+			$fg = $ld['sg'];
+		} else {
+			if(!$this->fields['g_final']) {
+				return false;
+			}
+			$fg = $this->fields['g_final'];
+		}
+		
+		return ($og - $fg) / $og;
+	}
 }
 
 /**
