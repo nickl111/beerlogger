@@ -23,7 +23,7 @@ if($ago < 3600) {
 <script src="/js/chartjs-plugin-annotation.min.js"></script>
 <script src="/js/chartjs-plugin-zoom.min.js"></script>
 <div class="content">
-	<h1 class="title">Fermenting <?php print $s->fields['name'];?></h1>
+	<h1 class="title">Fermenting <a href="?view=brew&do=view&pks=<?php print implode(",",$s->getPKValues());?>"><?php print $s->fields['name'];?></a></h1>
 	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?></p>
 	<nav class="level box">
 		<div class="level-item has-text-centered">
