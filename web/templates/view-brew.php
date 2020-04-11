@@ -219,7 +219,7 @@ var myChart = new Chart(ctx, {
 			}]
 		},
 		zoom: {
-			enabled: true,
+			enabled: false,
 			mode: 'y'
 		}
     }
