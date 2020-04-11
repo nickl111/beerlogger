@@ -17,16 +17,9 @@ CREATE TABLE brew (
 	notes TEXT default NULL,
 	g_orig DECIMAL(4,3) default NULL,
 	mash_ph DECIMAL(3,2) default NULL,
-	g_post_mash DECIMAL(4,3) default NULL,
-	mash_eff INTEGER default NULL,
-	vol_pre_boil DECIMAL(5,2) default NULL,
-	g_pre_boil DECIMAL(4,3) default NULL,
 	vol_ferment DECIMAL(5,2) default NULL,
 	g_final DECIMAL(4,3) default NULL,
 	vol_bottle DECIMAL(5,2) default NULL,
-	abv DECIMAL(4,2) default NULL,
-	attenuation DECIMAL(4,1) default NULL,
-	carb_level DECIMAL(2,1) default NULL,
 	target_temp DECIMAL(3,1) default NULL
 );
 

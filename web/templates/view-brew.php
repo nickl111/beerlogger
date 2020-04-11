@@ -79,29 +79,17 @@ foreach($b as $binNo => $bAry) {
 						<input class="input" name="field_g_orig" id="g_orig-input" type="text" value="<?php print $o->fields['g_orig']; ?>">
 					</div>
 				</div>
-				
 				<div class="field">
-					<label class="label" for="g_pre_boil-input">Pre-Boil Gravity</label>
-					<div class="control">
-						<input class="input" name="field_g_pre_boil" id="g_pre_boil-input" type="text" value="<?php print $o->fields['g_pre_boil']; ?>">
-					</div>
-				</div>
-				<div class="field">
-					<label class="label" for="g_final-input">Final Gravity</label>
+					<label class="label" for="g_final-input">Expected Final Gravity</label>
 					<div class="control">
 						<input class="input" name="field_g_final" id="g_final-input" type="text" value="<?php print $o->fields['g_final']; ?>">
 					</div>
 				</div>
-				<div class="field">
-					<label class="label" for="abv-input">ABV</label>
-					<div class="control">
-						<input class="input" name="field_abv" id="abv-input" type="text" value="<?php print $o->fields['abv']; ?>">
-					</div>
-				</div>
+				
 			</div>
 			
 			<div class="column">
-				<div class="field is-horizontal">
+				<div class="field is-horizontal" style="margin-bottom:0px">
 					<div class="field" style="margin-right: 1rem">
 						<label class="label">Color</label>
 						<div class="select">
@@ -134,7 +122,6 @@ foreach($b as $binNo => $bAry) {
 						</div>
 					</div>
 				</div>
-				
 				<div class="field">
 					<label class="label" for="vol_ferment-input">Volume into Fermenter</label>
 					<div class="control">
@@ -142,21 +129,9 @@ foreach($b as $binNo => $bAry) {
 					</div>
 				</div>
 				<div class="field">
-					<label class="label" for="vol_pre_boil-input">Pre-boil Volume</label>
-					<div class="control">
-						<input class="input" name="field_vol_pre_boil" id="vol_pre_boil-input" type="text" value="<?php print $o->fields['vol_pre_boil']; ?>">
-					</div>
-				</div>
-				<div class="field">
 					<label class="label" for="vol_bottle-input">Bottled Volume</label>
 					<div class="control">
 						<input class="input" name="field_vol_bottle" id="vol_bottle-input" type="text" value="<?php print $o->fields['vol_bottle']; ?>">
-					</div>
-				</div>
-				<div class="field">
-					<label class="label" for="carb_level-input">Carbonation Level</label>
-					<div class="control">
-						<input class="input" name="field_carb_level" id="carb_level-input" type="text" value="<?php print $o->fields['carb_level']; ?>">
 					</div>
 				</div>
 			</div>
