@@ -49,7 +49,7 @@ $b = $o->getData();
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
 	$as[] 	= $bAry['sg'];
-	$bcs[] 	= $bAry['battery'];
+	$vol[] 	= $bAry['sg_sd']*10;
 	
 	if($this_sample[1] < $binNo) {
 		$sms[] = $this_sample[0];
@@ -188,6 +188,7 @@ var myChart = new Chart(ctx, {
 				label: 'Beer Temperature',
 				borderColor: 'rgba(255, 0, 0, 0.2)',
 				backgroundColor: 'rgba(255, 0, 0, 0.2)',
+				radius: 1,
 				fill: false,
 				yAxisID: 'y-axis-1',
 				data: [<?php print implode(', ',$bs);?>]
@@ -196,9 +197,19 @@ var myChart = new Chart(ctx, {
 				label: 'Specific Gravity',
 				borderColor: 'rgba(13, 99, 255, 0.2)',
 				backgroundColor: 'rgba(13, 99, 255, 0.2)',
+				radius: 1,
 				fill: false,
 				yAxisID: 'y-axis-2',
 				data: [<?php print implode(', ',$as);?>]
+			},
+			{
+				label: 'Activity',
+				borderColor: 'rgba(230,230,230,0.5)',
+				backgroundColor: 'rgba(230,230,230,0.5)',
+				fill: 'origin',
+				radius: 0,
+				yAxisID: 'y-axis-1',
+				data: [<?php print implode(', ',$vol);?>]
 			}
 		]
 	},

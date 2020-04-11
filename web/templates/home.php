@@ -4,7 +4,6 @@ if($cur = $d->getCurrent()) {
 	$ary = end($cur);
 	$b_temp 	= $ary['b_temp'];
 	$sg 		= $ary['sg'];
-	$battery 	= $ary['battery'];
 }
 
 $ago = time() - $s->fields['ts_start'];
