@@ -131,6 +131,7 @@ var myChart = new Chart(ctx, {
 				label: 'Beer Temperature',
 				borderColor: 'rgba(255, 0, 0, 0.2)',
 				backgroundColor: 'rgba(255, 0, 0, 0.2)',
+				radius: 1,
 				fill: false,
 				yAxisID: 'y-axis-1',
 				data: [<?php print implode(', ',$bs);?>]
@@ -139,15 +140,17 @@ var myChart = new Chart(ctx, {
 				label: 'Specific Gravity',
 				borderColor: 'rgba(13, 99, 255, 0.2)',
 				backgroundColor: 'rgba(13, 99, 255, 0.2)',
+				radius: 1,
 				fill: false,
 				yAxisID: 'y-axis-2',
 				data: [<?php print implode(', ',$as);?>]
 			},
 			{
 				label: 'Activity',
-				borderColor: 'rgba(230,230,230,0.8)',
-				backgroundColor: 'rgba(230,230,230,0.8)',
-				fill: true,
+				borderColor: 'rgba(230,230,230,0.5)',
+				backgroundColor: 'rgba(230,230,230,0.5)',
+				fill: 'origin',
+				radius: 0,
 				yAxisID: 'y-axis-1',
 				data: [<?php print implode(', ',$vol);?>]
 			}
