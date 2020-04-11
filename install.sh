@@ -21,10 +21,12 @@ case $1 in
 		mkdir -p $RUN_DIR
 		cp $THIS_DIR/core/* $HOME_DIR/
 		chmod 755 $HOME_DIR/beerlog
-		chmod 755 $HOME_DIR/led-emu.sh
-		chmod 755 $HOME_DIR/selectTemp.sh
+		chmod 755 $HOME_DIR/cron
 		
-		sed s"@|HOME_DIR|@$HOME_DIR@g" $THIS_DIR/systemd/beerlog.service >  /etc/systemd/system/beerlog.service
+		sed -i "s@|SQL_USER|@$SQL_USER@g" $HOME_DIR/cron
+		sed -i "s@|SQL_PASS|@$SQL_PASS@g" $HOME_DIR/cron
+		
+		sed s"@|HOME_DIR|@$HOME_DIR@g" $THIS_DIR/systemd/beerlog.service > /etc/systemd/system/beerlog.service
 		sed -i "s@|RUN_DIR|@$RUN_DIR@g" /etc/systemd/system/beerlog.service
 		systemctl daemon-reload
 		systemctl enable beerlog
@@ -44,6 +46,14 @@ case $1 in
 		
 		systemctl start beerlog
 		systemctl restart apache2
+		
+		mycron=`mktemp`
+		crontab -l > $mycron
+		echo "*/10 * * * * $HOME_DIR/cron" >> $mycron
+		crontab $mycron
+		rm $mycron
+		
+		
 	;;
 	uninstall)
 		# TODO Warning about data loss
@@ -56,6 +66,12 @@ case $1 in
 		systemctl daemon-reload
 		rm /etc/apache2/sites-enabled/beerlogger.conf
 		rm /etc/apache2/sites-available/beerlogger.conf
+		
+		mycron=`mktemp`
+		crontab -l > $mycron
+		sed -i "s@\*/10 \* \* \* \* $HOME_DIR/cron@@" $mycron 
+		crontab $mycron
+		rm $mycron
 		
 	;;
 	*)

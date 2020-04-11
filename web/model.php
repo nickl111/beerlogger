@@ -144,11 +144,12 @@ class vbc {
 	
 	/**
 	 * Create a collection of objects based on a sql query
+	 * collection is used by load(), results is used by iterate()
 	 * @param string $sqlwhere A SQL string
 	 * @return boolean Number of results or false (beware 0 !== false)
 	 */
-	function find($sqlwhere='1=1') {
-		$q = 'SELECT * FROM '.$this->tablename.' WHERE '.$this->db->real_escape_string($sqlwhere);
+	function find($sqlwhere='1=1', $what='*') {
+		$q = 'SELECT '.$what.' FROM '.$this->tablename.' WHERE '.$this->db->real_escape_string($sqlwhere);
 		$this->collection = array();
 		$this->results = array();
 		if($r = $this->query($q)) {
@@ -168,6 +169,10 @@ class vbc {
 		return count($this->collection);
 	}
 	
+	/**
+	 * Iterate over a result set. More efficient than calling load repeatedly
+	 * @return boolean True unless at the end of the results
+	 */
 	function iterate() {
 		$colcount = count($this->results);
 		if(count($this->results) > 0) {
@@ -451,10 +456,12 @@ class data extends vbc {
 		// Check the archive first
 		$archive = new archive($this->db);
 		if($archive->find("color = ".$this->color." AND ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
-			while($archive->load()) {
+			while($archive->iterate()) {
 				$bins[$archive->fields['ts']] = array('b_temp' 		=> number_format(($archive->fields['beer_temp']-32) * (5/9),2),
 													  'sg' 			=> number_format($archive->fields['sg']/1000,4),
-													  'battery' 	=> $archive->fields['battery']);
+													  'sg_sd'		=> number_format($archive->fields['sg_sd'],2),
+													  'datacount'	=> $archive->fields['datacount']
+													 );
 				$ts_start = $archive->fields['ts'] + $binLength;
 			}
 		}
@@ -465,60 +472,21 @@ class data extends vbc {
 			$actual_steps 	= 0;
 			$b_temp_tot 	= 0;
 			$sg_tot 		= 0;
-			$battery_tot 	= 0;
 
-
-			while($this->load()) {	// this is deeply inefficient
-				if($this->fields['ts'] >= $bin_start + $binLength) {
-					// finished bin.
-					if($actual_steps > 0) {
-						$b_temp = round($b_temp_tot / $actual_steps, 1);
-						$sg 	= round($sg_tot / $actual_steps, 1);
-						
-					}
-					
-					$bins[$bin_start] = array('b_temp' 		=> number_format(($b_temp-32) * (5/9),2),
-											  'sg' 			=> number_format($sg/1000,4),
-											  'battery' 	=> $battery);
-					
-					// archive this so we never need do it again
-					if($a = new archive($this->db)) {
-						
-						$a->fields['ts'] 		= $bin_start;
-						$a->fields['color']		= $this->color;
-						$a->fields['binLength'] = $binLength;
-						$a->fields['beer_temp'] = $b_temp;
-						$a->fields['sg'] 		= $sg;
-						$a->fields['battery'] 	= $battery;
-						$a->save();
-					}
-					
-					$actual_steps 	= 0;
-					$bin_start		+= $binLength;
-					$b_temp_tot 	= 0;
-					$sg_tot 		= 0;
-					$battery_tot 	= 0;
-
-				}
-
-				$actual_steps++;
+			while($this->load()) {
 				$b_temp_tot += $this->fields['beer_temp'];
-				$sg_tot += $this->fields['sg'];
-				$battery += $this->fields['battery'];
-				
+				$sg_tot 	+= $this->fields['sg'];
+				$actual_steps++;
 			}
-
-			// last unfinshed bin. Should not be archived
-			if($actual_steps > 0) {
-				$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
-				$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 );
-				$battery 	= ($actual_steps > 0 ? round($battery_tot / $actual_steps, 1) : 0 );
-				
-				$bins[$bin_start] = array('b_temp' 		=> number_format(($b_temp-32) * (5/9),2),
+			
+			$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
+			$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 );
+			
+			$bins[$bin_start] = array('b_temp' 			=> number_format(($b_temp-32) * (5/9),2),
 										  'sg' 			=> number_format($sg/1000,4),
-										  'battery' 	=> $battery);
-				
-			}
+										  'sg_sd'		=> 0,
+										  'datacount'	=> $actual_steps
+										  );
 		}
 		return $bins;
 	}

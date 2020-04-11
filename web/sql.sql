@@ -55,17 +55,17 @@ CREATE TABLE data (
 	ts INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	color INTEGER default NULL,
 	beer_temp INTEGER default NULL,
-	sg INTEGER default NULL,
-	battery INTEGER default NULL
+	sg INTEGER default NULL
 );
 
 CREATE TABLE archive (
 	ts INTEGER NOT NULL,
 	binLength INTEGER default 0,
 	color INTEGER default NULL,
-	beer_temp INTEGER default NULL,
-	sg INTEGER default NULL,
-	battery INTEGER default NULL,
+	datacount INTEGER default NULL,
+	beer_temp DECIMAL(5,2) default NULL,
+	sg DECIMAL(6,2) default NULL,
+	sg_sd DECIMAL(4,2) default NULL,
 	PRIMARY KEY (ts,binLength)
 );
 
