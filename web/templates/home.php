@@ -104,7 +104,7 @@ $b = $s->getData();
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
 	$as[] 	= $bAry['sg'];
-	$bcs[] 	= $bAry['battery'];
+	$vol[] 	= $bAry['sg_sd']*10;
 	
 	if($sample_data && $this_sample[1] < $binNo) {
 		$sms[] = $this_sample[0];
@@ -142,15 +142,15 @@ var myChart = new Chart(ctx, {
 				fill: false,
 				yAxisID: 'y-axis-2',
 				data: [<?php print implode(', ',$as);?>]
-			}/*,
+			},
 			{
-				label: 'Sample Gravity',
-				borderColor: 'rgba(0,0,255,0.8)',
-				backgroundColor: 'rgba(0,0,255,0.8)',
-				fill: false,
-				yAxisID: 'y-axis-2',
-				data: [<?php print implode(', ',$sms);?>]
-			}*/
+				label: 'Activity',
+				borderColor: 'rgba(230,230,230,0.8)',
+				backgroundColor: 'rgba(230,230,230,0.8)',
+				fill: true,
+				yAxisID: 'y-axis-1',
+				data: [<?php print implode(', ',$vol);?>]
+			}
 		]
 	},
 	options: {
@@ -166,7 +166,7 @@ var myChart = new Chart(ctx, {
 				},
 				scaleLabel: {
 					display: true,
-					labelString: '°C / Bloops'
+					labelString: '°C'
 				}
 			}, {
 				type: 'linear',
