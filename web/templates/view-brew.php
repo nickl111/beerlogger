@@ -33,9 +33,10 @@ reset($as);
 <script src="/js/chartjs-plugin-annotation.min.js"></script>
 <script src="/js/chartjs-plugin-zoom.min.js"></script>
 <div class="content">
-	<figure class="image is-64x64 is-pulled-left"><img class="" src="/lib/identicon.php?size=128&hash=<?php print $o->getHash();?>"></figure>
+	<figure class="image is-64x64 is-pulled-left" style="margin-bottom:0px"><img class="" src="/lib/identicon.php?size=128&hash=<?php print $o->getHash();?>"></figure>
 	<h2 class="title is-3">Brew <?php print $o->fields['name']; ?></h2>
 	<p class="subtitle is-5">Started: <?php print date("D jS M Y H:i",$o->fields['ts_start']) ; if ($o->fields['ts_end']) { print "&nbsp; Bottled: ".date("D jS M Y H:i",$o->fields['ts_end']) ; }?></p>
+	
 	<nav class="level box">
 		<div class="level-item has-text-centered">
 			<div>
