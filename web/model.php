@@ -408,36 +408,6 @@ class brew extends vbc {
 }
 
 /**
- * This is a beer sample taken
- * @package beerlogger
- */
-class sample extends vbc {
-	protected $tablename = 'sample';
-	
-	/**
-	 * Return a sensible string for the name
-	 * @return string The "name" of this sample
-	 */
-	function getDisplayName() {
-		return $this->getBrewName()." ".date('jS F Y H:i',$this->fields['ts']);
-	}
-	
-	/**
-	 * Get the name of the Brew this sample was for
-	 * @return string The name (or false on fail)
-	 */
-	function getBrewName() {
-		$s = new brew($this->db);
-		if($s->load($this->fields['brew_id'])){
-			return $s->getDisplayName();
-		} else {
-			return false;
-		}
-	}
-}
-
-
-/**
  * This is a beer recipe
  * @package beerlogger
  */

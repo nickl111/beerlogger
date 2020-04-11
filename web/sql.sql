@@ -36,14 +36,6 @@ CREATE TABLE yeast (
 	description TEXT default NULL
 );
 
-CREATE TABLE sample (
-	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	brew_id INTEGER default NULL,
-	ts INTEGER default NULL,
-	sg DECIMAL(8,4) default NULL,
-	note TEXT default NULL
-);
-
 CREATE TABLE data (
 	ts INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	color INTEGER default NULL,

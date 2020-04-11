@@ -62,44 +62,6 @@ if($ago < 3600) {
 	<article class="box">
 		<canvas id="myChart" width="900" height="400"></canvas>
 	</article>
-	
-	<?php
-	$samples = $s->getSamples();
-	if(count($samples) > 0) {
-		?>
-		<article>
-			<h3 class="title">Samples</h3>
-			<table>
-				<thead>
-					<tr>
-						<th>Date</th>
-						<th>Gravity</th>
-						<th>Notes</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					$sample_data = array();
-					$sample_label = array();
-					foreach($samples as $sample) {
-					?>
-					<tr>
-						<td><?php print date("D jS M Y H:i",$sample->fields['ts']);?></td>
-						<td><?php print $sample->fields['sg'];?></td>
-						<td><?php print $sample->fields['note'];?></td>
-					</tr>
-					<?php
-						// also collect some data for the chart
-						$sample_data[] = array($sample->fields['sg'],$sample->fields['ts']);
-					}
-					?>
-				</tbody>
-			</table>
-		</article>
-		<hr />
-		<?php
-	}
-	?>
 
 	<div class="has-text-centered">
 		<a class="button is-large" href="?view=sample&amp;do=edit&amp;brew_id=<?php print $s->fields['id'] ;?>">New Sample</a>
@@ -108,22 +70,12 @@ if($ago < 3600) {
 </div>
 <?php
 
-$sms = array();
-$this_sample = reset($sample_data);
 
 $b = $s->getData();
 foreach($b as $binNo => $bAry) {
 	$bs[] 	= $bAry['b_temp'];
 	$as[] 	= $bAry['sg'];
 	$vol[] 	= $bAry['sg_sd']*10;
-	
-	if($sample_data && $this_sample[1] < $binNo) {
-		$sms[] = $this_sample[0];
-		$this_sample = next($sample_data);
-		
-	} else {
-		$sms[] = '';
-	}
 	
 	$label = date('j M H:i', $binNo);
 	$labels[] = "'$label'";
