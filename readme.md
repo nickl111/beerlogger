@@ -4,7 +4,7 @@ Beerlogger is a simple linux service that logs temperature and gravity from a Ti
 
 It was designed to stop me having to go out to the garage to see what was happening all the time.
 
-![Graph](docs/Screenshot%202020-04-11%20at%09.04.46.png "Web Interface Graph")
+![Graph](docs/Screenshot%202020-04-11%20at%2009.04.46.png "Web Interface Graph")
 
 ## Installation
 Install it on a fresh copy of Raspbian on a Pi Zero W. Make sure you get wifi working reliably first and raspbian updated. Then
