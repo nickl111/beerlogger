@@ -1,3 +1,34 @@
+<?php
+$ago = time() - $o->fields['ts_start'];
+if($ago < 3600) {
+	// minutes
+	$agoStr = round($ago / 60).(round($ago / 60) == 1 ? ' Minute' : ' Minutes');
+} elseif($ago < 86400) {
+	// hours
+	$agoStr = round($ago / 3600).(round($ago / 3600) == 1 ? ' Hour' : ' Hours');
+} else {
+	// days
+	$agoStr = round($ago / 86400).(round($ago / 86400) == 1 ? ' Day' : ' Days');
+}
+
+
+$b = $o->getData();
+foreach($b as $binNo => $bAry) {
+	$bs[] 	= $bAry['b_temp'];
+	$as[] 	= $bAry['sg'];
+	$vol[] 	= $bAry['sg_sd']*10;
+	
+	$label = date('j M H:i', $binNo);
+	$labels[] = "'$label'";
+}
+
+$b_temp = end($bs);
+$sg = end($as);
+
+reset($bs);
+reset($as);
+
+?>
 <script src="/js/Chart.bundle.min.js"></script>
 <script src="/js/chartjs-plugin-annotation.min.js"></script>
 <script src="/js/chartjs-plugin-zoom.min.js"></script>
@@ -5,64 +36,43 @@
 	<figure class="image is-64x64 is-pulled-left"><img class="" src="/lib/identicon.php?size=128&hash=<?php print $o->getHash();?>"></figure>
 	<h2 class="title is-3">Brew <?php print $o->fields['name']; ?></h2>
 	<p class="subtitle is-5">Started: <?php print date("D jS M Y H:i",$o->fields['ts_start']) ; if ($o->fields['ts_end']) { print "&nbsp; Bottled: ".date("D jS M Y H:i",$o->fields['ts_end']) ; }?></p>
+	<nav class="level box">
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Age</p>
+				<p class="title"><?php print $agoStr; ?></p>
+			</div>
+		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Temp</p>
+				<p class="title"><?php print $b_temp; ?> &deg;C</p>
+			</div>
+		</div>
+
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Gravity</p>
+				<p class="title"><?php print $sg; ?></p>
+			</div>
+		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">ABV</p>
+				<p class="title"><?php print number_format($o->getABV(),2); ?>%</p>
+			</div>
+		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Attenuation</p>
+				<p class="title"><?php print number_format($o->getAttenuation()); ?>%</p>
+			</div>
+		</div>
+	</nav>
 	<article class="box">
 		<canvas id="myChart" width="900" height="400"></canvas>
 	</article>
-	<?php
-	$samples = $o->getSamples();
-	if(count($samples) > 0) {
-		?>
-		<article>
-			<h3 class="title">Samples</h3>
-			<table>
-				<thead>
-					<tr>
-						<th>Date</th>
-						<th>Gravity</th>
-						<th>Notes</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					foreach($samples as $sample) {
-					?>
-					<tr>
-						<td><?php print date("D jS M Y H:i",$sample->fields['ts']);?></td>
-						<td><?php print $sample->fields['sg'];?></td>
-						<td><?php print $sample->fields['note'];?></td>
-					</tr>
-					<?php
-					}
-					// also collect some data for the chart
-						$sample_data[] = array($sample->fields['sg'],$sample->fields['ts']);
-					?>
-				</tbody>
-			</table>
-		</article>
-		<hr />
-		<?php
-	}
 	
-$sms = array();
-$this_sample = reset($sample_data);
-$b = $o->getData();
-foreach($b as $binNo => $bAry) {
-	$bs[] 	= $bAry['b_temp'];
-	$as[] 	= $bAry['sg'];
-	$vol[] 	= $bAry['sg_sd']*10;
-	
-	if($this_sample[1] < $binNo) {
-		$sms[] = $this_sample[0];
-		$this_sample = next($sample_data);
-		
-	} else {
-		$sms[] = '';
-	}
-	
-	$label = date('j M H:i', $binNo);
-	$labels[] = "'$label'";
-}
-?>
 	<form method="POST" action="?">
 		
 		<div class="columns">
@@ -91,7 +101,7 @@ foreach($b as $binNo => $bAry) {
 			<div class="column">
 				<div class="field is-horizontal" style="margin-bottom:0px">
 					<div class="field" style="margin-right: 1rem">
-						<label class="label">Color</label>
+						<label class="label">Tilt Color</label>
 						<div class="select">
 							<select name="field_color">
 								<option value="20"<?php print ($o->fields['color'] == 20 ? ' selected="selected"' : ''); ?>>Green</option>

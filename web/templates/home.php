@@ -45,6 +45,18 @@ if($ago < 3600) {
 				<p class="title"><?php print $sg; ?></p>
 			</div>
 		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">ABV</p>
+				<p class="title"><?php print number_format($s->getABV(),2); ?>%</p>
+			</div>
+		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Attenuation</p>
+				<p class="title"><?php print number_format($s->getAttenuation()); ?>%</p>
+			</div>
+		</div>
 	</nav>
 	
 	<article class="box">

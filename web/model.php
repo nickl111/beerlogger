@@ -403,7 +403,7 @@ class brew extends vbc {
 			$fg = $this->fields['g_final'];
 		}
 		
-		return ($og - $fg) / $og;
+		return ($og - $fg) / ($og -1);
 	}
 }
 
