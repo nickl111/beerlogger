@@ -1,9 +1,10 @@
 <?php
-$d = new data($db,20);
-if($cur = $d->getCurrent()) {
-	$ary = end($cur);
-	$b_temp 	= $ary['b_temp'];
-	$sg 		= $ary['sg'];
+
+$d = $s->getCurrentData();
+
+if($d) {
+	$b_temp 	= $d['b_temp'];
+	$sg 		= $d['sg'];
 }
 
 $ago = time() - $s->fields['ts_start'];
@@ -64,8 +65,8 @@ if($ago < 3600) {
 	</article>
 
 	<div class="has-text-centered">
-		<a class="button is-large" href="?view=sample&amp;do=edit&amp;brew_id=<?php print $s->fields['id'] ;?>">New Sample</a>
-		<a class="button is-info is-large" href="?view=brew&amp;do=endBrew">Bottle it!</a>
+		<a class="button is-large" href="?view=brew&amp;do=dryhop&amp;pks=<?php print $s->fields['id'] ;?>">Dry Hop</a>
+		<a class="button is-info is-large" href="?view=brew&amp;do=endBrew&amp;pks=<?php print $s->fields['id'] ;?>">Bottle it!</a>
 	</div>
 </div>
 <?php

@@ -298,34 +298,28 @@ class brew extends vbc {
 	
 	/**
 	 * If there's a current brew load it
-	 * @return boolean Current brew or no
+	 * @return array Array of current brew objects. Or false.
 	 */
-	function getCurrent() {
-		if($this->find('ts_end IS NULL AND ts_start <= NOW() ORDER BY ts_start DESC LIMIT 0,1') > 0) {
-			if($this->load()) {
-				return true;
-			}
-		}
-		return false;
+	function findActive() {
+		return $this->find('ts_end IS NULL AND ts_start <= NOW() ORDER BY ts_start DESC');
 	}
 	
 	/**
-	 * Get samples associated with this brew
-	 * @return array An array of Sample objects
+	 * Get most recent data for this brew
 	 */
-	function getSamples() {
-		$samples = array();
-		$sample = new Sample($this->db);
-		$sample->find('brew_id = '.$this->fields['id']);
-		while($sample->load()) {
-			$samples[] = clone $sample;
+	function getCurrentData() {
+		$d = new data($this->db, $this->fields['color']);
+		
+		if(!$this->fields['ts_end']) {
+			return end($d->getBins(600, time()-600));
+		} else {
+			return end($d->getBins(600, $this->fields['ts_end']-600));
 		}
-		return $samples;
 	}
 	
 	/**
 	 * get data that happened between this brew's start and end (if any)
-	 * @return array An array of Data objects
+	 * @return array An array of data
 	 */
 	function getData($binLength=600) {
 		$d = new data($this->db, $this->fields['color']);
@@ -456,7 +450,7 @@ class data extends vbc {
 	/**
 	 * Calculate the current data values (an average of the last few anyway)
 	 */
-	function getCurrent(){
+	function getActive(){
 		return $this->getBins(600, time()-600);
 	}
 	
@@ -464,7 +458,7 @@ class data extends vbc {
 	 * @param int $binLength Bin size in seconds (min 120)
 	 * @param int $start Timestamp of start time.
 	 * @param int $end Timestamp of end time. Default is now.
-	 * @return array An array of arrays of binned data : $bin_start => [ 'b_temp' => $beer_temp, 'a_temp' => $ambient_temp, 'avg_bloop' => $average_bloop_rate/min ]
+	 * @return array An array of arrays of binned data : $bin_start => [ 'b_temp' => $beer_temp, 'sg' => $sg, 'sg_sd' => $sg_std-dev ]
 	 */
 	function getBins($binLength, $start, $end=false){
 		if($binLength < 120) {
@@ -509,10 +503,10 @@ class data extends vbc {
 			$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 );
 			
 			$bins[$bin_start] = array('b_temp' 			=> number_format(($b_temp-32) * (5/9),2),
-										  'sg' 			=> number_format($sg/1000,4),
-										  'sg_sd'		=> 0,
-										  'datacount'	=> $actual_steps
-										  );
+									  'sg' 			=> number_format($sg/1000,4),
+									  'sg_sd'		=> 0,
+									  'datacount'	=> $actual_steps
+									);
 		}
 		return $bins;
 	}

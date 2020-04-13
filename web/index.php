@@ -46,7 +46,8 @@ switch($view) {
 	case 'home':
 		$title = 'Home';
 		$s = new Brew($db);
-		if($s->getCurrent()) {
+		if($s->findActive() > 0) {
+			$s->load(); // First one only... atm
 			// We have an existing session.
 			// - Show details
 			// - - Graph of temps & bloops
@@ -64,6 +65,7 @@ switch($view) {
 			$content = ob_get_clean();
 			
 		} else {
+			unset($s);
 			// No current session
 			// - Show "Start New Session" button
 			// - -> New Session page
@@ -172,13 +174,24 @@ switch($view) {
 				exit;
 				break;
 			case 'endBrew':
-				$s = new Brew($db);
-				if($s->getCurrent()) {
+				if($pks) {
+					$s = new Brew($db);
+					$s->load($pks);
 					$s->fields['ts_end'] = time();
 					$s->save();
 				}
+
 				header("Location: /?view=home");
 				exit;
+				break;
+			case 'dryhop':
+				if($pks) {
+					$s = new Brew($db);
+					$s->load($pks);
+					$s->fields['ts_dryhop'] = time();
+					$s->fields['g_dryhop'] = $s->getSG();
+					$s->save();
+				}
 				break;
 			case 'newSample':
 				$s = new sample($db);
