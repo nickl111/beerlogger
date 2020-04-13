@@ -175,7 +175,7 @@ switch($view) {
 				break;
 			case 'endBrew':
 				if($pks) {
-					$s = new Brew($db);
+					$s = new brew($db);
 					$s->load($pks);
 					$s->fields['ts_end'] = time();
 					$s->save();
@@ -186,12 +186,16 @@ switch($view) {
 				break;
 			case 'dryhop':
 				if($pks) {
-					$s = new Brew($db);
-					$s->load($pks);
-					$s->fields['ts_dryhop'] = time();
-					$s->fields['g_dryhop'] = $s->getSG();
-					$s->save();
+					$s = new brew($db);
+					if($s->load($pks)) {
+						$curdata = $s->getCurrentData();
+						$s->fields['ts_dryhop'] = time();
+						$s->fields['g_dryhop'] = $curdata['sg'];
+						$s->save();
+					}
 				}
+				header("Location: /?view=home");
+				exit;
 				break;
 			case 'newSample':
 				$s = new sample($db);
