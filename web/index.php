@@ -9,7 +9,7 @@ require_once('page.php');
 $db 	= new mysqli('localhost', 'beerman', 'c21n09487b', 'beerlogger');
 
 $perm_views 	= array('','home','brew','data','recipe','sample','newBrew','yeast');
-$perm_actions 	= array('','view','edit','save','delete','resumePrevBrew','newBrew','endBrew','newSample');
+$perm_actions 	= array('','view','edit','save','delete','resumePrevBrew','newBrew','endBrew','dryhop');
 $perm_graphs 	= array('day','hour','week','month','year');
 
 // keys
