@@ -21,11 +21,11 @@ if($ago < 3600) {
 
 ?>
 <script src="/js/Chart.bundle.min.js"></script>
-<script src="/js/chartjs-plugin-annotation.min.js"></script>
+<script src="/js/chartjs-plugin-annotation.js"></script>
 <script src="/js/chartjs-plugin-zoom.min.js"></script>
 <div class="content">
 	<h1 class="title">Fermenting <a href="?view=brew&do=view&pks=<?php print implode(",",$s->getPKValues());?>"><?php print $s->fields['name'];?></a></h1>
-	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?></p>
+	<p class="subtitle"><?php print $s->getRecipe()->getDisplayname();?><?php print($s->fields['ts_dryhop'] ?  ' - Dry Hopped on '.date("jS M Y H:m", $s->fields['ts_dryhop'] ) : ''); ?></p>
 	<nav class="level box">
 		<div class="level-item has-text-centered">
 			<div>
@@ -65,7 +65,9 @@ if($ago < 3600) {
 	</article>
 
 	<div class="has-text-centered">
+		<?php if(!$s->fields['ts_dryhop']) { ?>
 		<a class="button is-large" href="?view=brew&amp;do=dryhop&amp;pks=<?php print $s->fields['id'] ;?>">Dry Hop</a>
+		<?php } ?>
 		<a class="button is-info is-large" href="?view=brew&amp;do=endBrew&amp;pks=<?php print $s->fields['id'] ;?>">Bottle it!</a>
 	</div>
 </div>
@@ -150,6 +152,47 @@ var myChart = new Chart(ctx, {
 				}
 			}]
 		}
+		<?php if($s->fields['ts_dryhop']) { ?>
+		,annotation: {
+			// Defines when the annotations are drawn.
+			// This allows positioning of the annotation relative to the other
+			// elements of the graph.
+			//
+			// Should be one of: afterDraw, afterDatasetsDraw, beforeDatasetsDraw
+			// See http://www.chartjs.org/docs/#advanced-usage-creating-plugins
+			drawTime: 'afterDatasetsDraw', // (default)
+
+			// Mouse events to enable on each annotation.
+			// Should be an array of one or more browser-supported mouse events
+			// See https://developer.mozilla.org/en-US/docs/Web/Events
+			events: ['click'],
+
+			// Double-click speed in ms used to distinguish single-clicks from
+			// double-clicks whenever you need to capture both. When listening for
+			// both click and dblclick, click events will be delayed by this
+			// amount.
+			dblClickSpeed: 350, // ms (default)
+
+			// Array of annotation configuration objects
+			// See below for detailed descriptions of the annotation options
+			annotations: [{
+				drawTime: 'afterDraw', // overrides annotation.drawTime if set
+				id: 'a-line-1', // optional
+				type: 'line',
+				mode: 'vertical',
+				scaleID: 'x-axis-0',
+				value: '<?php print date('j M H:i', floor($s->fields['ts_dryhop']/600)*600); ?>',
+				borderColor: 'green',
+				borderWidth: 2,
+
+				// Fires when the user clicks this annotation on the chart
+				// (be sure to enable the event in the events array below).
+				onClick: function(e) {
+					// `this` is bound to the annotation element
+				}
+			}]
+		}
+		<?php } ?>
     }
 });
 </script>
