@@ -357,9 +357,7 @@ class brew extends vbc {
 		$og = $this->fields['g_orig'];
 		
 		if($actual) {
-			// this is dumb. Need to reimagine this bit. need a getLatestData function and to remove the concept of data being independent of brew
-			$da = $this->getData();
-			$ld = end($da);
+			$ld = $this->getCurrentData();
 			$fg = $ld['sg'];
 		} else {
 			if(!$this->fields['g_final']) {
@@ -386,9 +384,7 @@ class brew extends vbc {
 		$og = $this->fields['g_orig'];
 		
 		if($actual) {
-			// this is dumb. Need to reimagine this bit. need a getLatestData function and to remove the concept of data being independent of brew
-			$da = $this->getData();
-			$ld = end($da);
+			$ld = $this->getCurrentData();
 			$fg = $ld['sg'];
 		} else {
 			if(!$this->fields['g_final']) {
