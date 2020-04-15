@@ -1,2 +1,2 @@
 #! /bin/bash
-/usr/bin/mysql -u|SQL_USER| -p|SQL_PASS| -D|SQL_DB| -h|SQL_HOST| -e"INSERT IGNORE INTO archive select min(ts) as ts,600 as binLength,min(color) as color,count(ts) as datacount,avg(beer_temp) as beer_temp,avg(sg) as sg,stddev(sg) as sg_sd  from data where ts > 1586363552 GROUP BY color, floor(ts/600) having floor(ts/600) < floor(unix_timestamp()/600)"
+/usr/bin/mysql -u|SQL_USER| -p|SQL_PASS| -D|SQL_DB| -h|SQL_HOST| -e"INSERT IGNORE INTO archive select floor(ts/600)*600 as ts,600 as binLength,min(color) as color,count(ts) as datacount,avg(beer_temp) as beer_temp,avg(sg) as sg,stddev(sg) as sg_sd  from data where ts >= floor((unix_timestamp()-3600)/600)*600 GROUP BY color, floor(ts/600) having floor(ts/600) < floor(unix_timestamp()/600)"
