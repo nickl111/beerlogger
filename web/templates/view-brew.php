@@ -228,12 +228,8 @@ var myChart = new Chart(ctx, {
 					labelString: 'Gravity'
 				}
 			}]
-		},
-		zoom: {
-			enabled: false,
-			mode: 'y'
 		}
-		<?php if($s->fields['ts_dryhop']) { ?>
+		<?php if($o->fields['ts_dryhop']) { ?>
 		,annotation: {
 			// Defines when the annotations are drawn.
 			// This allows positioning of the annotation relative to the other
@@ -262,7 +258,7 @@ var myChart = new Chart(ctx, {
 				type: 'line',
 				mode: 'vertical',
 				scaleID: 'x-axis-0',
-				value: '<?php print date('j M H:i', floor($s->fields['ts_dryhop']/600)*600); ?>',
+				value: '<?php print date('j M H:i', floor($o->fields['ts_dryhop']/600)*600); ?>',
 				borderColor: 'green',
 				borderWidth: 2,
 
