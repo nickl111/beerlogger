@@ -25,6 +25,8 @@ case $1 in
 		
 		sed -i "s@|SQL_USER|@$SQL_USER@g" $HOME_DIR/cron
 		sed -i "s@|SQL_PASS|@$SQL_PASS@g" $HOME_DIR/cron
+		sed -i "s@|SQL_HOST|@$SQL_HOST@g" $HOME_DIR/cron
+		sed -i "s@|SQL_DB|@$SQL_DB@g" $HOME_DIR/cron
 		
 		sed s"@|HOME_DIR|@$HOME_DIR@g" $THIS_DIR/systemd/beerlog.service > /etc/systemd/system/beerlog.service
 		sed -i "s@|RUN_DIR|@$RUN_DIR@g" /etc/systemd/system/beerlog.service
@@ -42,7 +44,18 @@ case $1 in
 		chgrp www-data $DATA_DIR/db
 		chmod -R 777 $DATA_DIR/db	# This is the only permission set I can get it to work on under apache
 		
-		mysql < $THIS_DIR/web/sql.sql
+		sed -i "s@|SQL_USER|@$SQL_USER@g" $OUT_DIR/html/sql.sql
+		sed -i "s@|SQL_PASS|@$SQL_PASS@g" $OUT_DIR/html/sql.sql
+		sed -i "s@|SQL_HOST|@$SQL_HOST@g" $OUT_DIR/html/sql.sql
+		sed -i "s@|SQL_DB|@$SQL_DB@g" $OUT_DIR/html/sql.sql
+		
+		sed -i "s@|SQL_USER|@$SQL_USER@g" $OUT_DIR/html/db.php
+		sed -i "s@|SQL_PASS|@$SQL_PASS@g" $OUT_DIR/html/db.php
+		sed -i "s@|SQL_HOST|@$SQL_HOST@g" $OUT_DIR/html/db.php
+		sed -i "s@|SQL_DB|@$SQL_DB@g" $OUT_DIR/html/db.php
+		
+		mysql < $OUT_DIR/html/sql.sql
+		
 		
 		systemctl start beerlog
 		systemctl restart apache2

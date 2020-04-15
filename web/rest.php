@@ -4,8 +4,7 @@
  * This is quick and dirty REST. Sans HTTP methods (who cares?)
  */
 require_once('model.php');
-
-$db 	= new mysqli('localhost', 'beerman', 'c21n09487b', 'beerlogger');
+require_once('db.php');
 
 $r = array();	//response object
 $r['meta'] = array('status' => '200' , 'errno' => '0', 'message' => '');

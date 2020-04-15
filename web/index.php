@@ -5,8 +5,7 @@
  */
 require_once('model.php');
 require_once('page.php');
-
-$db 	= new mysqli('localhost', 'beerman', 'c21n09487b', 'beerlogger');
+require_once('db.php');
 
 $perm_views 	= array('','home','brew','data','recipe','sample','newBrew','yeast');
 $perm_actions 	= array('','view','edit','save','delete','resumePrevBrew','newBrew','endBrew','dryhop');
