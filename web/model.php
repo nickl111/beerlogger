@@ -311,9 +311,9 @@ class brew extends vbc {
 		$d = new data($this->db, $this->fields['color']);
 		
 		if(!$this->fields['ts_end']) {
-			return end($d->getBins(600, time()-600));
+			return end($d->getBins(600, $this->fields['ts_start'], time()-600));
 		} else {
-			return end($d->getBins(600, $this->fields['ts_end']-600));
+			return end($d->getBins(600, $this->fields['ts_start'], $this->fields['ts_end']-600));
 		}
 	}
 	
@@ -346,24 +346,21 @@ class brew extends vbc {
 	/**
 	 * Calculate ABV based on the formula
 	 * ABV =(76.08 * (og-fg) / (1.775-og)) * (fg / 0.794)
-	 * @param boolean $actual Return anticipated or actual
+	 * @param decimal Gravity to use or current grav if 0
 	 * @return float ABV as a percentage. False on error.
 	 */
-	function getABV($actual=true){
+	function getABV($gravity=0){
 		if(!$this->fields['g_orig']) {
 			return false;
 		}
 		
 		$og = $this->fields['g_orig'];
 		
-		if($actual) {
+		if(!$gravity) {
 			$ld = $this->getCurrentData();
 			$fg = $ld['sg'];
 		} else {
-			if(!$this->fields['g_final']) {
-				return false;
-			}
-			$fg = $this->fields['g_final'];
+			$fg = $gravity;
 		}
 		
 		$abv = (76.08 * ($og-$fg) / (1.775-$og)) * ($fg / 0.794);
@@ -440,14 +437,6 @@ class data extends vbc {
 	function __construct($db,$color) {
 		$this->color = $color;
 		parent::__construct($db);
-	}
-	
-	
-	/**
-	 * Calculate the current data values (an average of the last few anyway)
-	 */
-	function getActive(){
-		return $this->getBins(600, time()-600);
 	}
 	
 	/**
