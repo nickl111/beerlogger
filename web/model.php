@@ -133,11 +133,15 @@ class archive extends vbc {
 }
 
 /**
- * Notes/events
+ * Notes/notifications
  * @package beerlogger
  */
 class note extends vbc {
 	protected $tablename = 'note';
+	
+	function sendEmail($recipient, $subject="Beerlogger Alert") {
+		mail($recipient, $subject, $this->fields['content']);
+	}
 }
 
 /**
