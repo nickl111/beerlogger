@@ -78,10 +78,28 @@ reset($as);
 		
 		<div class="columns">
 			<div class="column">
-				<div class="field">
-					<label class="label" for="name-input">Name</label>
-					<div class="control">
-						<input class="input" name="field_name" id="name-input" type="text" value="<?php print $o->fields['name']; ?>">
+				<div class="field is-horizontal">
+					<div class="field" style="margin-right: 1rem">
+						<label class="label" for="name-input">Name</label>
+						<div class="control">
+							<input class="input" name="field_name" id="name-input" type="text" value="<?php print $o->fields['name']; ?>">
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">Schedule</label>
+						<div class="select">
+							<select name="field_schedule_id">
+								<option value="">None</option>
+								<?php
+									$sced = new schedule($db);
+									if($sced->find()) {
+										while($sced->load()) {
+											print '<option value="'.$sced->fields['id'].'"'.($o->fields['schedule_id'] == $sced->fields['id'] ? ' selected="selected"' : '').'>'.$sced->fields['name']."</option>\n";
+										}
+									}
+								?>
+							</select>
+						</div>
 					</div>
 				</div>
 				<div class="field">
@@ -100,7 +118,7 @@ reset($as);
 			</div>
 			
 			<div class="column">
-				<div class="field is-horizontal" style="margin-bottom:0px">
+				<div class="field is-horizontal">
 					<div class="field" style="margin-right: 1rem">
 						<label class="label">Tilt Color</label>
 						<div class="select">

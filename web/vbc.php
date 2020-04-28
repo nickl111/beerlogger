@@ -259,18 +259,22 @@ class vbc {
 		if($this->tableinfo && !$force) {
 			return true;
 		}
-		$r = $this->query("DESCRIBE ".$this->tablename);
-		while ($row = $r->fetch_assoc()) {
-			 $this->tableinfo[$row['Field']] = $row;
-		}
-		
-		foreach($this->tableinfo as $rownum => $v) {
-			if($v['Key'] == 'PRI') {
-				$this->pk[] = $v['Field'];
+		if($r = $this->query("DESCRIBE ".$this->tablename)) {
+			while ($row = $r->fetch_assoc()) {
+				 $this->tableinfo[$row['Field']] = $row;
 			}
-			$this->fields[$v['Field']] = null ;
+		
+			foreach($this->tableinfo as $rownum => $v) {
+				if($v['Key'] == 'PRI') {
+					$this->pk[] = $v['Field'];
+				}
+				$this->fields[$v['Field']] = null ;
+			}
+			return true;
+		} else {
+			error_log("Error: setTableInfo: DESCRIBE query failed. Table ".$this->tablename." probably doesn't exist");
+			return false;
 		}
-		return true;
 	}
 	
 	/**

@@ -9,7 +9,7 @@ require_once('db.php');
 $r = array();	//response object
 $r['meta'] = array('status' => '200' , 'errno' => '0', 'message' => '');
 
-$perm_objects 	= array('brew','data','recipe','sample','yeast');
+$perm_objects 	= array('brew','data','recipe','schedule','yeast');
 $perm_actions 	= array('','create','read','update','delete','list');
 
 // Security

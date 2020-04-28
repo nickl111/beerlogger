@@ -8,6 +8,22 @@
 			<input class="input" name="field_name" id="name-input" type="text" placeholder="A name for your brew, eg Red IPA 2 or VPA Version 4">
 		</div>
 	</div>
+	<div class="field" style="margin-right: 1rem">
+		<label class="label">Schedule</label>
+			<div class="select">
+				<select name="field_schedule_id">
+					<option value="">None</option>
+					<?php
+						$sced = new schedule($db);
+						if($sced->find()) {
+							while($sced->load()) {
+								print '<option value="'.$sced->fields['id'].'">'.$sced->fields['name']."</option>\n";
+							}
+						}
+					?>
+				</select>
+			</div>
+	</div>
 	<div class="field">
 		<div class="field is-horizontal">
 			<div class="field" style="margin-right: 1rem">
