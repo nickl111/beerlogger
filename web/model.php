@@ -140,7 +140,7 @@ class note extends vbc {
 	protected $tablename = 'note';
 	
 	function sendEmail($recipient, $subject="Beerlogger Alert") {
-		mail($recipient, $subject, $this->fields['content']);
+		return mail($recipient, $subject, $this->fields['content']);
 	}
 }
 

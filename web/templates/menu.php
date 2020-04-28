@@ -7,8 +7,8 @@
 			  </p>
 			<li><a<?php print ($this->view == 'brew' ? ' class="is-active"' : '')?> href="?view=brew">Brews</a></li>
 			<li><a<?php print ($this->view == 'recipe' ? ' class="is-active"' : '')?> href="?view=recipe">Recipes</a></li>
-			<li><a<?php print ($this->view == 'sample' ? ' class="is-active"' : '')?> href="?view=sample">Samples</a></li>
 			<li><a<?php print ($this->view == 'yeast' ? ' class="is-active"' : '')?> href="?view=yeast">Yeasts</a></li>
+			<li><a<?php print ($this->view == 'schedule' ? ' class="is-active"' : '')?> href="?view=schedule">Schedules</a></li>
 		</ul>
 	</aside>
 </div>
