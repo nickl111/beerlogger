@@ -151,10 +151,12 @@ class schedule extends vbc {
 	function load($id=false){
 		if(parent::load($id)) {
 			// load children;
-			$ss = new scheduleStep($this->db);
-			if($ss->find('schedule_id = '.$this->fields['id']." ORDER BY sortOrder") > 0) {
-				while($ss->load()) {
-					$this->steps[] = clone $ss;
+			if($this->fields['id']) {
+				$ss = new scheduleStep($this->db);
+				if($ss->find('schedule_id = '.$this->fields['id']." ORDER BY sortOrder") > 0) {
+					while($ss->load()) {
+						$this->steps[] = clone $ss;
+					}
 				}
 			}
 			return true;
