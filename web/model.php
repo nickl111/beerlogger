@@ -106,6 +106,18 @@ class brew extends vbc {
 		
 		return (($og - $fg) / ($og - 1)) * 100;
 	}
+	
+	/**
+	 * Get any associated schedule
+	 */
+	function getSchedule() {
+		if($this->fields['schedule_id']) {
+			$s = new schedule($this->fields['schedule_id']);
+			return $s;
+		} else {
+			return false;
+		}
+	}
 }
 
 /**
@@ -122,6 +134,42 @@ class recipe extends vbc {
  */
 class yeast extends vbc {
 	protected $tablename = 'yeast';
+}
+
+
+/**
+ * This is a fermentation schedule/profile
+ * @package beerlogger
+ */
+class schedule extends vbc {
+	protected $tablename = 'schedule';
+	public $steps = array();
+	
+	/**
+	 * Overload load method so we can load up steps on load. (load)
+	 */
+	function load($id=false){
+		if(parent::load($id)) {
+			// load children;
+			$ss = new scheduleStep();
+			if($ss->find('schedule_id = '.$this->fields['id']." ORDER BY sortOrder") > 0) {
+				while($ss->load()) {
+					$this->steps[] = clone $ss;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+/**
+ * This is a step/trigger in the schedule
+ *@package beerlogger
+ */
+class scheduleStep extends vbc {
+	protected $tablename = 'scheduleStep';
 }
 
 /**

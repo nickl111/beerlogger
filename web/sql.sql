@@ -33,7 +33,7 @@ CREATE TABLE brew (
 CREATE TABLE schedule (
 	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name TEXT default NULL
-)
+);
 
 CREATE TABLE schedule_step (
 	schedule_id INTEGER NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE schedule_step (
 	stepAction ENUM('none', 'temp'),
 	stepActionValue DECIMAL default NULL,
 	KEY(schedule_id, sortOrder)
-)
+);
 
 -- Recipe
 CREATE TABLE recipe (
