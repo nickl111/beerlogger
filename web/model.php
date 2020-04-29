@@ -140,6 +140,7 @@ class yeast extends vbc {
 /**
  * This is a fermentation schedule/profile
  * @package beerlogger
+ * @var $steps array Array of scheduleStep Objects
  */
 class schedule extends vbc {
 	protected $tablename = 'schedule';
