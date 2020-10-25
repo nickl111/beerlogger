@@ -91,5 +91,32 @@ CREATE TABLE note (
 	content TEXT default NULL,
 	acknowledged INTEGER default 0,
 	notify INTEGER default 0
-)
+);
 
+-- Tank
+CREATE TABLE tank (
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name TEXT default NULL,
+	notes TEXT default NULL,
+	temp_max DECIMAL(4,2) default NULL,
+	temp_min DECIMAL(4,2) default NULL
+);
+
+-- This is a link table for brew and tank
+CREATE TABLE brew_tank (
+	brew_id INTEGER NOT NULL KEY,
+	tank_id INTEGER NOT NULL KEY,
+	ts_start INTEGER default NULL KEY,
+	ts_end INTEGER default NULL
+);
+
+-- Controller
+CREATE TABLE controller (
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name TEXT default NULL,
+	notes TEXT default NULL,
+	controllerType TEXT default NULL,
+	controllerData TEXT default NULL
+	data_read TINYINT default 1,
+	data_write TINYINT default 0
+);

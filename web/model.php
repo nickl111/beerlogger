@@ -266,5 +266,99 @@ class data extends vbc {
 	}
 }
 
+/**
+ * This is a tank in which brew can be stored
+ * @package beerlogger
+ */
+class tank extends vbc {
+	protected $tablename = 'tank';
+	
+	/**
+	 * Get the current temperature
+	 */
+	function getTemp(){
+		return false;
+	}
+	
+	/**
+	 * Set the temperature of this tank
+	 */
+	function setTemp($targetTemp){
+		return false;
+	}
+}
+
+/**
+ * Temperature Controller.
+ * This will need to know which GPIO pin is linked to which channel.
+ * Either we assume there are only two and give them a db field each,
+ * allow more and build an extra table or force this class to be overloaded with specifics?
+ * @package beerlogger
+ */
+class controller extends vbc {
+	protected $tablename = 'controller';
+	
+	function __construct() {
+		# load the data from controllerData field
+		$this->loadData();
+	}
+	
+	/**
+	 * load the data from controllerData field
+	 */
+	function loadData() {
+		
+	}
+	
+	/**
+	 * Should this be here?
+	 */
+	function setTemp($targetTemp) {
+		;
+	}
+	
+	/**
+	 *  
+	 */
+	function getTemp() {
+		;
+	}
+	
+	/**
+	 * Turn on the heat
+	 * (implies turning off the cold)
+	 */
+	function heat() {
+		;
+	}
+	
+	/**
+	 * Turn on the cold
+	 * (implies turning off the heat)
+	 */
+	function cool() {
+		;
+	}
+}
+
+class TwoChannelController extends controller {
+	
+	/**
+	 * Do the specified action to the specified channel
+	 * @param int $channel Which channel to controll
+	 * @param int $action What to do (0=off, 1=on)
+	 */
+	function setChannelStatus($channel,$action) {
+		;
+	}
+	
+	/**
+	 * Get the current status of the channel. We can't physically poll the relay but we can check if the the GPIO pin is high or low
+	 * @param int $channel Which channel to poll
+	 */
+	function getChannelStatus($channel) {
+		;
+	}
+}
 
 ?>
