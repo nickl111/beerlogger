@@ -15,7 +15,7 @@ fi
 
 case $1 in
 	install)
-		apt-get install apache2 php mariadb-server php-mysql bc bluez
+		apt-get -y install apache2 php mariadb-server php-mysql bc bluez bluez-hcidump wiringpi
 
 		mkdir -p $HOME_DIR
 		mkdir -p $RUN_DIR
@@ -65,6 +65,9 @@ case $1 in
 		echo "*/10 * * * * $HOME_DIR/cron" >> $mycron
 		crontab $mycron
 		rm $mycron
+		
+		echo "dtoverlay=w1-gpio" >> /boot/config.txt
+		dtoverlay w1-gpio gpiopin=4 pullup=0
 		
 		
 	;;
