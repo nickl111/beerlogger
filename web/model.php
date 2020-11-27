@@ -267,7 +267,7 @@ class data extends vbc {
 }
 
 /**
- * This is a tank in which brew can be stored
+ * This is a tank in which a brew can be stored
  * @package beerlogger
  */
 class tank extends vbc {
@@ -281,10 +281,24 @@ class tank extends vbc {
 	}
 	
 	/**
-	 * Set the temperature of this tank
+	 * Set the target temperature of this tank
 	 */
 	function setTemp($targetTemp){
 		return false;
+	}
+	
+	/**
+	 * Start monitoring the temperature here
+	 */
+	function startMonitor() {
+		// set active = 1 ;
+	}
+	
+	/**
+	 * Stop monitoring the temperature here
+	 */
+	function stopMonitor() {
+		// set active = 0 ;
 	}
 }
 
@@ -318,7 +332,7 @@ class controller extends vbc {
 	}
 	
 	/**
-	 *  
+	 * 
 	 */
 	function getTemp() {
 		;
@@ -348,7 +362,7 @@ class TwoChannelController extends controller {
 	 * @param int $channel Which channel to controll
 	 * @param int $action What to do (0=off, 1=on)
 	 */
-	function setChannelStatus($channel,$action) {
+	function setChannelStatus($channel, $action) {
 		;
 	}
 	

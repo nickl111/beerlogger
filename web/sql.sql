@@ -99,7 +99,10 @@ CREATE TABLE tank (
 	name TEXT default NULL,
 	notes TEXT default NULL,
 	temp_max DECIMAL(4,2) default NULL,
-	temp_min DECIMAL(4,2) default NULL
+	temp_min DECIMAL(4,2) default NULL,
+	temp_target DECIMAL(4,2) default NULL,
+	active TINYINT default 0 KEY,
+	controller_id INTEGER default NULL KEY
 );
 
 -- This is a link table for brew and tank
@@ -117,6 +120,14 @@ CREATE TABLE controller (
 	notes TEXT default NULL,
 	controllerType TEXT default NULL,
 	controllerData TEXT default NULL
-	data_read TINYINT default 1,
-	data_write TINYINT default 0
+	heat_channel TINYINT default 1,
+	cold_channel TINYINT default 1
+);
+
+CREATE TABLE controllerLog (
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	controller_id INTEGER NOT NULL KEY,
+	ts_start INTEGER NOT NULL KEY,
+	action_taken TEXT default NULL,
+	
 );
