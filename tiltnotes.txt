@@ -116,6 +116,22 @@ sed "s/201.-..-..//;  s/[[:digit:]]\{3,3\} //; s/1A 1E 4A 74 FA F7//"   # pretty
 
 
 
+***************************************************************
 
+Similar for Jinou_Sensor_HumiTemp:
 
+FB:24:62:DE:47:DB
+                              
+                             |hdr| |  flags     | |      mac      | 
+2020-11-02 17:02:09.427871 > 04 3E 22 02 01 00 00 DB 47 DE 62 24 FB 16 02 01 06 03 02 20
+  AA 0E FF 00 13 03 00 41 07 64 FB 24 62 DE 47 DB C0
+  Z^       a  b  c     d  e  f  |      mac      | R                                   ^--
 
+a) 00 = + or 01 = -
+b) hex of temp integer
+c) hex of temp decimal
+d) hex of humidity integer
+e) hex of humidity decimal
+f) I suspect is battery %
+Z) UUID?
+R) RSSI?
