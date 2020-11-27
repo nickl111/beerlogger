@@ -56,6 +56,9 @@ case $1 in
 		
 		mysql < $OUT_DIR/html/sql.sql
 		
+		# This turns power save on the wifi off
+		! grep -q "/sbin/iwconfig wlan0 power off" /etc/rc.local && sed -i 's/^exit 0$/\/sbin\/iwconfig wlan0 power off\nexit 0/' /etc/rc.local
+		
 		
 		systemctl start beerlog
 		systemctl restart apache2
