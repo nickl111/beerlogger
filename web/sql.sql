@@ -26,7 +26,11 @@ CREATE TABLE brew (
 	vol_bottle DECIMAL(5,2) default NULL,
 	target_temp DECIMAL(3,1) default NULL,
 	ts_dryhop INTEGER default NULL,
-	g_dryhop DECIMAL(4,3) default NULL
+	g_dryhop DECIMAL(4,3) default NULL,
+	calib_g_low_ref DECIMAL(4,3) default NULL,
+	calib_g_high_ref DECIMAL(4,3) default NULL,
+	calib_g_low_raw DECIMAL(4,3) default NULL,
+	calib_g_high_raw DECIMAL(4,3) default NULL
 );
 
 -- Fermentation Schedule

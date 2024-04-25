@@ -9,9 +9,25 @@ require_once('vbc.php');
 class brew extends vbc {
 	
 	protected $tablename = 'brew';
+	public $calib = array();
 	
 	/**
-	 * If there's a current brew load it
+	 * Overload load to check for calibration
+	 */
+	function load($id=false){
+		if(parent::load($id)) {
+			// get calibration details
+			if($this->fields['calib_g_low_ref']) {
+				$this->calib = array($this->fields['calib_g_low_raw'], $this->fields['calib_g_high_raw'], $this->fields['calib_g_low_ref'], $this->fields['calib_g_high_ref']);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * If there's a current brew find it
 	 * @return array Array of current brew objects. Or false.
 	 */
 	function findActive() {
@@ -25,9 +41,9 @@ class brew extends vbc {
 		$d = new data($this->db, $this->fields['color']);
 		
 		if(!$this->fields['ts_end']) {
-			return end($d->getBins(600, $this->fields['ts_start'], time()-600));
+			return end($d->getBins(600, $this->fields['ts_start'], time()-600), $this->calib);
 		} else {
-			return end($d->getBins(600, $this->fields['ts_start'], $this->fields['ts_end']-600));
+			return end($d->getBins(600, $this->fields['ts_start'], $this->fields['ts_end']-600), $this->calib);
 		}
 	}
 	
@@ -37,7 +53,7 @@ class brew extends vbc {
 	 */
 	function getData($binLength=600) {
 		$d = new data($this->db, $this->fields['color']);
-		return $d->getBins($binLength,$this->fields['ts_start'],$this->fields['ts_end']);
+		return $d->getBins($binLength, $this->fields['ts_start'], $this->fields['ts_end'], $this->calib);
 	}
 	
 	/**
@@ -212,9 +228,10 @@ class data extends vbc {
 	 * @param int $binLength Bin size in seconds (min 120)
 	 * @param int $start Timestamp of start time.
 	 * @param int $end Timestamp of end time. Default is now.
+	 * @param array $calib 4 member Array of value to calc calibration ($rawLow,$rawHigh,$refLow,$refHigh)
 	 * @return array An array of arrays of binned data : $bin_start => [ 'b_temp' => $beer_temp, 'sg' => $sg, 'sg_sd' => $sg_std-dev ]
 	 */
-	function getBins($binLength, $start, $end=false){
+	function getBins($binLength, $start, $end=false, $calib=array()){
 		if($binLength < 120) {
 			error_log('Data : getBins : Bin Length cannot be less than 120 seconds');
 			return false;
@@ -231,8 +248,15 @@ class data extends vbc {
 		$archive = new archive($this->db);
 		if($archive->find("color = ".$this->color." AND ts >= $ts_start AND ts < $end AND binLength = $binLength ORDER BY ts ASC")) {
 			while($archive->iterate()) {
+				
+				$sg = $archive->fields['sg']/1000;
+				
+				if(count($calib) > 0) {
+					$sg = $this->twoPointCorrection($sg, $calib[0], $calib[1], $calib[2], $calib[3]);
+				}
+				
 				$bins[$archive->fields['ts']] = array('b_temp' 		=> number_format(($archive->fields['beer_temp']-32) * (5/9),2),
-													  'sg' 			=> number_format($archive->fields['sg']/1000,4),
+													  'sg' 			=> number_format($sg,4),
 													  'sg_sd'		=> number_format($archive->fields['sg_sd'],2),
 													  'datacount'	=> $archive->fields['datacount']
 													 );
@@ -240,6 +264,7 @@ class data extends vbc {
 			}
 		}
 		unset($archive);
+		unset($sg);
 	
 		if($this->find("color = ".$this->color." AND ts > $ts_start AND ts < $end ORDER BY ts ASC")) {
 			$bin_start 		= $ts_start;
@@ -254,15 +279,36 @@ class data extends vbc {
 			}
 			
 			$b_temp 	= ($actual_steps > 0 ? round($b_temp_tot / $actual_steps, 1) : 0 );
-			$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 );
+			$sg 		= ($actual_steps > 0 ? round($sg_tot / $actual_steps, 1) : 0 ) / 1000;
 			
-			$bins[$bin_start] = array('b_temp' 			=> number_format(($b_temp-32) * (5/9),2),
-									  'sg' 			=> number_format($sg/1000,4),
+			if(count($calib) > 0) {
+				$sg = $this->twoPointCorrection($sg, $calib[0], $calib[1], $calib[2], $calib[3]);
+			}
+			
+			$bins[$bin_start] = array('b_temp' 		=> number_format(($b_temp-32) * (5/9),2),
+									  'sg' 			=> number_format($sg,4),
 									  'sg_sd'		=> 0,
 									  'datacount'	=> $actual_steps
 									);
 		}
 		return $bins;
+	}
+	
+	/**
+	 * Use calibration to correct value
+	 **/
+	function twoPointCorrection($rawValue,$rawLow,$rawHigh,$refLow,$refHigh) {
+		
+		/*
+		Calculate "RawRange" as RawHigh – RawLow.
+		Calculate "ReferenceRange" as ReferenceHigh – ReferenceLow
+		In your code, calculate the "CorrectedValue" using the formula below
+		CorrectedValue = (((RawValue – RawLow) * ReferenceRange) / RawRange) + ReferenceLow
+		*/
+		$rawRange = $rawHigh - $rawLow;
+		$refRange = $refHigh - $refLow;
+		$correctedValue = ((($rawValue - $rawLow) * $refRange) / $rawRange) + $refLow;
+		return $correctedValue;
 	}
 }
 
