@@ -41,9 +41,9 @@ class brew extends vbc {
 		$d = new data($this->db, $this->fields['color']);
 		
 		if(!$this->fields['ts_end']) {
-			return end($d->getBins(600, $this->fields['ts_start'], time()-600), $this->calib);
+			return end($d->getBins(600, $this->fields['ts_start'], time()-600, $this->calib));
 		} else {
-			return end($d->getBins(600, $this->fields['ts_start'], $this->fields['ts_end']-600), $this->calib);
+			return end($d->getBins(600, $this->fields['ts_start'], $this->fields['ts_end']-600, $this->calib));
 		}
 	}
 	
