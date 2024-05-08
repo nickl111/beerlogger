@@ -1,3 +1,7 @@
+This has been pretty much made obsolete by the Kegland Rapt pill and controller. Shoulda commercialised it myself...
+
+
+
 # Beer Logger for Tilt 
 
 Beerlogger is a simple linux service that logs temperature and gravity from a Tilt hydrometer. As we are running on a Pi however we can also run a web server and make the results available to the world (though router config and system capacity for this I'm afraid is your problem).
